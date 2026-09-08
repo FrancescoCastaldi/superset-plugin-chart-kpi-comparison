@@ -13,6 +13,8 @@ Plugin custom per **Apache Superset** progettato per visualizzare in un'unica **
 * **Inversione di polarità colore** (*"Minore è Meglio"*): fondamentale per indicatori sanitari e gestionali dove una diminuzione è positiva (es. tempi di attesa, tasso di disdetta, costi, no-show).
 * **Sparkline temporale opzionale** ad alta risoluzione (vettoriale SVG puro, senza librerie pesanti).
 * **Supporto formattazione italiana**: separatore migliaia punto (`12.450`), decimali virgola (`12,4%`), prefissi (es. `€`) e suffissi.
+* **Auto-Fit Fluido & Responsive Anti-Collasso**: Ridimensionamento fluido automatico di numeri, titoli e badge con protezione da collasso a 0px; omissione automatica titolo interno su card ultra-compatte (< 90px).
+* **Personalizzazione Estetica Completa**: Selezione colore di sfondo (anche trasparente), raggio di curvatura (squadrato, morbido 8px, arrotondato 14px, pillola) e ombreggiatura/bordo (nessuna, leggera, pronunciata, bordo sottile).
 
 Elimina la necessità di occupare intere righe di dashboard con chart separati solo per mostrare le variazioni percentuali rispetto all'anno precedente o al mese scorso.
 

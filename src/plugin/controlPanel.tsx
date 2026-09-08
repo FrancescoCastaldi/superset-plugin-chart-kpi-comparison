@@ -182,6 +182,64 @@ const config: ControlPanelConfig = {
       ],
     },
     {
+      label: t('Personalizzazione Estetica Card'),
+      expanded: true,
+      controlSetRows: [
+        [
+          {
+            name: 'card_bg_color',
+            config: {
+              type: 'ColorPickerControl',
+              label: t('Colore Sfondo Card'),
+              default: { r: 255, g: 255, b: 255, a: 1 },
+              description: t(
+                'Colore di sfondo della card KPI. Riduci alpha a 0 per sfondo trasparente.',
+              ),
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'card_border_radius',
+            config: {
+              type: 'SelectControl',
+              label: t('Stile Bordo / Raggio Card'),
+              default: 'subtle',
+              choices: [
+                ['square', t('Squadrato (0px)')],
+                ['subtle', t('Morbido (8px)')],
+                ['rounded', t('Arrotondato (14px)')],
+                ['pill', t('Pillola')],
+              ],
+              description: t('Raggio di curvatura degli angoli della card.'),
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'card_box_shadow',
+            config: {
+              type: 'SelectControl',
+              label: t('Ombra / Bordo Card'),
+              default: 'none',
+              choices: [
+                ['none', t('Nessuna')],
+                ['subtle', t('Ombra Leggera')],
+                ['elevated', t('Ombra Pronunciata')],
+                ['bordered', t('Bordo Sottile')],
+              ],
+              description: t('Stile dell’elevazione e dell’ombreggiatura della card.'),
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+      ],
+    },
+    {
       label: t('Delta % & Polarità Semantica'),
       expanded: true,
       controlSetRows: [

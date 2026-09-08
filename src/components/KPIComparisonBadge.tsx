@@ -9,6 +9,8 @@ interface KPIComparisonBadgeProps {
   badgeBackgroundColor: string;
   badgeTextColor: string;
   showAbsoluteDelta?: boolean;
+  isCompact?: boolean;
+  isUltraCompact?: boolean;
 }
 
 export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
@@ -19,6 +21,8 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
   badgeBackgroundColor,
   badgeTextColor,
   showAbsoluteDelta = true,
+  isCompact = false,
+  isUltraCompact = false,
 }) => {
   const getArrowIcon = () => {
     switch (trendDirection) {
@@ -34,37 +38,56 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
   const isPill = badgeStyle === 'pill';
   const isFull = badgeStyle === 'full';
 
+  const badgePadding = isUltraCompact
+    ? isPill ? '1px 6px' : isFull ? '2px 5px' : '0px'
+    : isCompact
+    ? isPill ? '2px 8px' : isFull ? '3px 8px' : '1px 0px'
+    : isPill ? '3px 9px' : isFull ? '4px 10px' : '2px 0px';
+
+  const badgeFontSize = isUltraCompact
+    ? '0.72rem'
+    : isCompact
+    ? '0.78rem'
+    : '0.85rem';
+
   const containerStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '5px',
-    padding: isPill ? '3px 9px' : isFull ? '4px 10px' : '2px 0px',
+    gap: isUltraCompact ? '3px' : '4px',
+    padding: badgePadding,
     borderRadius: isPill ? '9999px' : isFull ? '6px' : '0px',
     backgroundColor: badgeBackgroundColor,
     color: badgeTextColor,
-    fontSize: '0.85rem',
+    fontSize: badgeFontSize,
     fontWeight: 700,
     lineHeight: 1.2,
     letterSpacing: '0.01em',
-    boxShadow: isPill ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+    boxShadow: isPill && !isUltraCompact ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
     transition: 'all 0.2s ease-in-out',
     userSelect: 'none',
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
   };
 
   const arrowStyle: React.CSSProperties = {
-    fontSize: '0.75rem',
+    fontSize: isUltraCompact ? '0.62rem' : isCompact ? '0.68rem' : '0.75rem',
     lineHeight: 1,
     transform: trendDirection === 'up' ? 'translateY(-1px)' : trendDirection === 'down' ? 'translateY(1px)' : 'none',
   };
+
+  // When ultra compact, omit absolute delta from visible text to preserve space,
+  // but keep it in the tooltip title
+  const shouldRenderAbsoluteDelta =
+    showAbsoluteDelta && !isUltraCompact && deltaAbsoluteStr && deltaAbsoluteStr !== '—';
 
   return (
     <span style={containerStyle} title={`Delta: ${deltaAbsoluteStr}`}>
       <span style={arrowStyle}>{getArrowIcon()}</span>
       <span>{deltaPercentStr}</span>
-      {showAbsoluteDelta && deltaAbsoluteStr && deltaAbsoluteStr !== '—' && (
+      {shouldRenderAbsoluteDelta && (
         <span
           style={{
-            fontSize: '0.75rem',
+            fontSize: isCompact ? '0.68rem' : '0.75rem',
             fontWeight: 500,
             opacity: 0.85,
             marginLeft: '2px',

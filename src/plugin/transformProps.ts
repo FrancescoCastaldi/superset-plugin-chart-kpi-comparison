@@ -2,6 +2,8 @@ import { ChartProps } from '@superset-ui/core';
 import {
   BadgeStyle,
   CardAlignment,
+  CardBorderRadius,
+  CardBoxShadow,
   KPIComparisonFormData,
   KPIComparisonProps,
   TrendDirection,
@@ -254,6 +256,24 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
   }
 
+  // Aesthetic Customization
+  let cardBgColor = '#ffffff';
+  if (fd.card_bg_color) {
+    const bg = fd.card_bg_color as any;
+    if (typeof bg === 'string') {
+      cardBgColor = bg;
+    } else if (bg.r !== undefined && bg.g !== undefined && bg.b !== undefined) {
+      if (bg.a === 0) {
+        cardBgColor = 'transparent';
+      } else {
+        cardBgColor = `rgba(${bg.r}, ${bg.g}, ${bg.b}, ${bg.a ?? 1})`;
+      }
+    }
+  }
+
+  const cardBorderRadius: CardBorderRadius = fd.card_border_radius || 'subtle';
+  const cardBoxShadow: CardBoxShadow = fd.card_box_shadow || 'none';
+
   return {
     width,
     height,
@@ -274,6 +294,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     comparisonLabel: resolvedComparisonLabel,
     prefixValue: fd.prefix_value || '',
     suffixValue: fd.suffix_value || '',
+    cardBgColor,
+    cardBorderRadius,
+    cardBoxShadow,
     badgeStyle,
     cardAlignment: (fd.card_alignment as CardAlignment) || 'left',
     showComparisonValue: fd.show_comparison_value !== false,

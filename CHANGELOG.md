@@ -7,6 +7,21 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ---
 
+## [0.1.3] - 2026-09-08
+
+### Risolto (Fixed)
+- **Auto-Fit Fluido Dinamico & Prevenzione Collasso a 0px**: Risolto bug critico di overflow in cui, al ridursi dell'altezza (es. titolo slice Superset su 2 righe) o larghezza della card, la sezione inferiore andava a capo occupando tutto lo spazio verticale e facendo collassare a 0px il contenitore del numero principale. Applicato `flexShrink: 0`, `minHeight: 0`, e dimensionamento fluido dei font basato proporzionalmente sia su larghezza che altezza (`primaryFontSizePx`).
+- **Gestione Intelligente Titolo Interno**: Quando l'altezza scende sotto i 90px (o larghezza < 180px), il titolo interno e sottotitolo vengono omessi automaticamente per dedicare il 100% dello spazio al Numero Principale e al Delta %, mantenendo il titolo completo nel tooltip nativo (`title`).
+- **Prevenzione Wrapping Forzato Badge**: In modalità compatta (altezza < 135px), la riga inferiore mantiene `flexWrap: 'nowrap'` con `flexShrink: 0` sul badge delta e troncamento morbido (`text-overflow: ellipsis`) sulla stringa di confronto secondaria.
+
+### Aggiunto (Added)
+- **Sezione Personalizzazione Estetica Card**: Aggiunta la sezione dedicata nel Control Panel di Superset:
+  - `card_bg_color`: Colore di sfondo personalizzabile tramite ColorPicker (incluso supporto trasparente con alpha = 0).
+  - `card_border_radius`: Raggio di curvatura angoli con opzioni squadrato (0px), morbido (8px), arrotondato (14px) o pillola.
+  - `card_box_shadow`: Ombra / bordo con opzioni nessuna, leggera, pronunciata o bordo sottile.
+
+---
+
 ## [0.1.2] - 2026-09-08
 
 ### Risolto (Fixed)

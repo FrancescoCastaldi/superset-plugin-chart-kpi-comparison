@@ -4,6 +4,8 @@ export type CalculationMode = 'dual_metric' | 'time_shift';
 export type BadgeStyle = 'pill' | 'subtle' | 'full';
 export type CardAlignment = 'left' | 'center' | 'right';
 export type TrendDirection = 'up' | 'down' | 'flat';
+export type CardBorderRadius = 'square' | 'subtle' | 'rounded' | 'pill';
+export type CardBoxShadow = 'none' | 'subtle' | 'elevated' | 'bordered';
 
 export interface KPIComparisonFormData extends QueryFormData {
   calculation_mode?: CalculationMode;
@@ -19,6 +21,11 @@ export interface KPIComparisonFormData extends QueryFormData {
   prefix_value?: string;
   suffix_value?: string;
   number_format?: string;
+
+  // Aesthetic Customization
+  card_bg_color?: any;
+  card_border_radius?: CardBorderRadius;
+  card_box_shadow?: CardBoxShadow;
 
   // Semantic & Polarity
   invert_polarity?: boolean;
@@ -61,6 +68,11 @@ export interface KPIComparisonProps {
   comparisonLabel: string;
   prefixValue: string;
   suffixValue: string;
+
+  // Aesthetic Customization
+  cardBgColor: string;
+  cardBorderRadius: CardBorderRadius;
+  cardBoxShadow: CardBoxShadow;
 
   // Config Flags
   badgeStyle: BadgeStyle;
