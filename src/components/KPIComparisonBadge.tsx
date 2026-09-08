@@ -11,6 +11,7 @@ interface KPIComparisonBadgeProps {
   showAbsoluteDelta?: boolean;
   isCompact?: boolean;
   isUltraCompact?: boolean;
+  hideAbsoluteDelta?: boolean;
 }
 
 export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
@@ -23,6 +24,7 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
   showAbsoluteDelta = true,
   isCompact = false,
   isUltraCompact = false,
+  hideAbsoluteDelta = false,
 }) => {
   const getArrowIcon = () => {
     switch (trendDirection) {
@@ -75,13 +77,16 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
     transform: trendDirection === 'up' ? 'translateY(-1px)' : trendDirection === 'down' ? 'translateY(1px)' : 'none',
   };
 
-  // When ultra compact, omit absolute delta from visible text to preserve space,
-  // but keep it in the tooltip title
-  const shouldRenderAbsoluteDelta =
-    showAbsoluteDelta && !isUltraCompact && deltaAbsoluteStr && deltaAbsoluteStr !== '—';
+  // Only render absolute delta if enabled, horizontal room exists, and value is valid
+  const hasAbsoluteDelta = deltaAbsoluteStr && deltaAbsoluteStr !== '—';
+  const shouldRenderAbsoluteDelta = showAbsoluteDelta && !hideAbsoluteDelta && hasAbsoluteDelta;
+
+  const tooltipText = hasAbsoluteDelta
+    ? `Variazione: ${deltaPercentStr} (${deltaAbsoluteStr})`
+    : `Variazione: ${deltaPercentStr}`;
 
   return (
-    <span style={containerStyle} title={`Delta: ${deltaAbsoluteStr}`}>
+    <span style={containerStyle} title={tooltipText}>
       <span style={arrowStyle}>{getArrowIcon()}</span>
       <span>{deltaPercentStr}</span>
       {shouldRenderAbsoluteDelta && (

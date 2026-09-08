@@ -30,56 +30,56 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   cardBorderRadius = 'subtle',
   cardBoxShadow = 'none',
 }) => {
-  // Sizing tiers for responsive scaling
-  const isUltraCompact = height < 90 || width < 180;
-  const isCompact = height < 135 || width < 230;
+  // Dimensional tiers (decoupled height and width)
+  const isVerticalUltraCompact = height < 90;
+  const isVerticalCompact = height < 135;
+  const isHorizontalUltraCompact = width < 180;
+  const isHorizontalCompact = width < 230;
 
-  // Title intelligence: if ultra compact, hide internal title to give 100% space to primary KPI & delta
-  const showTitle = !isUltraCompact && Boolean(kpiTitle);
-  const showSubtitle = height >= 120 && width >= 200 && Boolean(kpiSubtitle);
+  // Title intelligence:
+  // When vertical height is very small (< 90px), vertical space is prioritized 100%
+  // for the primary KPI value and comparison delta badge. Title is preserved in container tooltip.
+  const showTitle = !isVerticalUltraCompact && Boolean(kpiTitle);
+  const isTitleMini = isHorizontalUltraCompact;
+  const showSubtitle = height >= 140 && width >= 200 && Boolean(kpiSubtitle);
 
-  // Dynamic padding scaled to card dimensions
-  const padV = height < 75 ? 3 : height < 95 ? 5 : height < 135 ? 8 : height < 180 ? 12 : 18;
-  const padH = width < 160 ? 6 : width < 200 ? 10 : width < 280 ? 14 : 20;
+  // Sparkline: requires sufficient vertical room (>= 125px)
+  const canRenderSparkline =
+    showSparkline && sparklineData && sparklineData.length > 1 && height >= 125;
+  const sparklineHeight = canRenderSparkline ? (height < 160 ? 22 : 36) : 0;
+
+  // Dynamic padding scaled to dimensions
+  const padV =
+    height < 65 ? 2 : height < 80 ? 4 : height < 100 ? 6 : height < 140 ? 10 : height < 180 ? 14 : 18;
+  const padH = width < 150 ? 6 : width < 200 ? 10 : width < 280 ? 14 : 20;
 
   // Fluid responsive font size calculation
-  const charLength =
-    (formattedPrimary ? formattedPrimary.length : 1) +
-    (prefixValue ? prefixValue.length * 0.7 : 0) +
-    (suffixValue ? suffixValue.length * 0.7 : 0);
+  const titleHeight = showTitle ? (showSubtitle ? 32 : isTitleMini ? 14 : 18) : 0;
+  const bottomHeight = isVerticalUltraCompact ? 18 : isVerticalCompact ? 22 : 26;
+  const innerGap = isVerticalUltraCompact ? 2 : isVerticalCompact ? 4 : 8;
 
-  const availWidth = Math.max(40, width - padH * 2);
-  const maxFontFromWidth = Math.floor(availWidth / (Math.max(1, charLength) * 0.58));
+  const availWidth = Math.max(30, width - padH * 2);
+  const effectiveChars =
+    (formattedPrimary ? formattedPrimary.length * 0.58 : 1) +
+    (prefixValue ? prefixValue.length * 0.35 : 0) +
+    (suffixValue ? suffixValue.length * 0.35 : 0);
 
-  const sparklineHeight =
-    showSparkline && sparklineData && sparklineData.length > 1 && !isUltraCompact
-      ? isCompact
-        ? 22
-        : 36
-      : 0;
-  const titleHeight = showTitle ? (showSubtitle ? 32 : 16) : 0;
-  const bottomHeight = isUltraCompact ? 18 : isCompact ? 24 : 30;
+  const maxFontFromWidth = Math.floor(availWidth / Math.max(1, effectiveChars));
+
   const availHeight = Math.max(
-    16,
-    height - padV * 2 - sparklineHeight - titleHeight - bottomHeight - (isCompact ? 4 : 10),
+    14,
+    height - padV * 2 - sparklineHeight - titleHeight - bottomHeight - innerGap,
   );
+  const maxFontFromHeight = Math.floor(availHeight / 1.05);
 
-  const maxFontFromHeight = Math.floor(availHeight * 0.95);
-  const targetBaseFont =
-    height >= 240 && width >= 340
-      ? 46
-      : height >= 190
-      ? 38
-      : height >= 135
-      ? 28
-      : height >= 95
-      ? 22
-      : 18;
-
+  // Primary font size dynamically scales and fills space smoothly, bounded between 13px and 64px
   const primaryFontSizePx = Math.max(
     13,
-    Math.min(targetBaseFont, maxFontFromHeight, maxFontFromWidth),
+    Math.min(64, maxFontFromWidth, maxFontFromHeight),
   );
+
+  // Absolute delta in badge: hide when horizontal width is tight (< 220px) to prevent crowded bottom row
+  const hideBadgeAbsolute = !showAbsoluteDelta || width < 220;
 
   // Aesthetic border radius
   let borderRadius = '0px';
@@ -141,8 +141,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         padding: `${padV}px ${padH}px`,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: isUltraCompact ? 'center' : 'space-between',
-        gap: isUltraCompact ? '3px' : '0px',
+        justifyContent: !showTitle ? 'center' : 'space-between',
+        gap: !showTitle ? (height < 70 ? '2px' : '4px') : '0px',
         backgroundColor: cardBgColor,
         borderRadius,
         boxShadow,
@@ -152,7 +152,13 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         overflow: 'hidden',
         position: 'relative',
       }}
-      title={isUltraCompact && kpiTitle ? kpiTitle : undefined}
+      title={
+        !showTitle && kpiTitle
+          ? kpiSubtitle
+            ? `${kpiTitle} — ${kpiSubtitle}`
+            : kpiTitle
+          : undefined
+      }
     >
       {/* Top Section: Title & Subtitle */}
       {showTitle && (
@@ -167,7 +173,11 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         >
           <div
             style={{
-              fontSize: isCompact ? '0.74rem' : '0.90rem',
+              fontSize: isTitleMini
+                ? '0.70rem'
+                : isVerticalCompact
+                ? '0.74rem'
+                : '0.90rem',
               fontWeight: 600,
               color: '#475569',
               letterSpacing: '0.02em',
@@ -213,7 +223,11 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               : cardAlignment === 'right'
               ? 'flex-end'
               : 'flex-start',
-          margin: isUltraCompact ? '1px 0' : isCompact ? '2px 0' : '4px 0',
+          margin: isVerticalUltraCompact
+            ? '0px'
+            : isVerticalCompact
+            ? '1px 0'
+            : '3px 0',
           width: '100%',
           flexShrink: 0,
           minHeight: 0,
@@ -245,6 +259,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            minWidth: 0,
+            flexShrink: 1,
           }}
           title={`${prefixValue}${formattedPrimary}${suffixValue}`}
         >
@@ -271,9 +287,9 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
       <div
         style={{
           display: 'flex',
-          flexWrap: isCompact ? 'nowrap' : 'wrap',
+          flexWrap: 'nowrap',
           alignItems: 'center',
-          gap: isUltraCompact ? '4px' : '6px',
+          gap: isHorizontalUltraCompact ? '3px' : '5px',
           width: '100%',
           justifyContent:
             cardAlignment === 'center'
@@ -281,7 +297,11 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               : cardAlignment === 'right'
               ? 'flex-end'
               : 'flex-start',
-          fontSize: isUltraCompact ? '0.72rem' : isCompact ? '0.78rem' : '0.84rem',
+          fontSize: isVerticalUltraCompact
+            ? '0.72rem'
+            : isVerticalCompact
+            ? '0.78rem'
+            : '0.84rem',
           lineHeight: 1.2,
           flexShrink: 0,
           overflow: 'hidden',
@@ -295,8 +315,9 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           badgeBackgroundColor={badgeBackgroundColor}
           badgeTextColor={badgeTextColor}
           showAbsoluteDelta={showAbsoluteDelta}
-          isCompact={isCompact}
-          isUltraCompact={isUltraCompact}
+          isCompact={isVerticalCompact}
+          isUltraCompact={isVerticalUltraCompact}
+          hideAbsoluteDelta={hideBadgeAbsolute}
         />
 
         {(showComparisonValue || comparisonLabel) && (
@@ -306,7 +327,11 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               alignItems: 'center',
               gap: '3px',
               color: '#64748b',
-              fontSize: isUltraCompact ? '0.70rem' : isCompact ? '0.75rem' : '0.80rem',
+              fontSize: isVerticalUltraCompact
+                ? '0.70rem'
+                : isVerticalCompact
+                ? '0.74rem'
+                : '0.80rem',
               fontWeight: 500,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -317,7 +342,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             title={
               comparisonLabel && showComparisonValue
                 ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
-                : comparisonLabel || `${prefixValue}${formattedComparison}${suffixValue}`
+                : comparisonLabel ||
+                  `${prefixValue}${formattedComparison}${suffixValue}`
             }
           >
             {comparisonLabel && (
@@ -350,13 +376,13 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
       </div>
 
       {/* Optional Sparkline Area */}
-      {showSparkline && sparklineData && sparklineData.length > 1 && !isUltraCompact && (
+      {canRenderSparkline && (
         <div style={{ width: '100%', marginTop: 'auto', flexShrink: 0 }}>
           <KPISparkline
             data={sparklineData}
             color={sparklineColor}
             fill={sparklineFill}
-            height={isCompact ? 22 : 36}
+            height={height < 160 ? 22 : 36}
           />
         </div>
       )}
