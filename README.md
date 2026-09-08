@@ -104,14 +104,41 @@ Lo script si occupa in automatico di:
 | **Delta % & Polarità** | *Inverti Polarità Colore* | **Attiva per tempi di attesa/costi/disdette**: un decremento sarà **Verde** e un aumento sarà **Rosso**. |
 | | *Stile Badge Delta* | Scelta tra *Pillola arrotondata*, *Riquadro morbido* o *Testo minimale*. |
 | | *Delta Assoluto* | Visualizza la differenza assoluta tra parentesi (es. `(+2.640)`). |
+| **Personalizzazione Estetica** | *Colore Sfondo Card* | Selettore colore RGBA per impostare sfondo personalizzato o trasparente. |
+| | *Stile Bordo / Raggio* | Raggio angoli: `Squadrato (0px)`, `Morbido (8px)`, `Arrotondato (14px)`, `Pillola (24px)`. |
+| | *Ombra / Bordo Card* | Elevazione: `Nessuna`, `Ombra Leggera`, `Ombra Pronunciata`, `Bordo Sottile`. |
 | **Sparkline** | *Mostra Sparkline* | Attiva la visualizzazione della trendline vettoriale alla base della card. |
 | | *Colore & Sfumatura* | Personalizzazione colore linea e gradiente d'area sottostante. |
+
+---
+
+## 🐳 Aggiornamento in Ambienti Docker Non-Dev
+
+Se Superset è in esecuzione tramite container Docker (es. in `C:\Users\admmaps\superset_6_1_0\superset`):
+
+```cmd
+:: 1. Aggiorna il codice del plugin da Git
+cd C:\Users\admmaps\superset-plugin-chart-kpi-comparison
+git pull origin main
+
+:: 2. Sincronizza i file compilati dentro superset-frontend/plugins
+powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1 -SupersetPath "C:\Users\admmaps\superset_6_1_0\superset" -Force
+
+:: 3. Ricompila e riavvia il container Superset
+cd C:\Users\admmaps\superset_6_1_0\superset
+docker compose -f docker-compose-non-dev.yml up -d --build superset
+```
+*(In alternativa, esegui `install.bat` e seleziona l'opzione `[4]`)*.
 
 ---
 
 ## 💻 Sviluppo e Compilazione Locale
 
 ```bash
+# Repository ufficiale pubblico
+git clone https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison.git
+cd superset-plugin-chart-kpi-comparison
+
 # Installazione dipendenze
 npm install
 
@@ -125,5 +152,7 @@ npm run clean
 ---
 
 ## 📄 Licenza
-Rilasciato sotto licenza Apache 2.0.
-Sviluppato da Francesco Castaldi.
+Rilasciato sotto licenza Apache 2.0.  
+Repository: [https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison](https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison)  
+Autore: Francesco Castaldi.
+
