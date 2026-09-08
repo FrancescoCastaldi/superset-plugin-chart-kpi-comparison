@@ -60,6 +60,21 @@ src/
 
 ## 📝 Registro Aggiornamenti Agenti (Agent Activity Log)
 
+### [2026-09-08 13:14] — Visibilità Repository impostata su Privata
+- **Agente**: Antigravity (Gemini 3.8 Flash)
+- **Attività svolte**:
+  1. Esecuzione comando GitHub CLI `gh repo edit FrancescoCastaldi/superset-plugin-chart-kpi-comparison --visibility private`.
+  2. Verifica dello stato: `visibility: PRIVATE`, `isPrivate: true`.
+
+### [2026-09-08 12:51] — Release v0.1.3: Auto-Fit Fluido Dinamico & Personalizzazione Estetica
+- **Agente**: DeepCoder subagent
+- **Attività svolte**:
+  1. Risoluzione bug di collasso e overflow dei font con ricalcolo continuo del font size (`13px` - `64px`), applicazione di `flexShrink: 0`, `minHeight: 0`, e per testi lunghi `minWidth: 0` con ellissi.
+  2. Omissione automatica del titolo interno duplicato quando l'altezza scende sotto i 90px (salvaguardando il 100% dell'altezza per numero e delta).
+  3. Riga inferiore bloccata a `flexWrap: 'nowrap'`.
+  4. Introduzione controlli estetici nativi nel Control Panel: `card_bg_color`, `card_border_radius`, `card_box_shadow`.
+  5. Rilascio e tag `v0.1.3`.
+
 ### [2026-09-08 10:40] — Release v0.1.1: Fix Layout GUI, Docker Non-Dev & Private Repo
 - **Agente**: Antigravity (Gemini 3.8 Flash)
 - **Attività svolte**:
