@@ -160,6 +160,46 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
   }
 
+  // Dynamic context: extract active time range filter from dashboard
+  const rawFd = (chartProps.rawFormData || {}) as any;
+  const activeTimeRange =
+    rawFd.time_range ||
+    rawFd.extra_form_data?.time_range ||
+    rawFd.extraFormData?.time_range;
+
+  let dynamicSubtitle = fd.kpi_subtitle || '';
+  if (!dynamicSubtitle && activeTimeRange && activeTimeRange !== 'No filter') {
+    dynamicSubtitle = `Periodo: ${activeTimeRange}`;
+  }
+
+  // Dynamic comparison label resolution
+  let resolvedComparisonLabel = fd.comparison_label;
+  if (!resolvedComparisonLabel || resolvedComparisonLabel === 'vs Periodo Prec.') {
+    if (calculationMode === 'time_shift') {
+      const shift = fd.time_compare || '1 year ago';
+      switch (shift) {
+        case '1 year ago':
+          resolvedComparisonLabel = 'vs Stesso Periodo Anno Prec.';
+          break;
+        case '1 month ago':
+          resolvedComparisonLabel = 'vs Mese Prec.';
+          break;
+        case '1 week ago':
+          resolvedComparisonLabel = 'vs Settimana Prec.';
+          break;
+        case '28 days ago':
+          resolvedComparisonLabel = 'vs 4 Settimane Fa';
+          break;
+        default:
+          resolvedComparisonLabel = `vs ${shift}`;
+      }
+    } else if (comparisonMetricKey) {
+      resolvedComparisonLabel = `vs ${comparisonMetricKey}`;
+    } else {
+      resolvedComparisonLabel = 'vs Benchmark';
+    }
+  }
+
   return {
     width,
     height,
@@ -176,8 +216,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     badgeBackgroundColor,
     badgeTextColor,
     kpiTitle: fd.kpi_title || primaryMetricKey || 'KPI',
-    kpiSubtitle: fd.kpi_subtitle || '',
-    comparisonLabel: fd.comparison_label || 'vs Periodo Prec.',
+    kpiSubtitle: dynamicSubtitle,
+    comparisonLabel: resolvedComparisonLabel,
     prefixValue: fd.prefix_value || '',
     suffixValue: fd.suffix_value || '',
     badgeStyle,
