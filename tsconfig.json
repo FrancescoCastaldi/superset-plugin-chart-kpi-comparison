@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "*",
+        "D:/Sviluppo/superset-plugins/superset-plugin-chart-stratum-heatmap/node_modules/*"
+      ]
+    },
+    "typeRoots": [
+      "D:/Sviluppo/superset-plugins/superset-plugin-chart-stratum-heatmap/node_modules/@types"
+    ]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist"]
+}
