@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -95,18 +95,24 @@ namespace KPIComparisonInstaller
 
             headerPanel.Controls.Add(lblTitle);
             headerPanel.Controls.Add(lblSubtitle);
-            this.Controls.Add(headerPanel);
 
             // 2. Main Content Panel
             Panel mainPanel = new Panel
             {
                 Dock = DockStyle.Fill,
                 Padding = new Padding(24, 16, 24, 16),
-                AutoScroll = true
+                AutoScroll = true,
+                BackColor = Color.FromArgb(248, 250, 252)
             };
-            this.Controls.Add(mainPanel);
 
-            int currentY = 14;
+            // Docking corretto: mainPanel aggiunto per primo, headerPanel inviato dietro per non sovrapporre mainPanel
+            this.Controls.Add(mainPanel);
+            this.Controls.Add(headerPanel);
+            headerPanel.SendToBack();
+            mainPanel.BringToFront();
+
+            int padX = 24;
+            int currentY = 18;
 
             // --- SEZIONE 1: PATH SUPERSET ---
             Label lblSuperset = new Label
@@ -114,7 +120,7 @@ namespace KPIComparisonInstaller
                 Text = "1. Percorso Cartella Radice di Apache Superset:",
                 Font = new Font("Segoe UI", 10f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 AutoSize = true
             };
             mainPanel.Controls.Add(lblSuperset);
@@ -122,7 +128,7 @@ namespace KPIComparisonInstaller
 
             txtSupersetPath = new TextBox
             {
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 Size = new Size(580, 28),
                 Font = new Font("Segoe UI", 10f),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -130,12 +136,12 @@ namespace KPIComparisonInstaller
             mainPanel.Controls.Add(txtSupersetPath);
 
             btnBrowseSuperset = CreateStyledButton("Sfoglia...", Color.FromArgb(71, 85, 105), Color.White);
-            btnBrowseSuperset.Location = new Point(590, currentY - 1);
+            btnBrowseSuperset.Location = new Point(614, currentY - 1);
             btnBrowseSuperset.Size = new Size(110, 30);
             btnBrowseSuperset.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnBrowseSuperset.Click += (s, e) => BrowseFolder(txtSupersetPath, "Seleziona la cartella radice di Apache Superset");
             mainPanel.Controls.Add(btnBrowseSuperset);
-            currentY += 38;
+            currentY += 40;
 
             // --- SEZIONE 2: PATH PLUGIN ---
             Label lblPlugin = new Label
@@ -143,7 +149,7 @@ namespace KPIComparisonInstaller
                 Text = "2. Percorso Cartella del Plugin KPIComparison:",
                 Font = new Font("Segoe UI", 10f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 AutoSize = true
             };
             mainPanel.Controls.Add(lblPlugin);
@@ -151,7 +157,7 @@ namespace KPIComparisonInstaller
 
             txtPluginPath = new TextBox
             {
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 Size = new Size(580, 28),
                 Font = new Font("Segoe UI", 10f),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -159,12 +165,12 @@ namespace KPIComparisonInstaller
             mainPanel.Controls.Add(txtPluginPath);
 
             btnBrowsePlugin = CreateStyledButton("Sfoglia...", Color.FromArgb(71, 85, 105), Color.White);
-            btnBrowsePlugin.Location = new Point(590, currentY - 1);
+            btnBrowsePlugin.Location = new Point(614, currentY - 1);
             btnBrowsePlugin.Size = new Size(110, 30);
             btnBrowsePlugin.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnBrowsePlugin.Click += (s, e) => BrowseFolder(txtPluginPath, "Seleziona la cartella del Plugin KPIComparison");
             mainPanel.Controls.Add(btnBrowsePlugin);
-            currentY += 40;
+            currentY += 42;
 
             // --- SEZIONE 3: OPZIONI REINSTALLAZIONE DA ZERO ---
             Label lblOptions = new Label
@@ -172,18 +178,18 @@ namespace KPIComparisonInstaller
                 Text = "3. Opzioni di Installazione / Reinstallazione da Zero:",
                 Font = new Font("Segoe UI", 10f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 AutoSize = true
             };
             mainPanel.Controls.Add(lblOptions);
-            currentY += 25;
+            currentY += 26;
 
             chkCleanReinstall = new CheckBox
             {
                 Text = "Rimuovi versione esistente e reinstalla completamente da zero (Clean Reinstall)",
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
                 Checked = true,
-                Location = new Point(2, currentY),
+                Location = new Point(padX + 2, currentY),
                 AutoSize = true,
                 ForeColor = Color.FromArgb(15, 23, 42)
             };
@@ -194,7 +200,7 @@ namespace KPIComparisonInstaller
             {
                 Text = "Pulisci automaticamente la cache Webpack (node_modules/.cache, .temp_cache, dist)",
                 Checked = true,
-                Location = new Point(2, currentY),
+                Location = new Point(padX + 2, currentY),
                 AutoSize = true,
                 ForeColor = Color.FromArgb(51, 65, 85)
             };
@@ -205,7 +211,7 @@ namespace KPIComparisonInstaller
             {
                 Text = "Compilazione TypeScript preliminare del plugin (npm run build nel plugin)",
                 Checked = true,
-                Location = new Point(2, currentY),
+                Location = new Point(padX + 2, currentY),
                 AutoSize = true,
                 ForeColor = Color.FromArgb(51, 65, 85)
             };
@@ -216,7 +222,7 @@ namespace KPIComparisonInstaller
             {
                 Text = "Compila Webpack di Superset (npm run build - NON necessario se usi Docker o sync rapido)",
                 Checked = false,
-                Location = new Point(2, currentY),
+                Location = new Point(padX + 2, currentY),
                 AutoSize = true,
                 ForeColor = Color.FromArgb(51, 65, 85)
             };
@@ -227,56 +233,58 @@ namespace KPIComparisonInstaller
             {
                 Text = "Riavvia container Superset Docker (opzionale, NON necessario se Superset legge dist)",
                 Checked = false,
-                Location = new Point(2, currentY),
+                Location = new Point(padX + 2, currentY),
                 AutoSize = true,
                 ForeColor = Color.FromArgb(51, 65, 85)
             };
             mainPanel.Controls.Add(chkRestartDocker);
-            currentY += 34;
+            currentY += 36;
 
             // --- PULSANTI AZIONE ---
             btnInstall = CreateStyledButton("⚡ Installazione Completa da Zero (Clean Reinstall)", Color.FromArgb(2, 132, 199), Color.White);
             btnInstall.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
-            btnInstall.Location = new Point(0, currentY);
-            btnInstall.Size = new Size(440, 44);
+            btnInstall.Location = new Point(padX, currentY);
+            btnInstall.Size = new Size(470, 44);
             btnInstall.Click += async (s, e) => await ExecuteInstallation(false);
             mainPanel.Controls.Add(btnInstall);
 
             btnRollback = CreateStyledButton("🔄 Rollback / Disinstalla", Color.FromArgb(225, 29, 72), Color.White);
             btnRollback.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-            btnRollback.Location = new Point(450, currentY);
+            btnRollback.Location = new Point(padX + 480, currentY);
             btnRollback.Size = new Size(220, 44);
+            btnRollback.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnRollback.Click += async (s, e) => await ExecuteInstallation(true);
             mainPanel.Controls.Add(btnRollback);
-            currentY += 50;
+            currentY += 52;
 
             // Seconda riga di azioni rapide
             btnQuickSync = CreateStyledButton("⚡ Aggiorna File Plugin (Sync Rapido)", Color.FromArgb(16, 185, 129), Color.White);
             btnQuickSync.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
-            btnQuickSync.Location = new Point(0, currentY);
-            btnQuickSync.Size = new Size(220, 36);
+            btnQuickSync.Location = new Point(padX, currentY);
+            btnQuickSync.Size = new Size(224, 36);
             btnQuickSync.Click += async (s, e) => await ExecuteQuickSync();
             mainPanel.Controls.Add(btnQuickSync);
 
             btnBuildWebpack = CreateStyledButton("📦 Compila Solo Frontend (npm build)", Color.FromArgb(124, 58, 237), Color.White);
             btnBuildWebpack.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
-            btnBuildWebpack.Location = new Point(228, currentY);
-            btnBuildWebpack.Size = new Size(230, 36);
+            btnBuildWebpack.Location = new Point(padX + 234, currentY);
+            btnBuildWebpack.Size = new Size(232, 36);
             btnBuildWebpack.Click += async (s, e) => await ExecuteBuildWebpackOnly();
             mainPanel.Controls.Add(btnBuildWebpack);
 
             btnRestartDockerOnly = CreateStyledButton("🐳 Riavvia Docker Superset", Color.FromArgb(14, 116, 144), Color.White);
             btnRestartDockerOnly.Font = new Font("Segoe UI", 9f, FontStyle.Bold);
-            btnRestartDockerOnly.Location = new Point(466, currentY);
-            btnRestartDockerOnly.Size = new Size(204, 36);
+            btnRestartDockerOnly.Location = new Point(padX + 476, currentY);
+            btnRestartDockerOnly.Size = new Size(224, 36);
+            btnRestartDockerOnly.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnRestartDockerOnly.Click += async (s, e) => await ExecuteRestartDockerOnly();
             mainPanel.Controls.Add(btnRestartDockerOnly);
-            currentY += 46;
+            currentY += 48;
 
             // Progress Bar & Status
             progressBar = new ProgressBar
             {
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 Size = new Size(700, 8),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 Style = ProgressBarStyle.Continuous
@@ -289,7 +297,7 @@ namespace KPIComparisonInstaller
                 Text = "Pronto per l'installazione.",
                 Font = new Font("Segoe UI", 9f, FontStyle.Italic),
                 ForeColor = Color.FromArgb(100, 116, 139),
-                Location = new Point(0, currentY),
+                Location = new Point(padX, currentY),
                 AutoSize = true
             };
             mainPanel.Controls.Add(lblStatus);
@@ -301,32 +309,32 @@ namespace KPIComparisonInstaller
                 Text = "Console Log di Operazione (Streaming in Tempo Reale):",
                 Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
-                Location = new Point(0, currentY + 3),
+                Location = new Point(padX, currentY + 3),
                 AutoSize = true
             };
             mainPanel.Controls.Add(lblLogTitle);
 
             btnOpenLog = CreateStyledButton("📂 Apri File di Log", Color.FromArgb(71, 85, 105), Color.White);
             btnOpenLog.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
-            btnOpenLog.Location = new Point(480, currentY);
-            btnOpenLog.Size = new Size(130, 26);
+            btnOpenLog.Location = new Point(500, currentY);
+            btnOpenLog.Size = new Size(120, 26);
             btnOpenLog.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnOpenLog.Click += (s, e) => OpenLogFile();
             mainPanel.Controls.Add(btnOpenLog);
 
             btnClearLog = CreateStyledButton("🧹 Pulisci", Color.FromArgb(148, 163, 184), Color.FromArgb(15, 23, 42));
             btnClearLog.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
-            btnClearLog.Location = new Point(616, currentY);
-            btnClearLog.Size = new Size(84, 26);
+            btnClearLog.Location = new Point(630, currentY);
+            btnClearLog.Size = new Size(70, 26);
             btnClearLog.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnClearLog.Click += (s, e) => { txtLog.Clear(); AppendLog("Log a schermo ripulito.", Color.FromArgb(148, 163, 184)); };
             mainPanel.Controls.Add(btnClearLog);
-            currentY += 30;
+            currentY += 32;
 
             txtLog = new RichTextBox
             {
-                Location = new Point(0, currentY),
-                Size = new Size(700, 200),
+                Location = new Point(padX, currentY),
+                Size = new Size(700, 220),
                 BackColor = Color.FromArgb(15, 23, 42),
                 ForeColor = Color.FromArgb(248, 250, 252),
                 Font = new Font("Consolas", 9.2f),
