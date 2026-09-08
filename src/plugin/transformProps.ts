@@ -16,7 +16,15 @@ import {
 function getMetricLabel(metric: any): string {
   if (!metric) return '';
   if (typeof metric === 'string') return metric;
-  return metric.label || metric.sqlExpression || '';
+  return (
+    metric.label ||
+    metric.metric_name ||
+    metric.verbose_name ||
+    metric.sqlExpression ||
+    metric.column?.column_name ||
+    metric.optionName ||
+    ''
+  );
 }
 
 export default function transformProps(chartProps: ChartProps): KPIComparisonProps {
@@ -32,37 +40,71 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   let primaryValue: number | null = null;
   let comparisonValue: number | null = null;
+  let primaryKeyUsed: string | null = null;
   const sparklineData: number[] = [];
 
   if (data.length > 0) {
     const firstRow = data[0];
 
     // 1. Primary Value extraction
-    primaryValue = parseNumericValue(firstRow[primaryMetricKey]);
-    if (primaryValue === null) {
-      // Fallback: search by case-insensitive match or first numeric column
+    if (primaryMetricKey && firstRow[primaryMetricKey] !== undefined) {
+      primaryValue = parseNumericValue(firstRow[primaryMetricKey]);
+      primaryKeyUsed = primaryMetricKey;
+    } else if (primaryMetricKey) {
       const foundKey = Object.keys(firstRow).find(
         k => k.toLowerCase() === primaryMetricKey.toLowerCase(),
       );
       if (foundKey) {
         primaryValue = parseNumericValue(firstRow[foundKey]);
-      } else {
-        const firstNumKey = Object.keys(firstRow).find(k => typeof firstRow[k] === 'number');
-        if (firstNumKey) {
-          primaryValue = parseNumericValue(firstRow[firstNumKey]);
-        }
+        primaryKeyUsed = foundKey;
+      }
+    }
+
+    if (primaryValue === null) {
+      // Fallback: first numeric column
+      const firstNumKey = Object.keys(firstRow).find(k => typeof firstRow[k] === 'number');
+      if (firstNumKey) {
+        primaryValue = parseNumericValue(firstRow[firstNumKey]);
+        primaryKeyUsed = firstNumKey;
       }
     }
 
     // 2. Comparison Value extraction
     if (calculationMode === 'dual_metric') {
-      comparisonValue = parseNumericValue(firstRow[comparisonMetricKey]);
-      if (comparisonValue === null && comparisonMetricKey) {
+      if (comparisonMetricKey && firstRow[comparisonMetricKey] !== undefined) {
+        comparisonValue = parseNumericValue(firstRow[comparisonMetricKey]);
+      } else if (comparisonMetricKey) {
         const foundCompKey = Object.keys(firstRow).find(
           k => k.toLowerCase() === comparisonMetricKey.toLowerCase(),
         );
         if (foundCompKey) {
           comparisonValue = parseNumericValue(firstRow[foundCompKey]);
+        }
+      }
+
+      // Robust fallback 1: search for keys containing comparison keywords
+      if (comparisonValue === null) {
+        const keywordKey = Object.keys(firstRow).find(
+          k =>
+            k !== primaryKeyUsed &&
+            (k.toLowerCase().includes('conf') ||
+              k.toLowerCase().includes('prev') ||
+              k.toLowerCase().includes('comp') ||
+              k.toLowerCase().includes('prec') ||
+              k.toLowerCase().includes('bench')),
+        );
+        if (keywordKey) {
+          comparisonValue = parseNumericValue(firstRow[keywordKey]);
+        }
+      }
+
+      // Robust fallback 2: take any second numeric column in firstRow that is not primaryKeyUsed
+      if (comparisonValue === null) {
+        const nextNumKey = Object.keys(firstRow).find(
+          k => k !== primaryKeyUsed && typeof firstRow[k] === 'number',
+        );
+        if (nextNumKey) {
+          comparisonValue = parseNumericValue(firstRow[nextNumKey]);
         }
       }
     } else {
@@ -97,16 +139,18 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     deltaAbsolute = primaryValue - comparisonValue;
     if (comparisonValue !== 0) {
       deltaPercent = (deltaAbsolute / Math.abs(comparisonValue)) * 100;
+    } else if (primaryValue === 0) {
+      deltaPercent = 0;
+    } else {
+      deltaPercent = 100;
     }
 
-    if (deltaPercent !== null) {
-      if (deltaPercent > 0.001) {
-        trendDirection = 'up';
-      } else if (deltaPercent < -0.001) {
-        trendDirection = 'down';
-      } else {
-        trendDirection = 'flat';
-      }
+    if (deltaPercent > 0.001) {
+      trendDirection = 'up';
+    } else if (deltaPercent < -0.001) {
+      trendDirection = 'down';
+    } else {
+      trendDirection = 'flat';
     }
   }
 
@@ -174,7 +218,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // Dynamic comparison label resolution
   let resolvedComparisonLabel = fd.comparison_label;
-  if (!resolvedComparisonLabel || resolvedComparisonLabel === 'vs Periodo Prec.') {
+  if (!resolvedComparisonLabel || resolvedComparisonLabel === 'vs Periodo Prec.' || resolvedComparisonLabel === 'vs Benchmark') {
     if (calculationMode === 'time_shift') {
       const shift = fd.time_compare || '1 year ago';
       switch (shift) {
@@ -193,10 +237,20 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         default:
           resolvedComparisonLabel = `vs ${shift}`;
       }
-    } else if (comparisonMetricKey) {
+    } else if (comparisonMetricKey && !comparisonMetricKey.toLowerCase().includes('conf')) {
       resolvedComparisonLabel = `vs ${comparisonMetricKey}`;
     } else {
-      resolvedComparisonLabel = 'vs Benchmark';
+      resolvedComparisonLabel = 'vs Confronto';
+    }
+  }
+
+  let resolvedTitle = fd.kpi_title || '';
+  if (!resolvedTitle) {
+    const raw = primaryMetricKey || '';
+    if (raw.toLowerCase() === 'richieste_corr') {
+      resolvedTitle = 'Richieste in attesa';
+    } else {
+      resolvedTitle = raw || 'KPI';
     }
   }
 
@@ -215,7 +269,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     trendColor,
     badgeBackgroundColor,
     badgeTextColor,
-    kpiTitle: fd.kpi_title || primaryMetricKey || 'KPI',
+    kpiTitle: resolvedTitle,
     kpiSubtitle: dynamicSubtitle,
     comparisonLabel: resolvedComparisonLabel,
     prefixValue: fd.prefix_value || '',

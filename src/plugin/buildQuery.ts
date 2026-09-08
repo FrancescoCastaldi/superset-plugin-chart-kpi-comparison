@@ -7,6 +7,7 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     calculation_mode = 'dual_metric',
     metric,
     comparison_metric,
+    metrics: fdMetrics,
     time_compare,
     time_column,
     show_sparkline,
@@ -16,11 +17,18 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     const isDual = calculation_mode === 'dual_metric';
 
     // In dual metric mode, request both primary and comparison metrics
-    const metrics = isDual
-      ? [metric, comparison_metric].filter(Boolean)
-      : metric
-        ? [metric]
-        : [];
+    let metrics: any[] = [];
+    if (isDual) {
+      if (metric && comparison_metric) {
+        metrics = [metric, comparison_metric];
+      } else if (Array.isArray(fdMetrics) && fdMetrics.length >= 2) {
+        metrics = fdMetrics;
+      } else if (metric) {
+        metrics = [metric, comparison_metric || 'richieste_conf'].filter(Boolean);
+      }
+    } else {
+      metrics = metric ? [metric] : [];
+    }
 
     const isSparklineActive = Boolean(show_sparkline && time_column);
     const columns = isSparklineActive ? [time_column] : [];

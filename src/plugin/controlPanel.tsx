@@ -50,6 +50,7 @@ const config: ControlPanelConfig = {
                 'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget).',
               ),
               visibility: ({ controls }) =>
+                !controls?.calculation_mode?.value ||
                 controls?.calculation_mode?.value === 'dual_metric',
             },
           },
