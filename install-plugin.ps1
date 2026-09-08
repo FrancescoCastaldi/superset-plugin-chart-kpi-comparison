@@ -76,14 +76,16 @@ Write-Color "[INFO] Cartella Plugin: $ResolvedPluginPath" "Gray"
 # -------------------------------------------------------------
 # 2. Resolve Superset Path
 # -------------------------------------------------------------
-$DefaultCandidate = "D:\Sviluppo\superset"
+$DefaultCompanyCandidate = "C:\Users\admmaps\superset_6_1_0\superset"
+$DefaultCandidate = if (Test-Path $DefaultCompanyCandidate) { $DefaultCompanyCandidate } else { "D:\Sviluppo\superset" }
 
 if (-not $SupersetPath) {
     $Candidates = @(
-        $DefaultCandidate,
-        "C:\Users\admmaps\superset_6_1_0\superset",
+        $DefaultCompanyCandidate,
+        "D:\Sviluppo\superset",
         (Join-Path $ResolvedPluginPath "..\superset"),
         (Join-Path $ResolvedPluginPath "..\apache-superset"),
+        (Join-Path $env:USERPROFILE "superset_6_1_0\superset"),
         (Join-Path $env:USERPROFILE "superset"),
         (Join-Path $env:USERPROFILE "Projects\superset")
     )
