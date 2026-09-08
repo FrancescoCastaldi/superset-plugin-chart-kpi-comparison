@@ -60,7 +60,16 @@ src/
 
 ## 📝 Registro Aggiornamenti Agenti (Agent Activity Log)
 
-### [2026-09-08 10:27] — Inizializzazione Completa del Progetto
+### [2026-09-08 10:40] — Release v0.1.1: Fix Layout GUI, Docker Non-Dev & Private Repo
+- **Agente**: Antigravity (Gemini 3.8 Flash)
+- **Attività svolte**:
+  1. Identificazione e risoluzione del bug di docking z-order in WinForms: `headerPanel` si sovrapponeva a `mainPanel` tagliando la Sezione 1 (Path Superset). Risolto chiamando `headerPanel.SendToBack()` e `mainPanel.BringToFront()`.
+  2. Applicato padding orizzontale uniforme (`padX = 24`) per allineare tutti i campi con l'intestazione.
+  3. Ricompilazione dell'eseguibile nativo `KPIComparisonInstallerGUI.exe`.
+  4. Integrazione supporto nativo per `docker compose -f docker-compose-non-dev.yml up -d --build superset`.
+  5. Impostazione della repository GitHub `FrancescoCastaldi/superset-plugin-chart-kpi-comparison` in modalità **Privata**.
+
+### [2026-09-08 10:27] — Inizializzazione Completa del Progetto (v0.1.0)
 - **Agente**: Antigravity (Gemini 3.8 Flash)
 - **Attività svolte**:
   1. Definizione e approvazione dell'implementation plan per il chart KPI all-in-one con confronto temporale e delta integrato per il modulo Programmazione Sanitaria di IDI.

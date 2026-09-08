@@ -7,6 +7,16 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ---
 
+## [0.1.1] - 2026-09-08
+
+### Modificato (Changed)
+- **Risoluzione Bug Layout GUI**: Corretto l'ordine di docking WinForms (`headerPanel.SendToBack()`) in `KPIComparisonInstallerGUI.cs` che causava la sovrapposizione dell'header e il taglio della sezione 1 (Path Superset).
+- **Allineamento e Margini**: Applicato padding orizzontale coerente (`padX = 24`) a tutti i controlli, etichette e log box.
+- **Supporto Nativo Docker Non-Dev**: Integrata l'opzione dedicata per `docker compose -f docker-compose-non-dev.yml up -d --build superset` sia nell'eseguibile GUI che in `install.bat`.
+- **Visibilità Repository**: Repository GitHub impostato su **Privato**.
+
+---
+
 ## [0.1.0] - 2026-09-08
 
 ### Aggiunto (Added)
