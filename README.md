@@ -1,159 +1,206 @@
-# Apache Superset Plugin — KPI Comparison Card Chart (Integrated Delta %)
+# KPI Comparison Card - Benchmark & Delta % Plugin for Apache Superset
 
-[![Apache Superset](https://img.shields.io/badge/Apache%20Superset-6.1%2B-blue.svg)](https://superset.apache.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Apache Superset](https://img.shields.io/badge/Apache%20Superset-3.x%20%7C%204.x%20%7C%206.x-green.svg)](https://superset.apache.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Vector Engine](https://img.shields.io/badge/Sparkline-Native%20SVG-orange.svg)](#)
 
-A custom **Apache Superset** plugin designed to display an **all-in-one compact KPI Card** featuring:
-* **Prominent Primary Value** (Current / Reference period).
-* **Comparison Benchmark Value** (Prior period / Budget / Target).
-* **Absolute Delta** ($\text{Ref} - \text{Comp}$) and **Integrated Percentage Delta** ($\Delta\% = \frac{\text{Ref} - \text{Comp}}{\text{Comp}} \times 100$).
-* **Semantic Trend Badge** with directional icons (▲ / ▼ / =).
-* **Color Polarity Inversion** (*"Lower is Better"*): essential for healthcare, operations, and cost metrics where a decrease represents positive performance (e.g., patient wait times, cancellation rates, no-shows, operational costs).
-* **Optional High-Resolution Sparkline** (pure SVG vector rendering, zero heavy external charting dependencies).
-* **Number & Currency Formatting Support**: d3-format presets, locale formatting (e.g., thousands and decimals), custom prefixes (e.g. `$`, `€`) and suffixes (e.g. `%`, `days`).
-* **Dynamic Fluid Auto-Fit & Anti-Collapse Protection**: Real-time fluid scaling of primary number, titles, and badges without 0px collapse on narrow screens or multi-line container titles; automatic omission of redundant internal title on ultra-compact cards (< 90px height).
-* **Comprehensive Aesthetic Customization**: Card background color picker (with alpha/transparency support), border radius presets (square 0px, subtle 8px, rounded 14px, pill 24px), and elevation/border styling (none, subtle shadow, elevated shadow, thin border).
-
-Eliminates the need to occupy multiple dashboard rows with separate charts just to display period-over-period percentage variations.
+**KPI Comparison Card** is a custom visualization plugin for **Apache Superset** engineered to display an all-in-one, high-impact executive summary card. It seamlessly combines primary reference metrics, period-over-period or budget benchmarks, absolute difference, automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion, and integrated vector sparklines.
 
 ---
 
-## 📸 Card Visual Preview
+## 📸 Visual Preview
 
-```text
-┌────────────────────────────────────────────────────────┐
-│  TOTAL OUTPATIENT VISITS                               │
-│  Clinical Department - FY 2026                         │
-│                                                        │
-│  27,140                                                │
-│                                                        │
-│  ▲ +10.8% (+2,640)   vs Prior Year: 24,500             │
-│                                                        │
-│  ▅▆▇██▇▆▅▄▆▇ (Integrated Vector Sparkline)             │
-└────────────────────────────────────────────────────────┘
+![KPI Comparison Card Preview](./src/images/thumbnail.png)
+
+*Figure 1: KPI Comparison Card displaying current outpatient volume, percentage gain over prior year (+10.8%), absolute delta (+2,640), and an integrated SVG vector sparkline.*
+
+---
+
+## 🌟 Key Features
+
+### 1. 🗂️ All-in-One Compact Executive Card
+- **Prominent Primary Value**: Current period or reference metric displayed with high-visibility typography and fluid auto-fitting.
+- **Benchmark Comparison Value**: Prior period, budget target, or custom baseline clearly labeled (e.g. `vs Prior Year: 24,500`).
+- **Dual Delta Calculations**: Computes both absolute variance ($\text{Ref} - \text{Comp}$) and percentage variance ($\Delta\% = \frac{\text{Ref} - \text{Comp}}{\text{Comp}} \times 100$).
+- **Semantic Trend Badges**: Directional indicators (▲ / ▼ / =) with configurable pill, boxed, or text styling.
+
+### 2. 🔄 Dual Calculation Engine (Dual Metric vs. Time Shift)
+- **Dual Metric Mode (Dataset / Pre-Aggregated SQL)**:
+ - Compares two metrics directly from the SQL query or dataset (e.g., `Current Year Requests` vs `Prior Year Requests`, or `Actual` vs `Budget`).
+ - Delivers instant calculations with zero subquery overhead - ideal for pre-aggregated analytical tables.
+- **Time Shift Mode (Native Temporal Offset)**:
+ - Leverages Superset's native temporal offset engine (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`).
+ - Automatically queries historical database records and calculates period comparisons on demand.
+
+### 3. 🎯 Color Polarity Inversion ("Lower is Better")
+- **Operational & Clinical Metric Support**: In environments such as healthcare, logistics, and cost accounting, a decrease signifies operational improvement (e.g., patient waiting times, ER door-to-doctor intervals, appointment cancellations, defect rates, operating costs).
+- **One-Click Inversion**: When enabled, a reduction is highlighted in **Green** and an increase is flagged in **Red**.
+
+### 4. 📈 High-Resolution SVG Vector Sparkline
+- **Zero Heavy Charting Dependencies**: Rendered using lightweight, responsive SVG path math directly inside the component.
+- **Visual Depth**: Optional semi-transparent gradient fill beneath the curve highlighting temporal velocity and fluctuations.
+- **Chronological Sorting**: Automatically driven by a designated date/time dimension.
+
+### 5. 🔠 Fluid Typography & Anti-Collapse Layout
+- **Dynamic Viewport Scaling**: Text scales dynamically to fit card boundaries, completely preventing 0px height collapse or awkward line wrapping on multi-column dashboard layouts.
+- **Header Omission on Micro-Cards**: Automatically collapses redundant subtitles when embedded in ultra-compact dashboard tiles (< 90px height).
+
+### 6. 🎨 Extensive Aesthetic Customization
+- **Background Styling**: Full RGBA color picker with alpha transparency support.
+- **Corner Radius Presets**: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)`, and `Pill (24px)`.
+- **Card Elevation**: `None (Flat)`, `Subtle Shadow`, `Elevated Shadow`, and `Thin Border`.
+- **Formatting Support**: d3-format string presets, currency symbols (`$`, `€`), and unit suffixes (`%`, `days`, `pts`).
+
+---
+
+## 🏛️ Architecture Overview
+
+```mermaid
+flowchart LR
+    A[Superset Explore / Dashboard] -->|FormData & Parameters| B[buildQuery.ts]
+    B -->|Dual Metric or Time Shift Request| C[Superset Backend Engine]
+    C -->|Aggregated Data Payload| D[transformProps.ts]
+    D -->|Delta % Math & Formatting| E[KPIComparison.tsx]
+    E -->|SVG Path Calculation| F[Vector Sparkline Renderer]
+    E -->|Card Render| G[Dynamic Responsive KPI Card]
 ```
 
 ---
 
-## 🛠️ Delta Calculation Modes
+## 📁 Repository Structure
 
-The plugin offers a **flexible dual-mode calculation engine** selectable directly within the Superset Explore control panel:
-
-1. **Dual Metric Mode (Dataset / Pre-aggregated SQL)**:
-   - Compares two columns or aggregations directly from the dataset (e.g., `Current Year Requests` vs `Comparison Year Requests`, or `Actual` vs `Budget`).
-   - Instant delta calculation without requiring complex sub-queries or time-shift database overhead.
-   - Ideal for healthcare and analytical warehouse datasets (such as pre-aggregated metrics).
-
-2. **Time Shift Mode (Native Superset Temporal Offset)**:
-   - Select a single metric and configure a native temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, etc.).
-   - Superset queries historical data from the underlying database and computes the comparison automatically.
+```
+superset-plugin-chart-kpi-comparison/
+├── package.json                    # Plugin manifest & dependencies
+├── tsconfig.json                   # TypeScript build configuration
+├── install-plugin.ps1              # Unified PowerShell automated installer
+├── install.bat                     # Windows batch menu launcher
+├── src/
+│   ├── index.ts                    # Plugin entry point & registration
+│   ├── types.ts                    # Component & FormData TypeScript definitions
+│   ├── plugin/
+│   │   ├── index.ts                # ChartPlugin registration & metadata
+│   │   ├── buildQuery.ts           # Query constructor (handles time shift & dual metric)
+│   │   ├── controlPanel.tsx        # Superset Explore form controls
+│   │   └── transformProps.ts       # Numeric deltas, trend badges & formatting
+│   ├── components/
+│   │   ├── KPIComparison.tsx       # Main React KPI Card component
+│   │   └── Sparkline.tsx           # Lightweight native SVG sparkline component
+│   └── images/
+│       ├── thumbnail.png           # Chart picker thumbnail
+│       └── example.png             # Full gallery preview image
+└── test/                           # Unit tests & verification
+```
 
 ---
 
-## ⚡ Quick Installation in Apache Superset
+## 🚀 Quick Installation in Apache Superset
 
-### Method 1: Double-Click Batch Launcher (Windows)
+### Option 1: Automated PowerShell Script (Recommended)
+
+Run the installer pointing to your Apache Superset repository:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1 -SupersetPath "D:\Sviluppo\superset"
+```
+
+To perform a clean installation and trigger a Superset frontend recompile:
+```powershell
+.\install-plugin.ps1 -SupersetPath "D:\Sviluppo\superset" -CleanReinstall -RebuildFrontend
+```
+
+The script autonomously:
+1. Validates and installs missing npm dependencies (`npm install`).
+2. Builds the TypeScript bundle (`tsc --build` / `npm run build`).
+3. Syncs compiled files into `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
+4. Creates a safety backup `MainPreset.ts.bak`.
+5. Idempotently registers `KPIComparisonChartPlugin` under the chart key `kpi_comparison`.
+6. Flushes Webpack and Babel bundle caches.
+
+### Option 2: Windows Batch Launcher
 Double-click:
-```cmd
-install.bat
-```
-An interactive menu will open: press `[1]` to run the automated standard installation.
+👉 **`install.bat`**  
+Press `[1]` to launch the automated installer.
 
-### Method 2: PowerShell Script
-Run from the plugin root directory:
-```powershell
-powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1
-```
-
-To force a clean re-installation and rebuild the Superset frontend:
-```powershell
-.\install-plugin.ps1 -CleanReinstall -RebuildFrontend
-```
-
-The script automatically:
-1. Detects the Apache Superset root directory (`D:\Sviluppo\superset` or configured paths).
-2. Compiles TypeScript sources (`tsc --build`).
-3. Syncs files into `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
-4. Creates a safety backup of `MainPreset.ts.bak`.
-5. Safely and idempotently registers the plugin in `MainPreset.ts`:
+### Option 3: Manual Installation
+1. Copy the plugin directory to `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
+2. Edit `superset-frontend/src/visualizations/presets/MainPreset.ts`:
    ```typescript
    import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';
-   ...
+
    new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }).register(),
    ```
-6. Clears the Webpack cache to ensure immediate availability in the Superset chart gallery.
+3. Clear the cache:
+   ```bash
+   rm -rf superset-frontend/node_modules/.cache
+   ```
 
 ---
 
-## 📊 Explore Control Panel Reference
+## 🐳 Docker Compose Deployment
 
-| Section | Control | Description |
-| :--- | :--- | :--- |
-| **Metrics & Comparison** | *Calculation Mode* | Choose between `Dual Metric` or `Time Shift`. |
-| | *Primary Metric* | Main prominent metric (e.g. `SUM(current_visits)`). |
-| | *Comparison Metric* | Baseline/comparison metric (e.g. `SUM(prior_visits)`). |
-| | *Comparison Label* | Descriptive label (e.g., `"vs Prior Year"`, `"vs Target"`). |
-| | *Time Column* | Date/time column used to chronologically sort the sparkline. |
-| **Card Appearance** | *KPI Title* | Top uppercase heading (e.g., `"TOTAL VISITS"`). |
-| | *Subtitle* | Optional caption or context (e.g., `"SSN Regime"`). |
-| | *Card Alignment* | Left, Center, or Right alignment. |
-| | *Prefix / Suffix* | Currency symbols (`$`, `€`) or measurement units (`%`, `days`). |
-| | *Number Format* | Standard d3-format strings or smart number formatting. |
-| **Delta % & Polarity** | *Invert Color Polarity* | **Enable for wait times / costs / cancellations**: a decrease becomes **Green** and an increase becomes **Red**. |
-| | *Badge Style* | Choose between *Rounded Pill*, *Full Box*, or *Subtle Text*. |
-| | *Absolute Delta* | Show absolute difference in parentheses (e.g., `(+2,640)`). |
-| **Aesthetic Customization** | *Card Background Color* | RGBA color picker for custom or transparent background. |
-| | *Card Border Radius* | Corner radius presets: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)`, `Pill (24px)`. |
-| | *Card Elevation / Border* | Visual elevation: `None`, `Subtle Shadow`, `Elevated Shadow`, `Thin Border`. |
-| **Sparkline** | *Show Sparkline* | Display vector trendline at the bottom of the card. |
-| | *Color & Fill* | Line color and optional area gradient fill below the curve. |
+When managing Superset via Docker Compose:
 
----
-
-## 🐳 Updating in Non-Dev Docker Environments
-
-When Superset runs in Docker (e.g. in `C:\Users\admmaps\superset_6_1_0\superset`):
-
-```cmd
-:: 1. Pull the latest plugin version from Git
-cd C:\Users\admmaps\superset-plugin-chart-kpi-comparison
-git pull origin main
-
-:: 2. Sync compiled files into superset-frontend/plugins
-powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1 -SupersetPath "C:\Users\admmaps\superset_6_1_0\superset" -Force
-
-:: 3. Rebuild and restart the Superset container
-cd C:\Users\admmaps\superset_6_1_0\superset
+### Non-Dev Environment (Production / Staging)
+```bash
+cd /path/to/superset
 docker compose -f docker-compose-non-dev.yml up -d --build superset
 ```
-*(Alternatively, run `install.bat` and choose option `[4]`)*.
+
+### Local Frontend Dev Server
+```bash
+cd superset-frontend
+npm run dev-server
+```
+
+Navigate to `http://localhost:8088`, create a new chart, and select **KPI Comparison Card**!
+
+---
+
+## 🛠️ Explore Control Panel Reference
+
+| Section | Control | Type | Description |
+|:---|:---|:---|:---|
+| **Metrics & Comparison** | `Calculation Mode` | Select | Choose between `Dual Metric` (pre-aggregated SQL) or `Time Shift`. |
+| | `Primary Metric` | Metric | Prominent reference metric (e.g. `SUM(current_visits)`). |
+| | `Comparison Metric` | Metric | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
+| | `Time Shift Offset` | Select | Temporal comparison offset (`1 year ago`, `1 month ago`, etc.). |
+| | `Comparison Label` | Text | Descriptive benchmark text (e.g., `"vs Prior Year"`, `"vs Target"`). |
+| | `Time Column` | Select | Date/time dimension used to order the vector sparkline. |
+| **Card Appearance** | `KPI Title` | Text | Top uppercase heading (e.g., `"TOTAL OUTPATIENT VISITS"`). |
+| | `Subtitle` | Text | Secondary context line (e.g., `"Clinical Department - FY 2026"`). |
+| | `Card Alignment` | Select | Text alignment: `Left`, `Center`, or `Right`. |
+| | `Prefix / Suffix` | Text | Currency symbols (`$`, `€`) or units (`%`, `days`, `hrs`). |
+| | `Number Format` | Select | d3-format preset or custom formatting pattern. |
+| **Delta % & Polarity** | `Invert Color Polarity` | Checkbox | **"Lower is Better" mode**: decreases turn **Green**, increases turn **Red**. |
+| | `Badge Style` | Select | Visual appearance: `Rounded Pill`, `Full Box`, or `Subtle Text`. |
+| | `Show Absolute Delta` | Checkbox | Appends numeric difference in parentheses (e.g. `(+2,640)`). |
+| **Card Styling** | `Card Background Color`| Color | RGBA color picker with transparency support. |
+| | `Border Radius` | Select | Preset radius: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)`, `Pill (24px)`. |
+| | `Card Elevation` | Select | Border & shadow style: `None`, `Subtle Shadow`, `Elevated Shadow`, `Thin Border`. |
+| **Sparkline** | `Show Sparkline` | Checkbox | Renders inline vector trend curve at the bottom of the card. |
+| | `Sparkline Color` | Color | Line stroke color. |
+| | `Fill Below Curve` | Checkbox | Adds soft gradient fill below the sparkline curve. |
 
 ---
 
 ## 💻 Local Development & Build
 
 ```bash
-# Clone the repository
-git clone https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison.git
-cd superset-plugin-chart-kpi-comparison
-
 # Install dependencies
 npm install
 
-# Compile TypeScript
+# Compile TypeScript sources
 npm run build
 
-# Clean build artifacts
+# Clean build directory
 npm run clean
 ```
 
 ---
 
 ## 📄 License
-Released under the Apache License 2.0.  
-Repository: [https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison](https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison)  
-Author: Francesco Castaldi.
 
-
+Distributed under the **Apache License 2.0**.
