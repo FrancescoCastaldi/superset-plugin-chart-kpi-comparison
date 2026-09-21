@@ -7,6 +7,22 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ---
 
+## [0.1.6] - 2026-09-21
+
+### Risolto (Fixed)
+- **Installer allineato allo stratum-bar per l'installazione dipendenze**:
+  `npm install` ora viene eseguito con `--legacy-peer-deps` (il client falliva
+  con ERESOLVE sul conflitto di peer `@testing-library/dom` tra
+  `@superset-ui/chart-controls` e `@testing-library/jest-dom`). L'installazione
+  parte quando manca `node_modules/typescript/lib/tsc.js` (non solo quando
+  manca l'intera cartella `node_modules`, evitando ripartenze parziali).
+- **TypeScript locale pinnato `~5.9.2` in devDependencies**: sul client non
+  esiste `tsc` globale e la catena di fallback del build terminava con
+  MODULE_NOT_FOUND. Con typescript locale il build usa il compilatore 5.9
+  (compatibile col tsconfig, senza gli errori TS5107/TS5101 della v6).
+
+---
+
 ## [0.1.5] - 2026-09-21
 
 ### Modificato (Changed)
