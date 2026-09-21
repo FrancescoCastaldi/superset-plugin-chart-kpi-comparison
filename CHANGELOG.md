@@ -7,6 +7,23 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ---
 
+## [0.1.4] - 2026-09-21
+
+### Risolto (Fixed)
+- **Valore Primario con Sparkline letta dall'Ultima Riga**: In modalita'
+  `dual_metric` con sparkline attiva, la query viene ordinata in ordine
+  crescente sulla colonna temporale (`time_column`) con `row_limit` 50; il
+  valore primario e il confronto erano letti dalla PRIMA riga (periodo piu'
+  remoto), sbagliando numero grande e delta percentuale. Ora, con sparkline
+  attiva, sono letti dall'ULTIMA riga (periodo piu' recente); senza sparkline
+  (row_limit 1) il comportamento resta identico (prima riga). Il ramo
+  `time_shift` non viene toccato.
+- Serve al KPI "Richieste · mese corrente" della Dashboard 29 IDI (Tab 4:
+  numero grande = mese corrente, confronto = mese precedente, sparkline =
+  serie mensile 12 mesi sulla coppia lag-1 della vista).
+
+---
+
 ## [0.1.3] - 2026-09-08
 
 ### Risolto (Fixed)

@@ -46,47 +46,61 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   const sparklineData: number[] = [];
 
   if (data.length > 0) {
+    // v0.1.4: con sparkline attiva in modalita' dual_metric la query viene
+    // ordinata in ordine crescente sulla colonna temporale (row_limit 50):
+    // il valore primario e il confronto sono letti dall'ULTIMA riga (periodo
+    // piu' recente), mentre la sparkline usa l'intera serie. Senza sparkline
+    // (row_limit 1) il comportamento resta identico (prima riga). Il ramo
+    // time-shift (else) non viene toccato.
+    const referenceRow =
+      calculationMode === 'dual_metric' &&
+      fd.show_sparkline &&
+      data.length > 1
+        ? data[data.length - 1]
+        : data[0];
     const firstRow = data[0];
 
     // 1. Primary Value extraction
-    if (primaryMetricKey && firstRow[primaryMetricKey] !== undefined) {
-      primaryValue = parseNumericValue(firstRow[primaryMetricKey]);
+    if (primaryMetricKey && referenceRow[primaryMetricKey] !== undefined) {
+      primaryValue = parseNumericValue(referenceRow[primaryMetricKey]);
       primaryKeyUsed = primaryMetricKey;
     } else if (primaryMetricKey) {
-      const foundKey = Object.keys(firstRow).find(
+      const foundKey = Object.keys(referenceRow).find(
         k => k.toLowerCase() === primaryMetricKey.toLowerCase(),
       );
       if (foundKey) {
-        primaryValue = parseNumericValue(firstRow[foundKey]);
+        primaryValue = parseNumericValue(referenceRow[foundKey]);
         primaryKeyUsed = foundKey;
       }
     }
 
     if (primaryValue === null) {
       // Fallback: first numeric column
-      const firstNumKey = Object.keys(firstRow).find(k => typeof firstRow[k] === 'number');
+      const firstNumKey = Object.keys(referenceRow).find(
+        k => typeof referenceRow[k] === 'number',
+      );
       if (firstNumKey) {
-        primaryValue = parseNumericValue(firstRow[firstNumKey]);
+        primaryValue = parseNumericValue(referenceRow[firstNumKey]);
         primaryKeyUsed = firstNumKey;
       }
     }
 
     // 2. Comparison Value extraction
     if (calculationMode === 'dual_metric') {
-      if (comparisonMetricKey && firstRow[comparisonMetricKey] !== undefined) {
-        comparisonValue = parseNumericValue(firstRow[comparisonMetricKey]);
+      if (comparisonMetricKey && referenceRow[comparisonMetricKey] !== undefined) {
+        comparisonValue = parseNumericValue(referenceRow[comparisonMetricKey]);
       } else if (comparisonMetricKey) {
-        const foundCompKey = Object.keys(firstRow).find(
+        const foundCompKey = Object.keys(referenceRow).find(
           k => k.toLowerCase() === comparisonMetricKey.toLowerCase(),
         );
         if (foundCompKey) {
-          comparisonValue = parseNumericValue(firstRow[foundCompKey]);
+          comparisonValue = parseNumericValue(referenceRow[foundCompKey]);
         }
       }
 
       // Robust fallback 1: search for keys containing comparison keywords
       if (comparisonValue === null) {
-        const keywordKey = Object.keys(firstRow).find(
+        const keywordKey = Object.keys(referenceRow).find(
           k =>
             k !== primaryKeyUsed &&
             (k.toLowerCase().includes('conf') ||
@@ -96,17 +110,17 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
               k.toLowerCase().includes('bench')),
         );
         if (keywordKey) {
-          comparisonValue = parseNumericValue(firstRow[keywordKey]);
+          comparisonValue = parseNumericValue(referenceRow[keywordKey]);
         }
       }
 
-      // Robust fallback 2: take any second numeric column in firstRow that is not primaryKeyUsed
+      // Robust fallback 2: take any second numeric column in referenceRow that is not primaryKeyUsed
       if (comparisonValue === null) {
-        const nextNumKey = Object.keys(firstRow).find(
-          k => k !== primaryKeyUsed && typeof firstRow[k] === 'number',
+        const nextNumKey = Object.keys(referenceRow).find(
+          k => k !== primaryKeyUsed && typeof referenceRow[k] === 'number',
         );
         if (nextNumKey) {
-          comparisonValue = parseNumericValue(firstRow[nextNumKey]);
+          comparisonValue = parseNumericValue(referenceRow[nextNumKey]);
         }
       }
     } else {
