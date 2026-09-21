@@ -7,6 +7,18 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ---
 
+## [0.1.5] - 2026-09-21
+
+### Modificato (Changed)
+- **`install.bat` allineato a quello del plugin StratumBar**: rimosso il menù
+  interattivo (opzioni 1-5, GUI, clean reinstall, docker) e sostituito con il
+  runner diretto che esegue `install-plugin.ps1` passando gli eventuali
+  argomenti (`%*`) e attende Invio. Comportamento identico al `install.bat`
+  dello stratum-bar, evitando errori/blocchi sul client in esecuzione
+  non interattiva.
+
+---
+
 ## [0.1.4] - 2026-09-21
 
 ### Risolto (Fixed)
