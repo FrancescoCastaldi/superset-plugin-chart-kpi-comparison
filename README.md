@@ -59,10 +59,10 @@
 
 ```mermaid
 flowchart LR
-    A[Superset Explore / Dashboard] -->|FormData & Parameters| B[buildQuery.ts]
+    A[Superset Explore or Dashboard] -->|FormData and Parameters| B[buildQuery.ts]
     B -->|Dual Metric or Time Shift Request| C[Superset Backend Engine]
     C -->|Aggregated Data Payload| D[transformProps.ts]
-    D -->|Delta % Math & Formatting| E[KPIComparison.tsx]
+    D -->|Delta % Math and Formatting| E[KPIComparison.tsx]
     E -->|SVG Path Calculation| F[Vector Sparkline Renderer]
     E -->|Card Render| G[Dynamic Responsive KPI Card]
 ```
@@ -161,28 +161,30 @@ Navigate to `http://localhost:8088`, create a new chart, and select **KPI Compar
 
 ## 🛠️ Explore Control Panel Reference
 
-| Section | Control | Type | Description |
-|:---|:---|:---|:---|
-| **Metrics & Comparison** | `Calculation Mode` | Select | Choose between `Dual Metric` (pre-aggregated SQL) or `Time Shift`. |
-| | `Primary Metric` | Metric | Prominent reference metric (e.g. `SUM(current_visits)`). |
-| | `Comparison Metric` | Metric | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
-| | `Time Shift Offset` | Select | Temporal comparison offset (`1 year ago`, `1 month ago`, etc.). |
-| | `Comparison Label` | Text | Descriptive benchmark text (e.g., `"vs Prior Year"`, `"vs Target"`). |
-| | `Time Column` | Select | Date/time dimension used to order the vector sparkline. |
-| **Card Appearance** | `KPI Title` | Text | Top uppercase heading (e.g., `"TOTAL OUTPATIENT VISITS"`). |
-| | `Subtitle` | Text | Secondary context line (e.g., `"Clinical Department - FY 2026"`). |
-| | `Card Alignment` | Select | Text alignment: `Left`, `Center`, or `Right`. |
-| | `Prefix / Suffix` | Text | Currency symbols (`$`, `€`) or units (`%`, `days`, `hrs`). |
-| | `Number Format` | Select | d3-format preset or custom formatting pattern. |
-| **Delta % & Polarity** | `Invert Color Polarity` | Checkbox | **"Lower is Better" mode**: decreases turn **Green**, increases turn **Red**. |
-| | `Badge Style` | Select | Visual appearance: `Rounded Pill`, `Full Box`, or `Subtle Text`. |
-| | `Show Absolute Delta` | Checkbox | Appends numeric difference in parentheses (e.g. `(+2,640)`). |
-| **Card Styling** | `Card Background Color`| Color | RGBA color picker with transparency support. |
-| | `Border Radius` | Select | Preset radius: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)`, `Pill (24px)`. |
-| | `Card Elevation` | Select | Border & shadow style: `None`, `Subtle Shadow`, `Elevated Shadow`, `Thin Border`. |
-| **Sparkline** | `Show Sparkline` | Checkbox | Renders inline vector trend curve at the bottom of the card. |
-| | `Sparkline Color` | Color | Line stroke color. |
-| | `Fill Below Curve` | Checkbox | Adds soft gradient fill below the sparkline curve. |
+| Section | Control (`name`) | UI Label | Type | Default | Description |
+|:---|:---|:---|:---|:---|:---|
+| **Metrics & Comparison** | `calculation_mode` | Calculation Mode | Select | `dual_metric` | Comparison mode: `dual_metric` (pre-aggregated SQL) or `time_shift`. |
+| | `metric` | Primary Metric | Metric | — | Prominent reference metric (e.g. `SUM(current_visits)`). |
+| | `comparison_metric` | Comparison Metric | Metric | — | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
+| | `time_compare` | Time Shift Offset | Select | `1 year ago` | Temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`). |
+| | `comparison_label` | Comparison Label | Text | `"vs Periodo Prec."` | Descriptive benchmark text (e.g., `"vs 2025"`, `"vs Target"`). |
+| | `time_column` | Time Column | Select | — | Date/time dimension used to order the vector sparkline. |
+| **Card Appearance** | `kpi_title` | KPI Title | Text | `""` | Top uppercase heading (e.g., `"TOTAL OUTPATIENT VISITS"`). |
+| | `kpi_subtitle` | Subtitle / Detail | Text | `""` | Secondary context line (e.g., `"Clinical Department - FY 2026"`). |
+| | `card_alignment` | Content Alignment | Select | `left` | Text alignment: `left`, `center`, or `right`. |
+| | `prefix_value` | Value Prefix | Text | `""` | Currency symbols (`$`, `€`) prepended to values. |
+| | `suffix_value` | Value Suffix | Text | `""` | Units (`%`, `days`, `hrs`) appended to values. |
+| | `number_format` | Number Format | Select | `SMART_NUMBER` | d3-format preset or custom formatting pattern. |
+| **Delta % & Polarity** | `invert_polarity` | Invert Color Polarity | Checkbox | `false` | **"Lower is Better" mode**: decreases turn **Green**, increases turn **Red**. |
+| | `badge_style` | Delta Badge Style | Select | `pill` | Visual appearance: `pill` (Rounded Pill), `full` (Box), or `subtle` (Text). |
+| | `show_comparison_value`| Show Comparison Value | Checkbox | `true` | Displays baseline comparison number alongside the card. |
+| | `show_absolute_delta` | Show Absolute Delta | Checkbox | `true` | Appends numeric difference in parentheses (e.g. `(+2,640)`). |
+| **Card Styling** | `card_bg_color` | Card Background Color | Color | `#ffffff` | RGBA color picker with transparency support. |
+| | `card_border_radius` | Card Corner Radius | Select | `subtle` | Preset radius: `square` (0px), `subtle` (8px), `rounded` (14px), `pill` (24px). |
+| | `card_box_shadow` | Card Shadow / Elevation | Select | `none` | Border & shadow style: `none`, `subtle`, `elevated`, `bordered`. |
+| **Sparkline** | `show_sparkline` | Show Sparkline | Checkbox | `false` | Renders inline vector trend curve at the bottom of the card. |
+| | `sparkline_color` | Sparkline Color | Color | `#2563eb` | Line stroke color. |
+| | `sparkline_fill` | Fill Below Curve | Checkbox | `true` | Adds soft gradient fill below the sparkline curve. |
 
 ---
 

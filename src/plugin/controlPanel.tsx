@@ -83,7 +83,7 @@ const config: ControlPanelConfig = {
               label: t('Etichetta Periodo di Confronto'),
               default: 'vs Periodo Prec.',
               description: t(
-                'Testo descrittivo visualizzato accanto al valore di confronto (es. "vs 2025", "vs Budget", "vs Mese Prec.").',
+                'Testo descrittivo visualizzato accanto al valore di confronto (es. "vs Mese precedente"). Supporta segnaposto {comp_month} / {mese_prec} o risoluzione automatica.',
               ),
               renderTrigger: true,
             },
@@ -114,7 +114,9 @@ const config: ControlPanelConfig = {
               type: 'TextControl',
               label: t('Titolo KPI'),
               default: '',
-              description: t('Titolo in evidenza sopra il valore numerico (es. "VISITE TOTALI").'),
+              description: t(
+                'Titolo in evidenza sopra il valore numerico. Supporta segnaposto dinamici: {month} / {mese} e {period} / {periodo}, o risoluzione automatica da dati e filtri.',
+              ),
               renderTrigger: true,
             },
           },
@@ -126,11 +128,14 @@ const config: ControlPanelConfig = {
               type: 'TextControl',
               label: t('Sottotitolo / Dettaglio'),
               default: '',
-              description: t('Didascalia opzionale sotto il titolo.'),
+              description: t(
+                'Didascalia opzionale sotto il titolo. Supporta segnaposto dinamici {month} e {period}.',
+              ),
               renderTrigger: true,
             },
           },
         ],
+
         [
           {
             name: 'card_alignment',

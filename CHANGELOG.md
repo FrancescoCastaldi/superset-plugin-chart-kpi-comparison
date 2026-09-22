@@ -5,6 +5,20 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.1.7] - 2026-09-22
+
+### Added
+- **Risoluzione Dinamica del Mese e Periodo nei Titoli Card**: Introdotto supporto per segnaposto dinamici nei campi `kpi_title`, `kpi_subtitle` e `comparison_label`:
+  - `{month}` / `{mese}`: sostituito con il mese effettivo del dato (es. "Settembre 2026", "Ottobre 2025").
+  - `{period}` / `{periodo}`: sostituito con l'estensione temporale effettiva (es. "12 mesi", "6 mesi", "Ottobre 2025 - Settembre 2026").
+  - `{comp_month}` / `{mese_prec}`: sostituito con il mese di confronto effettivo (es. "Agosto 2026").
+- **Auto-Discovery Intelligente del Mese**: Se il titolo è configurato con diciture standard ("Mese di picco", "Mese più basso", "Richieste ultimo mese", "Media mensile"), il plugin estrae automaticamente il mese/periodo reale dalle metriche descrittive della riga (es. `mese_picco`, `mese_minimo`, `mese_corrente`, `mese_confronto`, `periodo_mesi`), dalle serie multi-riga o dal filtro temporale attivo, formattandolo in italiano con iniziale maiuscola.
+
+### Changed
+- **Preservazione Metriche Extra e Colonne in `buildQuery`**: `buildQuery` non sovrascrive più arbitrariamente la lista delle metriche con la sola coppia `[metric, comparison_metric]`, consentendo l'inclusione di metriche descrittive (stringhe/date) nel QueryContext senza generare duplicati di label.
+
 ---
 
 ## [0.1.6] - 2026-09-21

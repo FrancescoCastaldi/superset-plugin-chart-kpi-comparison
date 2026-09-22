@@ -12,22 +12,11 @@ import {
   formatDeltaPercent,
   formatItalianNumber,
   formatMetricValue,
+  formatMonthYearItalian,
+  getMetricLabel,
   parseNumericValue,
 } from '../utils/formatters';
 
-function getMetricLabel(metric: any): string {
-  if (!metric) return '';
-  if (typeof metric === 'string') return metric;
-  return (
-    metric.label ||
-    metric.metric_name ||
-    metric.verbose_name ||
-    metric.sqlExpression ||
-    metric.column?.column_name ||
-    metric.optionName ||
-    ''
-  );
-}
 
 export default function transformProps(chartProps: ChartProps): KPIComparisonProps {
   const { width, height, formData, queriesData } = chartProps;
@@ -44,6 +33,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   let comparisonValue: number | null = null;
   let primaryKeyUsed: string | null = null;
   const sparklineData: number[] = [];
+  let referenceRow: Record<string, any> | undefined;
 
   if (data.length > 0) {
     // v0.1.4: con sparkline attiva in modalita' dual_metric la query viene
@@ -52,7 +42,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     // piu' recente), mentre la sparkline usa l'intera serie. Senza sparkline
     // (row_limit 1) il comportamento resta identico (prima riga). Il ramo
     // time-shift (else) non viene toccato.
-    const referenceRow =
+    referenceRow =
       calculationMode === 'dual_metric' &&
       fd.show_sparkline &&
       data.length > 1
@@ -227,14 +217,188 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     rawFd.extra_form_data?.time_range ||
     rawFd.extraFormData?.time_range;
 
+  // --- Dynamic Month & Period Discovery ---
+  let dynamicMonth: string | null = null;
+  let dynamicCompMonth: string | null = null;
+  let dynamicPeriod: string | null = null;
+
+  // 1. Inspect referenceRow for explicit string metrics or date columns
+  if (referenceRow) {
+    for (const [key, val] of Object.entries(referenceRow)) {
+      if (typeof val === 'string' && val.trim()) {
+        const kLow = key.toLowerCase();
+        if (kLow.includes('picco') || kLow.includes('peak')) {
+          dynamicMonth = formatMonthYearItalian(val);
+        } else if (
+          kLow.includes('minimo') ||
+          kLow.includes('lowest') ||
+          kLow.includes('più basso') ||
+          kLow.includes('piu basso')
+        ) {
+          dynamicMonth = formatMonthYearItalian(val);
+        } else if (
+          kLow.includes('corrente') ||
+          kLow.includes('ultimo') ||
+          kLow.includes('current')
+        ) {
+          if (!dynamicMonth) {
+            dynamicMonth = formatMonthYearItalian(val);
+          }
+        } else if (
+          kLow.includes('confronto') ||
+          kLow.includes('prec') ||
+          kLow.includes('prev') ||
+          kLow.includes('comp')
+        ) {
+          if (!dynamicCompMonth) {
+            dynamicCompMonth = formatMonthYearItalian(val);
+          }
+        } else if (
+          kLow.includes('periodo') ||
+          kLow.includes('mesi') ||
+          kLow.includes('finestra')
+        ) {
+          if (!dynamicPeriod) {
+            dynamicPeriod = val.trim();
+          }
+        } else if (
+          kLow.includes('mese') ||
+          kLow.includes('month') ||
+          kLow.includes('data') ||
+          kLow.includes('date')
+        ) {
+          if (!dynamicMonth) {
+            dynamicMonth = formatMonthYearItalian(val);
+          }
+        }
+      }
+    }
+  }
+
+  // 2. If data has multiple rows (series/sparkline/monthly groups), detect from rows
+  if (data.length > 1) {
+    const dateCol = Object.keys(data[0]).find(k => {
+      const kLow = k.toLowerCase();
+      return (
+        k === fd.time_column ||
+        kLow.includes('mese') ||
+        kLow.includes('month') ||
+        kLow.includes('data') ||
+        kLow.includes('date')
+      );
+    });
+
+    if (dateCol) {
+      const titleLower = (fd.kpi_title || '').toLowerCase();
+      const isPeak = titleLower.includes('picco') || titleLower.includes('peak');
+      const isMin =
+        titleLower.includes('minimo') ||
+        titleLower.includes('basso') ||
+        titleLower.includes('lowest');
+
+      if (isPeak) {
+        let maxVal = -Infinity;
+        let peakRow = data[0];
+        data.forEach(r => {
+          const v = parseNumericValue(r[primaryKeyUsed || primaryMetricKey]);
+          if (v !== null && v > maxVal) {
+            maxVal = v;
+            peakRow = r;
+          }
+        });
+        if (peakRow && peakRow[dateCol]) {
+          dynamicMonth = formatMonthYearItalian(String(peakRow[dateCol]));
+        }
+      } else if (isMin) {
+        let minVal = Infinity;
+        let minRow = data[0];
+        data.forEach(r => {
+          const v = parseNumericValue(r[primaryKeyUsed || primaryMetricKey]);
+          if (v !== null && v < minVal) {
+            minVal = v;
+            minRow = r;
+          }
+        });
+        if (minRow && minRow[dateCol]) {
+          dynamicMonth = formatMonthYearItalian(String(minRow[dateCol]));
+        }
+      } else {
+        const lastRow = data[data.length - 1];
+        if (lastRow && lastRow[dateCol]) {
+          dynamicMonth = formatMonthYearItalian(String(lastRow[dateCol]));
+        }
+        if (data.length > 1) {
+          const prevRow = data[data.length - 2];
+          if (prevRow && prevRow[dateCol]) {
+            dynamicCompMonth = formatMonthYearItalian(String(prevRow[dateCol]));
+          }
+        }
+      }
+    }
+  }
+
+  // 3. Fallback from activeTimeRange if month or period still unknown
+  if (activeTimeRange && activeTimeRange !== 'No filter') {
+    const rangeMatch = activeTimeRange.match(
+      /(\d{4}-\d{2}-\d{2})\s*:\s*(\d{4}-\d{2}-\d{2})?/,
+    );
+    if (rangeMatch) {
+      const startFmt = formatMonthYearItalian(rangeMatch[1]);
+      const endFmt = rangeMatch[2] ? formatMonthYearItalian(rangeMatch[2]) : null;
+      if (!dynamicPeriod) {
+        dynamicPeriod = endFmt ? `${startFmt} - ${endFmt}` : `dal ${startFmt}`;
+      }
+      if (!dynamicMonth && endFmt) {
+        dynamicMonth = endFmt;
+      }
+    } else if (activeTimeRange.toLowerCase().includes('last 12 months')) {
+      if (!dynamicPeriod) dynamicPeriod = '12 mesi';
+    } else if (activeTimeRange.toLowerCase().includes('last 6 months')) {
+      if (!dynamicPeriod) dynamicPeriod = '6 mesi';
+    }
+  }
+
+  // Dynamic subtitle resolution
   let dynamicSubtitle = fd.kpi_subtitle || '';
   if (!dynamicSubtitle && activeTimeRange && activeTimeRange !== 'No filter') {
-    dynamicSubtitle = `Periodo: ${activeTimeRange}`;
+    dynamicSubtitle = `Periodo: ${dynamicPeriod || activeTimeRange}`;
+  } else if (dynamicSubtitle) {
+    if (dynamicPeriod) {
+      dynamicSubtitle = dynamicSubtitle.replace(/{period}|{periodo}/gi, dynamicPeriod);
+    }
+    if (dynamicMonth) {
+      dynamicSubtitle = dynamicSubtitle.replace(/{month}|{mese}/gi, dynamicMonth);
+    }
   }
 
   // Dynamic comparison label resolution
   let resolvedComparisonLabel = fd.comparison_label;
-  if (!resolvedComparisonLabel || resolvedComparisonLabel === 'vs Periodo Prec.' || resolvedComparisonLabel === 'vs Benchmark') {
+  if (dynamicCompMonth) {
+    if (
+      !resolvedComparisonLabel ||
+      resolvedComparisonLabel === 'vs Mese precedente' ||
+      resolvedComparisonLabel === 'vs Mese Prec.' ||
+      resolvedComparisonLabel === 'vs Periodo Prec.' ||
+      resolvedComparisonLabel === 'vs Confronto' ||
+      resolvedComparisonLabel.startsWith('vs Mese') ||
+      resolvedComparisonLabel.startsWith('vs Agosto') ||
+      resolvedComparisonLabel.startsWith('vs Settembre')
+    ) {
+      resolvedComparisonLabel = `vs ${dynamicCompMonth}`;
+    } else if (
+      resolvedComparisonLabel.includes('{comp_month}') ||
+      resolvedComparisonLabel.includes('{mese_prec}')
+    ) {
+      resolvedComparisonLabel = resolvedComparisonLabel.replace(
+        /{comp_month}|{mese_prec}/gi,
+        dynamicCompMonth,
+      );
+    }
+  } else if (
+    !resolvedComparisonLabel ||
+    resolvedComparisonLabel === 'vs Periodo Prec.' ||
+    resolvedComparisonLabel === 'vs Benchmark'
+  ) {
     if (calculationMode === 'time_shift') {
       const shift = fd.time_compare || '1 year ago';
       switch (shift) {
@@ -253,22 +417,105 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         default:
           resolvedComparisonLabel = `vs ${shift}`;
       }
-    } else if (comparisonMetricKey && !comparisonMetricKey.toLowerCase().includes('conf')) {
+    } else if (
+      comparisonMetricKey &&
+      !comparisonMetricKey.toLowerCase().includes('conf')
+    ) {
       resolvedComparisonLabel = `vs ${comparisonMetricKey}`;
     } else {
       resolvedComparisonLabel = 'vs Confronto';
     }
   }
 
+  // Dynamic title resolution
   let resolvedTitle = fd.kpi_title || '';
-  if (!resolvedTitle) {
-    const raw = primaryMetricKey || '';
-    if (raw.toLowerCase() === 'richieste_corr') {
-      resolvedTitle = 'Richieste in attesa';
+
+  if (resolvedTitle) {
+    // 1. Template replacement if placeholders present
+    if (
+      dynamicMonth &&
+      (resolvedTitle.includes('{month}') || resolvedTitle.includes('{mese}'))
+    ) {
+      resolvedTitle = resolvedTitle.replace(/{month}|{mese}/gi, dynamicMonth);
+    }
+    if (
+      dynamicPeriod &&
+      (resolvedTitle.includes('{period}') || resolvedTitle.includes('{periodo}'))
+    ) {
+      resolvedTitle = resolvedTitle.replace(/{period}|{periodo}/gi, dynamicPeriod);
+    }
+
+    // 2. Automatic smart append/update if title is standard pattern without template token
+    const tLow = resolvedTitle.toLowerCase().trim();
+    if (dynamicMonth) {
+      if (tLow === 'mese di picco' || tLow === 'picco') {
+        resolvedTitle = `Picco · ${dynamicMonth}`;
+      } else if (
+        tLow.startsWith('picco:') ||
+        tLow.startsWith('picco :') ||
+        tLow.startsWith('picco ·')
+      ) {
+        resolvedTitle = `Picco · ${dynamicMonth}`;
+      } else if (
+        tLow === 'mese più basso' ||
+        tLow === 'mese piu basso' ||
+        tLow === 'minimo'
+      ) {
+        resolvedTitle = `Minimo · ${dynamicMonth}`;
+      } else if (
+        tLow.startsWith('minimo:') ||
+        tLow.startsWith('minimo :') ||
+        tLow.startsWith('minimo ·')
+      ) {
+        resolvedTitle = `Minimo · ${dynamicMonth}`;
+      } else if (
+        tLow === 'richieste ultimo mese' ||
+        tLow === 'ultimo mese' ||
+        tLow === 'richieste mese corrente' ||
+        tLow === 'richieste'
+      ) {
+        resolvedTitle = `Richieste · ${dynamicMonth}`;
+      } else if (
+        tLow.startsWith('richieste ·') ||
+        tLow.startsWith('richieste:')
+      ) {
+        resolvedTitle = `Richieste · ${dynamicMonth}`;
+      }
+    }
+    if (
+      dynamicPeriod &&
+      (tLow === 'media mensile' ||
+        tLow.startsWith('media mensile ·') ||
+        tLow.startsWith('media mensile ('))
+    ) {
+      resolvedTitle = `Media mensile · ${dynamicPeriod}`;
+    }
+  } else {
+    // If no title configured, use smart defaults
+    if (primaryMetricKey) {
+      const pLow = primaryMetricKey.toLowerCase();
+      if (pLow.includes('picco')) {
+        resolvedTitle = dynamicMonth ? `Picco · ${dynamicMonth}` : 'Mese di picco';
+      } else if (pLow.includes('minimo') || pLow.includes('basso')) {
+        resolvedTitle = dynamicMonth ? `Minimo · ${dynamicMonth}` : 'Mese più basso';
+      } else if (pLow.includes('ultimo') || pLow.includes('corrente')) {
+        resolvedTitle = dynamicMonth
+          ? `Richieste · ${dynamicMonth}`
+          : 'Richieste ultimo mese';
+      } else if (pLow.includes('media')) {
+        resolvedTitle = dynamicPeriod
+          ? `Media mensile · ${dynamicPeriod}`
+          : 'Media mensile';
+      } else {
+        resolvedTitle = dynamicMonth
+          ? `${primaryMetricKey} · ${dynamicMonth}`
+          : primaryMetricKey;
+      }
     } else {
-      resolvedTitle = raw || 'KPI';
+      resolvedTitle = dynamicMonth ? `KPI · ${dynamicMonth}` : 'KPI';
     }
   }
+
 
   // Aesthetic Customization
   let cardBgColor = '#ffffff';

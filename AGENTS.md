@@ -95,3 +95,19 @@ src/
   6. Implementazione di `buildQuery.ts`, `controlPanel.tsx` e `transformProps.ts`.
   7. Creazione di `README.md`, `CHANGELOG.md` e `AGENTS.md`.
   8. Configurazione dello script di deploy PowerShell `install-plugin.ps1` e batch `install.bat`.
+
+---
+
+## 🔐 Credenziali, token & chiavi API — protocollo vault (obbligatorio)
+
+Questo file non contiene segreti e non deve mai contenerne. Tutte le credenziali della chiavetta vivono nel **vault unico** `D:/.env`, cifrato a riposo in `D:/.env.7z` (AES-256). Il protocollo completo è in `D:/AGENTS.md` §5, da leggere prima di qualsiasi attività che richieda un token. In sintesi:
+
+```powershell
+powershell -File D:/Scripts/vault/status-env.ps1   # exit 0 = UNLOCKED; exit 2 = LOCKED -> fermarsi e chiedere all'utente di eseguire unlock-env.ps1
+. D:/Scripts/vault/load-env.ps1 -Quiet             # esporta le variabili nella sessione corrente (mai stamparne i valori)
+```
+
+- **Chiavi rilevanti per quest'area**: `GH_TOKEN`, `GITHUB_TOKEN`, `GITHUB_USER`. Schema completo (nomi, nessun valore): `D:/.env.example`.
+- **Vietato**: leggere altri `.env`, `.npmrc` o `connessione_*.txt` come fonte di token; stampare, loggare o copiare valori; committare `.env*` (eccetto `.env.example`); chiedere la password del vault in chat.
+- Vault **LOCKED** → fermarsi e chiedere l'unlock, senza cercare copie altrove. Chiave assente dallo schema → non esiste nel vault: proporne l'aggiunta secondo `D:/AGENTS.md` §5.5.
+- **Fine sessione**: ricordare all'utente `powershell -File D:/Scripts/vault/lock-env.ps1`.
