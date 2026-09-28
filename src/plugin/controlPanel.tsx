@@ -210,7 +210,7 @@ const config: ControlPanelConfig = {
             config: {
               type: 'SelectControl',
               label: t('Stile Bordo / Raggio Card'),
-              default: 'subtle',
+              default: 'square',
               choices: [
                 ['square', t('Squadrato (0px)')],
                 ['subtle', t('Morbido (8px)')],

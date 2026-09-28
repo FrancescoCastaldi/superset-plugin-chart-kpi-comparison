@@ -26,8 +26,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   sparklineData = [],
   sparklineColor = '#2563eb',
   sparklineFill = true,
-  cardBgColor = '#ffffff',
-  cardBorderRadius = 'subtle',
+  cardBgColor = 'transparent',
+  cardBorderRadius = 'square',
   cardBoxShadow = 'none',
 }) => {
   // Dimensional tiers (decoupled height and width)
@@ -39,7 +39,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   // Title intelligence:
   // When vertical height is very small (< 90px), vertical space is prioritized 100%
   // for the primary KPI value and comparison delta badge. Title is preserved in container tooltip.
-  const showTitle = !isVerticalUltraCompact && Boolean(kpiTitle);
+  const showTitle = !isVerticalUltraCompact && Boolean(kpiTitle && kpiTitle.trim().length > 0);
   const isTitleMini = isHorizontalUltraCompact;
   const showSubtitle = height >= 140 && width >= 200 && Boolean(kpiSubtitle);
 

@@ -491,34 +491,15 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       resolvedTitle = `Media mensile · ${dynamicPeriod}`;
     }
   } else {
-    // If no title configured, use smart defaults
-    if (primaryMetricKey) {
-      const pLow = primaryMetricKey.toLowerCase();
-      if (pLow.includes('picco')) {
-        resolvedTitle = dynamicMonth ? `Picco · ${dynamicMonth}` : 'Mese di picco';
-      } else if (pLow.includes('minimo') || pLow.includes('basso')) {
-        resolvedTitle = dynamicMonth ? `Minimo · ${dynamicMonth}` : 'Mese più basso';
-      } else if (pLow.includes('ultimo') || pLow.includes('corrente')) {
-        resolvedTitle = dynamicMonth
-          ? `Richieste · ${dynamicMonth}`
-          : 'Richieste ultimo mese';
-      } else if (pLow.includes('media')) {
-        resolvedTitle = dynamicPeriod
-          ? `Media mensile · ${dynamicPeriod}`
-          : 'Media mensile';
-      } else {
-        resolvedTitle = dynamicMonth
-          ? `${primaryMetricKey} · ${dynamicMonth}`
-          : primaryMetricKey;
-      }
-    } else {
-      resolvedTitle = dynamicMonth ? `KPI · ${dynamicMonth}` : 'KPI';
-    }
+    // Quando nessun titolo è specificato esplicitamente, NON generare titoli interni
+    // né ripiegare sul nome della metrica o stringhe generate ("RICHIESTE_CORR", "Richieste ecc").
+    // La card del cruscotto Superset mostra già l'intestazione pulita nel container esterno.
+    resolvedTitle = '';
   }
 
 
   // Aesthetic Customization
-  let cardBgColor = '#ffffff';
+  let cardBgColor = 'transparent';
   if (fd.card_bg_color) {
     const bg = fd.card_bg_color as any;
     if (typeof bg === 'string') {
@@ -532,7 +513,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
   }
 
-  const cardBorderRadius: CardBorderRadius = fd.card_border_radius || 'subtle';
+  const cardBorderRadius: CardBorderRadius = fd.card_border_radius || 'square';
   const cardBoxShadow: CardBoxShadow = fd.card_box_shadow || 'none';
 
   return {

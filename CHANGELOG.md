@@ -7,6 +7,14 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-09-28
+
+### Fixed
+- **Eliminazione Titoli Interni Indesiderati ("RICHIESTE_CORR" / "Richieste ecc")**: Rimosso il fallback automatico che generava titoli interni derivati dal nome della metrica quando `kpi_title` non è valorizzato. Quando nessun titolo è specificato, la card non mostra alcun testo ridondante all'interno, lasciando pieno risalto al numero primario e al delta.
+- **Risoluzione Effetto "Box nel Box"**: Impostato `cardBorderRadius` di default a `square` (0px), `cardBgColor` a `transparent` e `cardBoxShadow` a `none` per un'integrazione fluida e nativa all'interno dei contenitori di dashboard Superset senza doppi bordi o cornici interne.
+
+---
+
 ## [0.1.7] - 2026-09-22
 
 ### Added
