@@ -241,7 +241,6 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               fontWeight: 600,
               color: '#64748b',
               marginRight: '2px',
-              userSelect: 'none',
               lineHeight: 1,
               flexShrink: 0,
             }}
@@ -273,7 +272,6 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               fontWeight: 600,
               color: '#64748b',
               marginLeft: '3px',
-              userSelect: 'none',
               lineHeight: 1,
               flexShrink: 0,
             }}

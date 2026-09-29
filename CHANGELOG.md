@@ -7,6 +7,16 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-09-29
+
+### Fixed
+- **Supporto Dual-Casing (`camelCase` & `snake_case`) per Controlli e Form Data**: Risolto bug critico per cui in Apache Superset 4.x (`ChartRenderer` / `SuperChart`) i parametri di configurazione della card (`suffix_value`, `number_format`, `prefix_value`, `kpi_title`, `card_alignment`, ecc.) venivano convertiti in camelCase (`suffixValue`, `numberFormat`), risultando `null`/`undefined` all'interno di `transformProps.ts`. Introdotto resolver trasparente `getProp` che ispeziona sia `formData` che `rawFormData` in entrambi i formati di naming.
+- **Visualizzazione Simbolo Percentuale (`%`) e Unità di Misura**: Ripristinata la corretta renderizzazione di `suffixValue` sia accanto al valore primario che nella riga del valore di confronto (`vs Confronto: X%`).
+- **Formattazione Decimale Precisa (`number_format`)**: Ripristinata l'applicazione della stringa di formato configurata (es. `.1f` -> `90,0%`, `99,4%`), prevenendo il fallback errato all'euristica interi/float non formattati.
+- **Selezionabilità e Copia del Testo con Unità**: Rimosso `userSelect: 'none'` dagli `span` del prefisso e del suffisso, permettendo la selezione con mouse e la copia negli appunti dell'intero valore corredato della relativa unità di misura (es. `90%`).
+
+---
+
 ## [0.1.8] - 2026-09-28
 
 ### Fixed

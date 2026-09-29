@@ -21,13 +21,29 @@ import {
 export default function transformProps(chartProps: ChartProps): KPIComparisonProps {
   const { width, height, formData, queriesData } = chartProps;
   const fd = formData as KPIComparisonFormData;
+  const rawFd = (chartProps.rawFormData || {}) as any;
+
+  // Superset normalizes formData to camelCase in modern versions (ChartRenderer),
+  // while explore and legacy views keep snake_case.
+  // We resolve every control checking camelCase, snake_case on both formData and rawFormData.
+  const getProp = <T>(camelKey: string, snakeKey: string, defaultVal: T): T => {
+    const val =
+      (fd as any)?.[camelKey] ??
+      (fd as any)?.[snakeKey] ??
+      rawFd?.[camelKey] ??
+      rawFd?.[snakeKey];
+    return val !== undefined && val !== null ? val : defaultVal;
+  };
 
   const data = (queriesData?.[0]?.data as Array<Record<string, any>>) || [];
 
   // Determine calculation mode
-  const calculationMode = fd.calculation_mode || 'dual_metric';
-  const primaryMetricKey = getMetricLabel(fd.metric);
-  const comparisonMetricKey = getMetricLabel(fd.comparison_metric);
+  const calculationMode = getProp<CalculationMode>('calculationMode', 'calculation_mode', 'dual_metric');
+  const metricProp = getProp('metric', 'metric', fd.metric);
+  const comparisonMetricProp = getProp('comparisonMetric', 'comparison_metric', (fd as any)?.comparison_metric);
+  const primaryMetricKey = getMetricLabel(metricProp);
+  const comparisonMetricKey = getMetricLabel(comparisonMetricProp);
+  const showSparkline = Boolean(getProp('showSparkline', 'show_sparkline', false));
 
   let primaryValue: number | null = null;
   let comparisonValue: number | null = null;
@@ -44,7 +60,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     // time-shift (else) non viene toccato.
     referenceRow =
       calculationMode === 'dual_metric' &&
-      fd.show_sparkline &&
+      showSparkline &&
       data.length > 1
         ? data[data.length - 1]
         : data[0];
@@ -161,7 +177,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Semantic color coding and polarity
-  const invertPolarity = Boolean(fd.invert_polarity);
+  const invertPolarity = Boolean(getProp('invertPolarity', 'invert_polarity', false));
   let trendColor = '#64748b'; // default slate grey
   let badgeBackgroundColor = '#f1f5f9';
   let badgeTextColor = '#475569';
@@ -174,7 +190,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     (!invertPolarity && trendDirection === 'down') ||
     (invertPolarity && trendDirection === 'up');
 
-  const badgeStyle: BadgeStyle = fd.badge_style || 'pill';
+  const badgeStyle: BadgeStyle = getProp<BadgeStyle>('badgeStyle', 'badge_style', 'pill');
 
   if (isPositiveTrend) {
     trendColor = '#10b981'; // emerald green
@@ -191,8 +207,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Format strings
-  const formattedPrimary = formatMetricValue(primaryValue, fd.number_format);
-  const formattedComparison = formatMetricValue(comparisonValue, fd.number_format);
+  const numberFormat = getProp<string | undefined>('numberFormat', 'number_format', undefined);
+  const formattedPrimary = formatMetricValue(primaryValue, numberFormat);
+  const formattedComparison = formatMetricValue(comparisonValue, numberFormat);
   const formattedDeltaPercent = formatDeltaPercent(deltaPercent, 1);
   const formattedDeltaAbsolute =
     deltaAbsolute !== null
@@ -201,17 +218,16 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // Sparkline color
   let sparklineColor = '#2563eb';
-  if (fd.sparkline_color) {
-    const sc = fd.sparkline_color as any;
-    if (typeof sc === 'string') {
-      sparklineColor = sc;
-    } else if (sc.r !== undefined && sc.g !== undefined && sc.b !== undefined) {
-      sparklineColor = `rgba(${sc.r}, ${sc.g}, ${sc.b}, ${sc.a ?? 1})`;
+  const sparklineColorCfg = getProp<any>('sparklineColor', 'sparkline_color', undefined);
+  if (sparklineColorCfg) {
+    if (typeof sparklineColorCfg === 'string') {
+      sparklineColor = sparklineColorCfg;
+    } else if (sparklineColorCfg.r !== undefined && sparklineColorCfg.g !== undefined && sparklineColorCfg.b !== undefined) {
+      sparklineColor = `rgba(${sparklineColorCfg.r}, ${sparklineColorCfg.g}, ${sparklineColorCfg.b}, ${sparklineColorCfg.a ?? 1})`;
     }
   }
 
   // Dynamic context: extract active time range filter from dashboard
-  const rawFd = (chartProps.rawFormData || {}) as any;
   const activeTimeRange =
     rawFd.time_range ||
     rawFd.extra_form_data?.time_range ||
@@ -277,10 +293,11 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // 2. If data has multiple rows (series/sparkline/monthly groups), detect from rows
   if (data.length > 1) {
+    const timeColumnCfg = getProp<string | undefined>('timeColumn', 'time_column', undefined);
     const dateCol = Object.keys(data[0]).find(k => {
       const kLow = k.toLowerCase();
       return (
-        k === fd.time_column ||
+        k === timeColumnCfg ||
         kLow.includes('mese') ||
         kLow.includes('month') ||
         kLow.includes('data') ||
@@ -289,7 +306,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     });
 
     if (dateCol) {
-      const titleLower = (fd.kpi_title || '').toLowerCase();
+      const rawTitle = getProp<string>('kpiTitle', 'kpi_title', '');
+      const titleLower = rawTitle.toLowerCase();
       const isPeak = titleLower.includes('picco') || titleLower.includes('peak');
       const isMin =
         titleLower.includes('minimo') ||
@@ -359,7 +377,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Dynamic subtitle resolution
-  let dynamicSubtitle = fd.kpi_subtitle || '';
+  let dynamicSubtitle = getProp<string>('kpiSubtitle', 'kpi_subtitle', '');
   if (!dynamicSubtitle && activeTimeRange && activeTimeRange !== 'No filter') {
     dynamicSubtitle = `Periodo: ${dynamicPeriod || activeTimeRange}`;
   } else if (dynamicSubtitle) {
@@ -372,7 +390,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Dynamic comparison label resolution
-  let resolvedComparisonLabel = fd.comparison_label;
+  let resolvedComparisonLabel = getProp<string | undefined>('comparisonLabel', 'comparison_label', undefined);
   if (dynamicCompMonth) {
     if (
       !resolvedComparisonLabel ||
@@ -400,7 +418,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     resolvedComparisonLabel === 'vs Benchmark'
   ) {
     if (calculationMode === 'time_shift') {
-      const shift = fd.time_compare || '1 year ago';
+      const shift = getProp<string>('timeCompare', 'time_compare', '1 year ago');
       switch (shift) {
         case '1 year ago':
           resolvedComparisonLabel = 'vs Stesso Periodo Anno Prec.';
@@ -428,7 +446,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Dynamic title resolution
-  let resolvedTitle = fd.kpi_title || '';
+  let resolvedTitle = getProp<string>('kpiTitle', 'kpi_title', '');
 
   if (resolvedTitle) {
     // 1. Template replacement if placeholders present
@@ -500,21 +518,27 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // Aesthetic Customization
   let cardBgColor = 'transparent';
-  if (fd.card_bg_color) {
-    const bg = fd.card_bg_color as any;
-    if (typeof bg === 'string') {
-      cardBgColor = bg;
-    } else if (bg.r !== undefined && bg.g !== undefined && bg.b !== undefined) {
-      if (bg.a === 0) {
+  const cardBgColorCfg = getProp<any>('cardBgColor', 'card_bg_color', undefined);
+  if (cardBgColorCfg) {
+    if (typeof cardBgColorCfg === 'string') {
+      cardBgColor = cardBgColorCfg;
+    } else if (cardBgColorCfg.r !== undefined && cardBgColorCfg.g !== undefined && cardBgColorCfg.b !== undefined) {
+      if (cardBgColorCfg.a === 0) {
         cardBgColor = 'transparent';
       } else {
-        cardBgColor = `rgba(${bg.r}, ${bg.g}, ${bg.b}, ${bg.a ?? 1})`;
+        cardBgColor = `rgba(${cardBgColorCfg.r}, ${cardBgColorCfg.g}, ${cardBgColorCfg.b}, ${cardBgColorCfg.a ?? 1})`;
       }
     }
   }
 
-  const cardBorderRadius: CardBorderRadius = fd.card_border_radius || 'square';
-  const cardBoxShadow: CardBoxShadow = fd.card_box_shadow || 'none';
+  const cardBorderRadius: CardBorderRadius = getProp<CardBorderRadius>('cardBorderRadius', 'card_border_radius', 'square');
+  const cardBoxShadow: CardBoxShadow = getProp<CardBoxShadow>('cardBoxShadow', 'card_box_shadow', 'none');
+  const prefixValue = getProp<string>('prefixValue', 'prefix_value', '');
+  const suffixValue = getProp<string>('suffixValue', 'suffix_value', '');
+  const cardAlignment = getProp<CardAlignment>('cardAlignment', 'card_alignment', 'left');
+  const showComparisonValue = getProp<boolean>('showComparisonValue', 'show_comparison_value', true);
+  const showAbsoluteDelta = getProp<boolean>('showAbsoluteDelta', 'show_absolute_delta', true);
+  const sparklineFill = getProp<boolean>('sparklineFill', 'sparkline_fill', true);
 
   return {
     width,
@@ -534,18 +558,18 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     kpiTitle: resolvedTitle,
     kpiSubtitle: dynamicSubtitle,
     comparisonLabel: resolvedComparisonLabel,
-    prefixValue: fd.prefix_value || '',
-    suffixValue: fd.suffix_value || '',
+    prefixValue,
+    suffixValue,
     cardBgColor,
     cardBorderRadius,
     cardBoxShadow,
     badgeStyle,
-    cardAlignment: (fd.card_alignment as CardAlignment) || 'left',
-    showComparisonValue: fd.show_comparison_value !== false,
-    showAbsoluteDelta: fd.show_absolute_delta !== false,
-    showSparkline: Boolean(fd.show_sparkline),
+    cardAlignment,
+    showComparisonValue: showComparisonValue !== false,
+    showAbsoluteDelta: showAbsoluteDelta !== false,
+    showSparkline,
     sparklineData,
     sparklineColor,
-    sparklineFill: fd.sparkline_fill !== false,
+    sparklineFill: sparklineFill !== false,
   };
 }
