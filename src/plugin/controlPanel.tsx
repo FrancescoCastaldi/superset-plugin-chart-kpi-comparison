@@ -129,9 +129,22 @@ const config: ControlPanelConfig = {
               label: t('Sottotitolo / Dettaglio'),
               default: '',
               description: t(
-                'Didascalia opzionale sotto il titolo. Supporta segnaposto dinamici {month} e {period}.',
+                'Didascalia opzionale sotto il titolo. Supporta segnaposto dinamici {month}, {period} e {dynamic}.',
               ),
               renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'dynamic_subtitle_column',
+            config: {
+              ...sharedControls.groupby,
+              label: t('Colonna Sottotitolo Dinamico'),
+              description: t(
+                'Scegli una colonna del dataset per estrarre il valore del sottotitolo (es. "Settembre 2026"). Usa {dynamic} in Titolo/Sottotitolo per posizionarlo.',
+              ),
+              multi: false,
             },
           },
         ],

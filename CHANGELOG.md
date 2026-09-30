@@ -7,6 +7,11 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-09-30
+
+### Added
+- **Sottotitolo e Titolo Dinamici (Data-Driven KPI)**: Introdotta la nuova configurazione `dynamic_subtitle_column` ("Colonna Sottotitolo Dinamico") nel pannello "Aspetto & Visualizzazione Card". Permette di estrarre e renderizzare come sottotitolo (o all'interno di `kpi_title` e `kpi_subtitle` tramite il segnaposto `{dynamic}`) il valore effettivo testuale o numerico ritornato dalla query SQL al variare dei filtri, superando i limiti delle descrizioni hardcoded (es. "Mese di picco: Settembre 2026").
+
 ## [0.1.9] - 2026-09-29
 
 ### Fixed

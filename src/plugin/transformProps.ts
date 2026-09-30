@@ -1,6 +1,7 @@
 import { ChartProps } from '@superset-ui/core';
 import {
   BadgeStyle,
+  CalculationMode,
   CardAlignment,
   CardBorderRadius,
   CardBoxShadow,
@@ -233,6 +234,13 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     rawFd.extra_form_data?.time_range ||
     rawFd.extraFormData?.time_range;
 
+  // --- Explicit Dynamic Subtitle Config ---
+  let explicitDynamicVal: string | null = null;
+  const dynamicSubtitleCol = getProp<string | undefined>('dynamicSubtitleColumn', 'dynamic_subtitle_column', undefined);
+  if (dynamicSubtitleCol && referenceRow && referenceRow[dynamicSubtitleCol] !== undefined) {
+    explicitDynamicVal = String(referenceRow[dynamicSubtitleCol]);
+  }
+
   // --- Dynamic Month & Period Discovery ---
   let dynamicMonth: string | null = null;
   let dynamicCompMonth: string | null = null;
@@ -378,6 +386,15 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // Dynamic subtitle resolution
   let dynamicSubtitle = getProp<string>('kpiSubtitle', 'kpi_subtitle', '');
+  
+  if (explicitDynamicVal) {
+    if (dynamicSubtitle && dynamicSubtitle.includes('{dynamic}')) {
+      dynamicSubtitle = dynamicSubtitle.replace(/{dynamic}/gi, explicitDynamicVal);
+    } else if (!dynamicSubtitle) {
+      dynamicSubtitle = explicitDynamicVal;
+    }
+  }
+
   if (!dynamicSubtitle && activeTimeRange && activeTimeRange !== 'No filter') {
     dynamicSubtitle = `Periodo: ${dynamicPeriod || activeTimeRange}`;
   } else if (dynamicSubtitle) {
@@ -386,6 +403,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
     if (dynamicMonth) {
       dynamicSubtitle = dynamicSubtitle.replace(/{month}|{mese}/gi, dynamicMonth);
+    }
+    if (explicitDynamicVal && dynamicSubtitle.includes('{dynamic}')) {
+      dynamicSubtitle = dynamicSubtitle.replace(/{dynamic}/gi, explicitDynamicVal);
     }
   }
 
@@ -450,6 +470,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   if (resolvedTitle) {
     // 1. Template replacement if placeholders present
+    if (explicitDynamicVal && resolvedTitle.includes('{dynamic}')) {
+      resolvedTitle = resolvedTitle.replace(/{dynamic}/gi, explicitDynamicVal);
+    }
     if (
       dynamicMonth &&
       (resolvedTitle.includes('{month}') || resolvedTitle.includes('{mese}'))

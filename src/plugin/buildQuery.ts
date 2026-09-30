@@ -11,6 +11,7 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     metrics: fdMetrics,
     time_compare,
     time_column,
+    dynamic_subtitle_column,
     show_sparkline,
     columns: fdColumns,
     groupby: fdGroupby,
@@ -44,11 +45,17 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     }
 
     const isSparklineActive = Boolean(show_sparkline && time_column);
-    const extraCols = Array.isArray(fdColumns)
+    const baseExtraCols = Array.isArray(fdColumns)
       ? fdColumns
       : Array.isArray(fdGroupby)
       ? fdGroupby
       : [];
+    
+    const extraCols = [...baseExtraCols];
+    if (dynamic_subtitle_column && !extraCols.includes(dynamic_subtitle_column)) {
+      extraCols.push(dynamic_subtitle_column);
+    }
+
     const columns = isSparklineActive
       ? [time_column, ...extraCols.filter((c: string) => c !== time_column)]
       : extraCols;

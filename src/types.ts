@@ -18,6 +18,7 @@ export interface KPIComparisonFormData extends QueryFormData {
   // Header & Display
   kpi_title?: string;
   kpi_subtitle?: string;
+  dynamic_subtitle_column?: string;
   prefix_value?: string;
   suffix_value?: string;
   number_format?: string;
