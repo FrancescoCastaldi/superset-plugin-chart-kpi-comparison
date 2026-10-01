@@ -7,6 +7,15 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-10-02
+
+### Changed
+- **Data Panel UI Optimization**: Cleaned up the chart configuration panel to reduce cognitive load on initial setup. Renamed `Metrica Principale` to explicitly say `(Obbligatoria)` and `Metrica di Confronto` to `(Opzionale)`.
+- **Collapsed Advanced Panels**: The highly detailed configuration panels (`Aspetto & Visualizzazione Card`, `Personalizzazione Estetica Card`, `Delta % & Polarità Semantica`) are now collapsed by default (`expanded: false`). This provides a much cleaner, streamlined UI for users configuring the basics, while keeping advanced visual options available on click.
+
+### Fixed
+- Fixed TypeScript compile error related to `useId` by replacing it with a generated UUID via `useMemo` for broader React legacy compatibility.
+
 ## [0.1.12] - 2026-10-01
 
 ### Fixed

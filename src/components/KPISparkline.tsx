@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React, { useMemo } from 'react';
 
 interface KPISparklineProps {
   data: number[];
@@ -15,7 +15,7 @@ export const KPISparkline: React.FC<KPISparklineProps> = ({
   height = 40,
   width = '100%',
 }) => {
-  const gradientId = useId();
+  const gradientId = useMemo(() => `sparkline-gradient-${Math.random().toString(36).substr(2, 9)}`, []);
 
   if (!data || data.length < 2) {
     return null;

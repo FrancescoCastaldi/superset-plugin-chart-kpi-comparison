@@ -35,7 +35,7 @@ const config: ControlPanelConfig = {
             name: 'metric',
             config: {
               ...sharedControls.metric,
-              label: t('Metrica Principale (Periodo di Riferimento)'),
+              label: t('Metrica Principale (Obbligatoria)'),
               description: t('La metrica primaria visualizzata a caratteri grandi nella card.'),
             },
           },
@@ -45,7 +45,7 @@ const config: ControlPanelConfig = {
             name: 'comparison_metric',
             config: {
               ...sharedControls.metric,
-              label: t('Metrica di Confronto (Periodo Precedente o Target)'),
+              label: t('Metrica di Confronto (Opzionale)'),
               description: t(
                 'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget).',
               ),
@@ -105,7 +105,7 @@ const config: ControlPanelConfig = {
     },
     {
       label: t('Aspetto & Visualizzazione Card'),
-      expanded: true,
+      expanded: false,
       controlSetRows: [
         [
           {
@@ -201,7 +201,7 @@ const config: ControlPanelConfig = {
     },
     {
       label: t('Personalizzazione Estetica Card'),
-      expanded: true,
+      expanded: false,
       controlSetRows: [
         [
           {
@@ -259,7 +259,7 @@ const config: ControlPanelConfig = {
     },
     {
       label: t('Delta % & Polarità Semantica'),
-      expanded: true,
+      expanded: false,
       controlSetRows: [
         [
           {

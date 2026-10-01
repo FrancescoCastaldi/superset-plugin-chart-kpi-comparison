@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useId } from 'react';
+import { useMemo } from 'react';
 export const KPISparkline = ({ data, color = '#2563eb', fill = true, height = 40, width = '100%', }) => {
-    const gradientId = useId();
+    const gradientId = useMemo(() => `sparkline-gradient-${Math.random().toString(36).substr(2, 9)}`, []);
     if (!data || data.length < 2) {
         return null;
     }
