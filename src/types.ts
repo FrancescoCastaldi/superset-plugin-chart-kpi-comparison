@@ -3,7 +3,7 @@ import { QueryFormData } from '@superset-ui/core';
 export type CalculationMode = 'dual_metric' | 'time_shift';
 export type BadgeStyle = 'pill' | 'subtle' | 'full';
 export type CardAlignment = 'left' | 'center' | 'right';
-export type TrendDirection = 'up' | 'down' | 'flat';
+export type TrendDirection = 'up' | 'down' | 'flat' | 'none';
 export type CardBorderRadius = 'square' | 'subtle' | 'rounded' | 'pill';
 export type CardBoxShadow = 'none' | 'subtle' | 'elevated' | 'bordered';
 
@@ -44,6 +44,11 @@ export interface KPIComparisonFormData extends QueryFormData {
   target_metric?: any;
   target_static_value?: string;
   show_progress_bar?: boolean;
+
+  // Percent of Total
+  badge_content?: 'delta' | 'percent_of_total';
+  total_metric?: any;
+  total_badge_color?: any;
 }
 
 export interface KPIComparisonProps {

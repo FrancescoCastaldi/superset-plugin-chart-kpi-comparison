@@ -217,10 +217,34 @@ export default function transformProps(chartProps) {
     const numberFormat = getProp('numberFormat', 'number_format', undefined);
     const formattedPrimary = formatMetricValue(primaryValue, numberFormat);
     const formattedComparison = formatMetricValue(comparisonValue, numberFormat);
-    const formattedDeltaPercent = formatDeltaPercent(deltaPercent, 1);
-    const formattedDeltaAbsolute = deltaAbsolute !== null
+    let formattedDeltaPercent = formatDeltaPercent(deltaPercent, 1);
+    let formattedDeltaAbsolute = deltaAbsolute !== null
         ? `${deltaAbsolute > 0 ? '+' : ''}${formatItalianNumber(deltaAbsolute, 0)}`
         : '—';
+    // Percent of Total override
+    const badgeContent = getProp('badge_content', 'badge_content', 'delta');
+    if (badgeContent === 'percent_of_total' && primaryValue !== null) {
+        const totalMetric = getProp('total_metric', 'total_metric', null);
+        if (totalMetric) {
+            const totalMetricKey = getMetricLabel(totalMetric);
+            if (totalMetricKey && data && data.length > 0 && typeof data[0][totalMetricKey] === 'number') {
+                const totalValue = parseNumericValue(data[0][totalMetricKey]);
+                if (totalValue !== null && totalValue !== 0) {
+                    const pct = (primaryValue / totalValue) * 100;
+                    formattedDeltaPercent = `${formatItalianNumber(pct, 1)}%`;
+                    formattedDeltaAbsolute = '—'; // Hide absolute delta
+                    trendDirection = 'none'; // Hide trend arrow
+                    // Badge color from user settings
+                    const totalBadgeColor = getProp('total_badge_color', 'total_badge_color', { r: 99, g: 102, b: 241, a: 1 });
+                    if (totalBadgeColor && totalBadgeColor.r !== undefined) {
+                        badgeBackgroundColor = `rgba(${totalBadgeColor.r}, ${totalBadgeColor.g}, ${totalBadgeColor.b}, ${totalBadgeColor.a ?? 1})`;
+                        const brightness = (totalBadgeColor.r * 299 + totalBadgeColor.g * 587 + totalBadgeColor.b * 114) / 1000;
+                        badgeTextColor = brightness > 125 ? '#0f172a' : '#ffffff';
+                    }
+                }
+            }
+        }
+    }
     // Sparkline color
     let sparklineColor = '#2563eb';
     const sparklineColorCfg = getProp('sparklineColor', 'sparkline_color', undefined);

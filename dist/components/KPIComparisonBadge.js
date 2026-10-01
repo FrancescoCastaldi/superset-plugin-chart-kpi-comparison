@@ -6,6 +6,8 @@ export const KPIComparisonBadge = ({ deltaPercentStr, deltaAbsoluteStr, trendDir
                 return '▲';
             case 'down':
                 return '▼';
+            case 'none':
+                return null;
             default:
                 return '■';
         }
@@ -51,7 +53,8 @@ export const KPIComparisonBadge = ({ deltaPercentStr, deltaAbsoluteStr, trendDir
     const tooltipText = hasAbsoluteDelta
         ? `Variazione: ${deltaPercentStr} (${deltaAbsoluteStr})`
         : `Variazione: ${deltaPercentStr}`;
-    return (_jsxs("span", { style: containerStyle, title: tooltipText, children: [_jsx("span", { style: arrowStyle, children: getArrowIcon() }), _jsx("span", { children: deltaPercentStr }), shouldRenderAbsoluteDelta && (_jsxs("span", { style: {
+    const arrowIcon = getArrowIcon();
+    return (_jsxs("span", { style: containerStyle, title: tooltipText, children: [arrowIcon && _jsx("span", { style: arrowStyle, children: arrowIcon }), _jsx("span", { children: deltaPercentStr }), shouldRenderAbsoluteDelta && (_jsxs("span", { style: {
                     fontSize: isCompact ? '0.68rem' : '0.75rem',
                     fontWeight: 500,
                     opacity: 0.85,

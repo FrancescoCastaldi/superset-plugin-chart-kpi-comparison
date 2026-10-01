@@ -134,6 +134,47 @@ const config: ControlPanelConfig = {
             },
           },
         ],
+        [
+          {
+            name: 'badge_content',
+            config: {
+              type: 'SelectControl',
+              label: t('Contenuto del Badge (In alto a destra)'),
+              default: 'delta',
+              choices: [
+                ['delta', t('Delta vs Periodo Precedente')],
+                ['percent_of_total', t('% sul Totale')],
+              ],
+              description: t('Cosa mostrare nel badge colorato in alto a destra.'),
+              renderTrigger: true,
+              clearable: false,
+            },
+          },
+        ],
+        [
+          {
+            name: 'total_metric',
+            config: {
+              ...sharedControls.metric,
+              label: t('Metrica per il Totale'),
+              description: t('Metrica da usare come denominatore per calcolare la percentuale (es. SUM(valore) OVER() o metrica custom).'),
+              visibility: ({ controls }) => controls?.badge_content?.value === 'percent_of_total',
+            },
+          },
+        ],
+        [
+          {
+            name: 'total_badge_color',
+            config: {
+              type: 'ColorPickerControl',
+              label: t('Colore Sfondo Badge Totale'),
+              default: { r: 99, g: 102, b: 241, a: 1 }, // Indigo 500
+              description: t('Colore da usare per il badge della percentuale sul totale.'),
+              renderTrigger: true,
+              visibility: ({ controls }) => controls?.badge_content?.value === 'percent_of_total',
+            },
+          },
+        ],
         ['adhoc_filters'],
       ],
     },

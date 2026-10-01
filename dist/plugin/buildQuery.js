@@ -41,6 +41,9 @@ export default function buildQuery(formData) {
         if (target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
             metrics.push(target_metric);
         }
+        if (fd.badge_content === 'percent_of_total' && fd.total_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(fd.total_metric))) {
+            metrics.push(fd.total_metric);
+        }
         // Normalize time_column if passed as an array or empty string
         const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;
         const validTimeCol = typeof rawTimeCol === 'string' && rawTimeCol.trim().length > 0 ? rawTimeCol.trim() : null;

@@ -7,6 +7,11 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-10-02
+
+### Added
+- **Percent of Total Badge**: Added the ability to swap the Delta Badge in the top right with a "Percent of Total" badge. Users can now select a `Total Metric` denominator and a custom background color for the badge. When active, it displays the incidence percentage without trend arrows.
+
 ## [0.1.14] - 2026-10-02
 
 ### Added

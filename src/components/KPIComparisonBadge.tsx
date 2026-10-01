@@ -32,6 +32,8 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
         return '▲';
       case 'down':
         return '▼';
+      case 'none':
+        return null;
       default:
         return '■';
     }
@@ -85,9 +87,11 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
     ? `Variazione: ${deltaPercentStr} (${deltaAbsoluteStr})`
     : `Variazione: ${deltaPercentStr}`;
 
+  const arrowIcon = getArrowIcon();
+
   return (
     <span style={containerStyle} title={tooltipText}>
-      <span style={arrowStyle}>{getArrowIcon()}</span>
+      {arrowIcon && <span style={arrowStyle}>{arrowIcon}</span>}
       <span>{deltaPercentStr}</span>
       {shouldRenderAbsoluteDelta && (
         <span
