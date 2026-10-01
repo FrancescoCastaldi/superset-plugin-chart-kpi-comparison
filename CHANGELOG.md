@@ -7,6 +7,12 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-09-30
+
+### Added
+- **Mese e Anno Dinamici per KPI Picco e Minimo**: Introdotto il calcolo automatico su serie multi-riga del valore di picco (massimo) e valore più basso (minimo) con determinazione automatica del mese/anno di riferimento (`dynamicMonth`).
+- **Render Condizionale Bottom Section**: Quando un KPI è utilizzato in modalità a metrica singola o per picco/minimo senza confronto (`hasComparison = false`), il badge delta (`■ --%`) e la dicitura `vs Confronto:` vengono automaticamente soppressi, visualizzando sotto il numero grande un'etichetta pulita ed elegante contenente il mese e l'anno di riferimento (es. "Settembre 2026").
+
 ## [0.1.10] - 2026-09-30
 
 ### Added

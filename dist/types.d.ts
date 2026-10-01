@@ -1,0 +1,66 @@
+import { QueryFormData } from '@superset-ui/core';
+export type CalculationMode = 'dual_metric' | 'time_shift';
+export type BadgeStyle = 'pill' | 'subtle' | 'full';
+export type CardAlignment = 'left' | 'center' | 'right';
+export type TrendDirection = 'up' | 'down' | 'flat';
+export type CardBorderRadius = 'square' | 'subtle' | 'rounded' | 'pill';
+export type CardBoxShadow = 'none' | 'subtle' | 'elevated' | 'bordered';
+export interface KPIComparisonFormData extends QueryFormData {
+    calculation_mode?: CalculationMode;
+    metric?: any;
+    comparison_metric?: any;
+    time_compare?: string;
+    comparison_label?: string;
+    time_column?: string;
+    kpi_title?: string;
+    kpi_subtitle?: string;
+    dynamic_subtitle_column?: string;
+    prefix_value?: string;
+    suffix_value?: string;
+    number_format?: string;
+    card_bg_color?: any;
+    card_border_radius?: CardBorderRadius;
+    card_box_shadow?: CardBoxShadow;
+    invert_polarity?: boolean;
+    badge_style?: BadgeStyle;
+    card_alignment?: CardAlignment;
+    show_comparison_value?: boolean;
+    show_absolute_delta?: boolean;
+    show_sparkline?: boolean;
+    sparkline_color?: string;
+    sparkline_fill?: boolean;
+}
+export interface KPIComparisonProps {
+    width: number;
+    height: number;
+    primaryValue: number | null;
+    comparisonValue: number | null;
+    deltaAbsolute: number | null;
+    deltaPercent: number | null;
+    formattedPrimary: string;
+    formattedComparison: string;
+    formattedDeltaAbsolute: string;
+    formattedDeltaPercent: string;
+    trendDirection: TrendDirection;
+    trendColor: string;
+    badgeBackgroundColor: string;
+    badgeTextColor: string;
+    kpiTitle: string;
+    kpiSubtitle: string;
+    comparisonLabel: string;
+    prefixValue: string;
+    suffixValue: string;
+    cardBgColor: string;
+    cardBorderRadius: CardBorderRadius;
+    cardBoxShadow: CardBoxShadow;
+    hasComparison?: boolean;
+    badgeStyle: BadgeStyle;
+    cardAlignment: CardAlignment;
+    showComparisonValue: boolean;
+    showAbsoluteDelta: boolean;
+    showSparkline: boolean;
+    sparklineData: number[];
+    sparklineColor: string;
+    sparklineFill: boolean;
+}
+//# sourceMappingURL=types.d.ts.map

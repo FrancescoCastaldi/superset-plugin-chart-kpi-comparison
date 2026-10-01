@@ -76,6 +76,7 @@ export interface KPIComparisonProps {
   cardBoxShadow: CardBoxShadow;
 
   // Config Flags
+  hasComparison?: boolean;
   badgeStyle: BadgeStyle;
   cardAlignment: CardAlignment;
   showComparisonValue: boolean;

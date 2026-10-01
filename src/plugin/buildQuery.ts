@@ -22,7 +22,17 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
 
     // In dual metric mode, request primary, comparison and any configured extra metrics
     let metrics: any[] = [];
-    if (Array.isArray(fdMetrics) && fdMetrics.length > 0) {
+    const titleLow = String(fd.kpi_title || fd.slice_name || '').toLowerCase();
+    const isPeakOrMin =
+      titleLow.includes('picco') ||
+      titleLow.includes('peak') ||
+      titleLow.includes('minimo') ||
+      titleLow.includes('basso') ||
+      titleLow.includes('lowest');
+
+    if (isPeakOrMin) {
+      metrics = metric ? [metric] : (Array.isArray(fdMetrics) && fdMetrics.length > 0 ? [fdMetrics[0]] : []);
+    } else if (Array.isArray(fdMetrics) && fdMetrics.length > 0) {
       metrics = [...fdMetrics];
       if (metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(metric))) {
         metrics.unshift(metric);
@@ -60,11 +70,13 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       ? [time_column, ...extraCols.filter((c: string) => c !== time_column)]
       : extraCols;
 
+    const isMultiRow = isSparklineActive || isPeakOrMin;
+
     const query: any = {
       ...baseQueryObject,
       columns,
       metrics,
-      row_limit: isSparklineActive ? 50 : (baseQueryObject.row_limit || 1),
+      row_limit: isMultiRow ? 50 : (baseQueryObject.row_limit || 1),
     };
 
     if (isSparklineActive) {

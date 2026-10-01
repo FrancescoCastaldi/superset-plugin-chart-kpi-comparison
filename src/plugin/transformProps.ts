@@ -52,19 +52,49 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   const sparklineData: number[] = [];
   let referenceRow: Record<string, any> | undefined;
 
+  const rawTitle = getProp<string>('kpiTitle', 'kpi_title', '') || getProp<string>('sliceName', 'slice_name', '');
+  const titleLower = rawTitle.toLowerCase();
+  const isPeak = titleLower.includes('picco') || titleLower.includes('peak');
+  const isMin =
+    titleLower.includes('minimo') ||
+    titleLower.includes('basso') ||
+    titleLower.includes('lowest');
+
   if (data.length > 0) {
-    // v0.1.4: con sparkline attiva in modalita' dual_metric la query viene
-    // ordinata in ordine crescente sulla colonna temporale (row_limit 50):
-    // il valore primario e il confronto sono letti dall'ULTIMA riga (periodo
-    // piu' recente), mentre la sparkline usa l'intera serie. Senza sparkline
-    // (row_limit 1) il comportamento resta identico (prima riga). Il ramo
-    // time-shift (else) non viene toccato.
-    referenceRow =
-      calculationMode === 'dual_metric' &&
-      showSparkline &&
-      data.length > 1
-        ? data[data.length - 1]
-        : data[0];
+    if (isPeak) {
+      // Find row with MAXIMUM primary metric
+      let maxVal = -Infinity;
+      let peakRow = data[0];
+      data.forEach(r => {
+        const v = parseNumericValue(primaryMetricKey ? r[primaryMetricKey] : null) ??
+                  parseNumericValue(Object.values(r).find(val => typeof val === 'number'));
+        if (v !== null && v > maxVal) {
+          maxVal = v;
+          peakRow = r;
+        }
+      });
+      referenceRow = peakRow;
+    } else if (isMin) {
+      // Find row with MINIMUM primary metric
+      let minVal = Infinity;
+      let minRow = data[0];
+      data.forEach(r => {
+        const v = parseNumericValue(primaryMetricKey ? r[primaryMetricKey] : null) ??
+                  parseNumericValue(Object.values(r).find(val => typeof val === 'number'));
+        if (v !== null && v < minVal) {
+          minVal = v;
+          minRow = r;
+        }
+      });
+      referenceRow = minRow;
+    } else {
+      referenceRow =
+        calculationMode === 'dual_metric' &&
+        showSparkline &&
+        data.length > 1
+          ? data[data.length - 1]
+          : data[0];
+    }
     const firstRow = data[0];
 
     // 1. Primary Value extraction
@@ -523,21 +553,32 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         resolvedTitle = `Richieste · ${dynamicMonth}`;
       }
     }
-    if (
-      dynamicPeriod &&
-      (tLow === 'media mensile' ||
-        tLow.startsWith('media mensile ·') ||
-        tLow.startsWith('media mensile ('))
-    ) {
-      resolvedTitle = `Media mensile · ${dynamicPeriod}`;
+    if (isPeak || isMin) {
+      resolvedTitle = '';
+      if (dynamicMonth) {
+        dynamicSubtitle = dynamicMonth;
+      }
     }
   } else {
-    // Quando nessun titolo è specificato esplicitamente, NON generare titoli interni
-    // né ripiegare sul nome della metrica o stringhe generate ("RICHIESTE_CORR", "Richieste ecc").
-    // La card del cruscotto Superset mostra già l'intestazione pulita nel container esterno.
     resolvedTitle = '';
   }
 
+  // If Peak or Min, comparison is strictly disabled
+  if (isPeak || isMin) {
+    comparisonValue = null;
+    deltaAbsolute = null;
+    deltaPercent = null;
+    if (dynamicMonth) {
+      dynamicSubtitle = dynamicMonth;
+    }
+  }
+
+  const hasComparison =
+    !isPeak &&
+    !isMin &&
+    primaryValue !== null &&
+    comparisonValue !== null &&
+    deltaPercent !== null;
 
   // Aesthetic Customization
   let cardBgColor = 'transparent';
@@ -568,6 +609,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     height,
     primaryValue,
     comparisonValue,
+    hasComparison,
     deltaAbsolute,
     deltaPercent,
     formattedPrimary,

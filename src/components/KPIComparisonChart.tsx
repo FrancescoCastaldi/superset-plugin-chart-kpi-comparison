@@ -19,6 +19,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   comparisonLabel,
   prefixValue,
   suffixValue,
+  hasComparison = true,
   cardAlignment = 'left',
   showComparisonValue = true,
   showAbsoluteDelta = true,
@@ -281,7 +282,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         )}
       </div>
 
-      {/* Bottom Section: Comparison Badge, Comparison Value & Period Label */}
+      {/* Bottom Section: Comparison Badge if hasComparison, or dynamic Month/Subtitle */}
       <div
         style={{
           display: 'flex',
@@ -305,71 +306,96 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           overflow: 'hidden',
         }}
       >
-        <KPIComparisonBadge
-          deltaPercentStr={formattedDeltaPercent}
-          deltaAbsoluteStr={formattedDeltaAbsolute}
-          trendDirection={trendDirection}
-          badgeStyle={badgeStyle}
-          badgeBackgroundColor={badgeBackgroundColor}
-          badgeTextColor={badgeTextColor}
-          showAbsoluteDelta={showAbsoluteDelta}
-          isCompact={isVerticalCompact}
-          isUltraCompact={isVerticalUltraCompact}
-          hideAbsoluteDelta={hideBadgeAbsolute}
-        />
+        {hasComparison ? (
+          <>
+            <KPIComparisonBadge
+              deltaPercentStr={formattedDeltaPercent}
+              deltaAbsoluteStr={formattedDeltaAbsolute}
+              trendDirection={trendDirection}
+              badgeStyle={badgeStyle}
+              badgeBackgroundColor={badgeBackgroundColor}
+              badgeTextColor={badgeTextColor}
+              showAbsoluteDelta={showAbsoluteDelta}
+              isCompact={isVerticalCompact}
+              isUltraCompact={isVerticalUltraCompact}
+              hideAbsoluteDelta={hideBadgeAbsolute}
+            />
 
-        {(showComparisonValue || comparisonLabel) && (
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '3px',
-              color: '#64748b',
-              fontSize: isVerticalUltraCompact
-                ? '0.70rem'
-                : isVerticalCompact
-                ? '0.74rem'
-                : '0.80rem',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              flexShrink: 1,
-              minWidth: 0,
-            }}
-            title={
-              comparisonLabel && showComparisonValue
-                ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
-                : comparisonLabel ||
-                  `${prefixValue}${formattedComparison}${suffixValue}`
-            }
-          >
-            {comparisonLabel && (
-              <span
+            {(showComparisonValue || comparisonLabel) && (
+              <div
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  color: '#64748b',
+                  fontSize: isVerticalUltraCompact
+                    ? '0.70rem'
+                    : isVerticalCompact
+                    ? '0.74rem'
+                    : '0.80rem',
+                  fontWeight: 500,
+                  whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  flexShrink: 1,
+                  minWidth: 0,
                 }}
+                title={
+                  comparisonLabel && showComparisonValue
+                    ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
+                    : comparisonLabel ||
+                      `${prefixValue}${formattedComparison}${suffixValue}`
+                }
               >
-                {comparisonLabel}:
-              </span>
+                {comparisonLabel && (
+                  <span
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {comparisonLabel}:
+                  </span>
+                )}
+                {showComparisonValue && (
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      color: '#334155',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {prefixValue}
+                    {formattedComparison}
+                    {suffixValue}
+                  </span>
+                )}
+              </div>
             )}
-            {showComparisonValue && (
-              <span
-                style={{
-                  fontWeight: 600,
-                  color: '#334155',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >
-                {prefixValue}
-                {formattedComparison}
-                {suffixValue}
-              </span>
-            )}
-          </div>
+          </>
+        ) : (
+          /* NO COMPARISON: Render dynamic month and year as bottom subtitle */
+          kpiSubtitle && (
+            <div
+              style={{
+                color: '#64748b',
+                fontSize: isVerticalUltraCompact
+                  ? '0.74rem'
+                  : isVerticalCompact
+                  ? '0.78rem'
+                  : '0.84rem',
+                fontWeight: 500,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+              title={kpiSubtitle}
+            >
+              {kpiSubtitle}
+            </div>
+          )
         )}
       </div>
 

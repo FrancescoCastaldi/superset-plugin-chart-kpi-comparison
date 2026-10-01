@@ -23,13 +23,13 @@
     "paths": {
       "*": [
         "*",
-        "D:/Sviluppo/superset-plugins/superset-plugin-chart-stratum-heatmap/node_modules/*"
+        "../superset-plugin-chart-stratum-heatmap/node_modules/*"
       ]
     },
     "typeRoots": [
-      "D:/Sviluppo/superset-plugins/superset-plugin-chart-stratum-heatmap/node_modules/@types"
+      "../superset-plugin-chart-stratum-heatmap/node_modules/@types"
     ]
   },
   "include": ["src/**/*"],
-  "exclude": ["dist"]
+  "exclude": ["node_modules", "dist"]
 }
