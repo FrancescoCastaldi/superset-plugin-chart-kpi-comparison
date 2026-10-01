@@ -38,28 +38,80 @@ export default function buildQuery(formData) {
         else {
             metrics = metric ? [metric] : [];
         }
-        const isSparklineActive = Boolean(show_sparkline && time_column);
+        // Normalize time_column if passed as an array or empty string
+        const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;
+        const validTimeCol = typeof rawTimeCol === 'string' && rawTimeCol.trim().length > 0 ? rawTimeCol.trim() : null;
+        const isSparklineActive = Boolean(show_sparkline && validTimeCol);
         const baseExtraCols = Array.isArray(fdColumns)
             ? fdColumns
             : Array.isArray(fdGroupby)
                 ? fdGroupby
                 : [];
         const extraCols = [...baseExtraCols];
-        if (dynamic_subtitle_column && !extraCols.includes(dynamic_subtitle_column)) {
+        if (dynamic_subtitle_column && typeof dynamic_subtitle_column === 'string' && !extraCols.includes(dynamic_subtitle_column)) {
             extraCols.push(dynamic_subtitle_column);
         }
-        const columns = isSparklineActive
-            ? [time_column, ...extraCols.filter((c) => c !== time_column)]
+        const rawColumns = isSparklineActive && validTimeCol
+            ? [validTimeCol, ...extraCols.filter((c) => c !== validTimeCol)]
             : extraCols;
+        // Strict sanitization of columns to prevent Superset's get_column_name from throwing 'Missing label'
+        const sanitizeColumn = (col) => {
+            if (typeof col === 'string') {
+                const trimmed = col.trim();
+                return trimmed.length > 0 ? trimmed : null;
+            }
+            if (col && typeof col === 'object' && !Array.isArray(col)) {
+                if (typeof col.label === 'string' && col.label.trim())
+                    return col;
+                if (typeof col.sqlExpression === 'string' && col.sqlExpression.trim())
+                    return col;
+                if (typeof col.column_name === 'string' && col.column_name.trim())
+                    return col.column_name.trim();
+            }
+            return null;
+        };
+        const finalColumns = (rawColumns || [])
+            .map(sanitizeColumn)
+            .filter((c) => c !== null);
         const isMultiRow = isSparklineActive || isPeakOrMin;
+        // Ensure metrics are non-empty and sanitized
+        const sanitizeMetric = (m) => {
+            if (typeof m === 'string') {
+                const trimmed = m.trim();
+                return trimmed.length > 0 ? trimmed : null;
+            }
+            if (m && typeof m === 'object' && !Array.isArray(m)) {
+                if (typeof m.label === 'string' && m.label.trim())
+                    return m;
+                if (typeof m.metric_name === 'string' && m.metric_name.trim())
+                    return m.metric_name.trim();
+                if (typeof m.sqlExpression === 'string' && m.sqlExpression.trim())
+                    return m;
+            }
+            return null;
+        };
+        let cleanMetrics = (metrics || [])
+            .map(sanitizeMetric)
+            .filter((m) => m !== null);
+        if (cleanMetrics.length === 0) {
+            if (metric)
+                cleanMetrics = [metric];
+            else
+                cleanMetrics = ['richieste_corr'];
+        }
+        // Clean baseQueryObject.columns to avoid polluted default groupby controls
+        const cleanBaseColumns = (Array.isArray(baseQueryObject.columns) ? baseQueryObject.columns : [])
+            .map(sanitizeColumn)
+            .filter((c) => c !== null);
+        const mergedColumns = Array.from(new Set([...cleanBaseColumns, ...finalColumns]));
         const query = {
             ...baseQueryObject,
-            columns,
-            metrics,
+            columns: mergedColumns,
+            metrics: cleanMetrics,
             row_limit: isMultiRow ? 50 : (baseQueryObject.row_limit || 1),
         };
-        if (isSparklineActive) {
-            query.orderby = [[time_column, true]];
+        if (isSparklineActive && validTimeCol) {
+            query.orderby = [[validTimeCol, true]];
         }
         // In time shift mode, apply Superset's native time offset query
         if (!isDual && time_compare) {

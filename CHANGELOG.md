@@ -7,6 +7,13 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-10-01
+
+### Fixed
+- **Sanitizzazione Rigorosa Colonne & Risoluzione Errore "Missing label (Issue 1011)"**: Risolto bug critico per cui l'apertura in modalità Explore o il rendering della card scatenava l'eccezione backend `ValueError("Missing label")` (`get_column_name` in `superset/utils/core.py`).
+- **Normalizzazione `time_column`**: Gestito il caso in cui `time_column` viene salvato o passato come array vuoto `[]` dal controllo di frontend, evitando che un tipo non stringa venga propagato nell'array `columns` della query.
+- **Filtro `sanitizeColumn` e `sanitizeMetric` in `buildQuery.ts`**: Implementata validazione e pulizia a monte sia su `columns` che su `baseQueryObject.columns` per garantire che vengano passati esclusivamente nomi di colonna/metriche stringa validi o oggetti ad-hoc completi di `label`/`sqlExpression`.
+
 ## [0.1.11] - 2026-09-30
 
 ### Added
