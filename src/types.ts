@@ -39,6 +39,11 @@ export interface KPIComparisonFormData extends QueryFormData {
   show_sparkline?: boolean;
   sparkline_color?: string;
   sparkline_fill?: boolean;
+
+  // Target Tracking
+  target_metric?: any;
+  target_static_value?: string;
+  show_progress_bar?: boolean;
 }
 
 export interface KPIComparisonProps {
@@ -87,4 +92,8 @@ export interface KPIComparisonProps {
   sparklineData: number[];
   sparklineColor: string;
   sparklineFill: boolean;
+
+  // Target Tracking
+  showProgressBar?: boolean;
+  targetProgressPercent?: number | null;
 }

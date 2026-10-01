@@ -11,6 +11,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   formattedDeltaAbsolute,
   formattedDeltaPercent,
   trendDirection,
+  trendColor,
   badgeStyle,
   badgeBackgroundColor,
   badgeTextColor,
@@ -30,6 +31,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   cardBgColor = 'transparent',
   cardBorderRadius = 'square',
   cardBoxShadow = 'none',
+  showProgressBar = false,
+  targetProgressPercent = null,
 }) => {
   // Dimensional tiers (decoupled height and width)
   const isVerticalUltraCompact = height < 90;
@@ -408,6 +411,48 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             fill={sparklineFill}
             height={height < 160 ? 22 : 36}
           />
+        </div>
+      )}
+      {/* Optional Target Progress Bar */}
+      {showProgressBar && targetProgressPercent !== null && (
+        <div
+          style={{
+            width: '100%',
+            marginTop: 'auto',
+            paddingTop: '6px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              height: '4px',
+              backgroundColor: '#e2e8f0',
+              borderRadius: '2px',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${Math.min(targetProgressPercent, 100)}%`,
+                height: '100%',
+                backgroundColor: targetProgressPercent > 100 ? '#eab308' : trendColor !== '#94a3b8' ? trendColor : '#3b82f6',
+                transition: 'width 0.5s ease-out',
+              }}
+            />
+          </div>
+          <div
+            style={{
+              fontSize: '0.7rem',
+              color: '#64748b',
+              textAlign: 'right',
+              fontWeight: 500,
+            }}
+          >
+            {targetProgressPercent > 100 ? '>100%' : `${Math.round(targetProgressPercent)}%`} del Target
+          </div>
         </div>
       )}
     </div>

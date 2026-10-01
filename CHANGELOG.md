@@ -7,6 +7,11 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-10-02
+
+### Added
+- **Target / Goal Tracking Progress Bar**: Added a sleek progress bar at the bottom of the card to track KPI performance against a goal. The target can be defined dynamically via a metric column or as a static absolute number. If the goal is exceeded, the bar fills 100% and changes color to Gold, with text explicitly noting `>100% del Target`.
+
 ## [0.1.13] - 2026-10-02
 
 ### Changed

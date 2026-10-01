@@ -13,6 +13,7 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     time_column,
     dynamic_subtitle_column,
     show_sparkline,
+    target_metric,
     columns: fdColumns,
     groupby: fdGroupby,
   } = fd;
@@ -52,6 +53,10 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       }
     } else {
       metrics = metric ? [metric] : [];
+    }
+
+    if (target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
+      metrics.push(target_metric);
     }
 
     // Normalize time_column if passed as an array or empty string

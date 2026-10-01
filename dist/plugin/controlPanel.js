@@ -87,6 +87,40 @@ const config = {
                         },
                     },
                 ],
+                [
+                    {
+                        name: 'target_metric',
+                        config: {
+                            ...sharedControls.metric,
+                            label: t('Metrica Target / Obiettivo (Dinamica)'),
+                            description: t('Seleziona una metrica per calcolare il target in modo dinamico. Se impostata, ignora il valore fisso.'),
+                        },
+                    },
+                ],
+                [
+                    {
+                        name: 'target_static_value',
+                        config: {
+                            type: 'TextControl',
+                            label: t('Valore Target Fisso (Opzionale)'),
+                            default: '',
+                            description: t('Inserisci un numero fisso come obiettivo (es. 150000). Verrà usato se non imposti la Metrica Target.'),
+                            renderTrigger: true,
+                        },
+                    },
+                ],
+                [
+                    {
+                        name: 'show_progress_bar',
+                        config: {
+                            type: 'CheckboxControl',
+                            label: t('Mostra Barra di Progresso Obiettivo'),
+                            default: false,
+                            description: t('Mostra una linea sottile in basso che indica la percentuale di raggiungimento del target.'),
+                            renderTrigger: true,
+                        },
+                    },
+                ],
                 ['adhoc_filters'],
             ],
         },

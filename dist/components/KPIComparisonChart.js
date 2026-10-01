@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
-export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', }) => {
+export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, }) => {
     // Dimensional tiers (decoupled height and width)
     const isVerticalUltraCompact = height < 90;
     const isVerticalCompact = height < 135;
@@ -233,7 +233,30 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                    }, title: kpiSubtitle, children: kpiSubtitle }))) }), canRenderSparkline && (_jsx("div", { style: { width: '100%', marginTop: 'auto', flexShrink: 0 }, children: _jsx(KPISparkline, { data: sparklineData, color: sparklineColor, fill: sparklineFill, height: height < 160 ? 22 : 36 }) }))] }));
+                    }, title: kpiSubtitle, children: kpiSubtitle }))) }), canRenderSparkline && (_jsx("div", { style: { width: '100%', marginTop: 'auto', flexShrink: 0 }, children: _jsx(KPISparkline, { data: sparklineData, color: sparklineColor, fill: sparklineFill, height: height < 160 ? 22 : 36 }) })), showProgressBar && targetProgressPercent !== null && (_jsxs("div", { style: {
+                    width: '100%',
+                    marginTop: 'auto',
+                    paddingTop: '6px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                }, children: [_jsx("div", { style: {
+                            width: '100%',
+                            height: '4px',
+                            backgroundColor: '#e2e8f0',
+                            borderRadius: '2px',
+                            overflow: 'hidden',
+                        }, children: _jsx("div", { style: {
+                                width: `${Math.min(targetProgressPercent, 100)}%`,
+                                height: '100%',
+                                backgroundColor: targetProgressPercent > 100 ? '#eab308' : trendColor !== '#94a3b8' ? trendColor : '#3b82f6',
+                                transition: 'width 0.5s ease-out',
+                            } }) }), _jsxs("div", { style: {
+                            fontSize: '0.7rem',
+                            color: '#64748b',
+                            textAlign: 'right',
+                            fontWeight: 500,
+                        }, children: [targetProgressPercent > 100 ? '>100%' : `${Math.round(targetProgressPercent)}%`, " del Target"] })] }))] }));
 };
 export default KPIComparisonChart;
 //# sourceMappingURL=KPIComparisonChart.js.map

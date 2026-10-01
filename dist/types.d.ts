@@ -29,6 +29,9 @@ export interface KPIComparisonFormData extends QueryFormData {
     show_sparkline?: boolean;
     sparkline_color?: string;
     sparkline_fill?: boolean;
+    target_metric?: any;
+    target_static_value?: string;
+    show_progress_bar?: boolean;
 }
 export interface KPIComparisonProps {
     width: number;
@@ -62,5 +65,7 @@ export interface KPIComparisonProps {
     sparklineData: number[];
     sparklineColor: string;
     sparklineFill: boolean;
+    showProgressBar?: boolean;
+    targetProgressPercent?: number | null;
 }
 //# sourceMappingURL=types.d.ts.map

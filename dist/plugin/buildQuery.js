@@ -2,7 +2,7 @@ import { buildQueryContext, ensureIsArray } from '@superset-ui/core';
 import { getMetricLabel } from '../utils/formatters';
 export default function buildQuery(formData) {
     const fd = formData || {};
-    const { calculation_mode = 'dual_metric', metric, comparison_metric, metrics: fdMetrics, time_compare, time_column, dynamic_subtitle_column, show_sparkline, columns: fdColumns, groupby: fdGroupby, } = fd;
+    const { calculation_mode = 'dual_metric', metric, comparison_metric, metrics: fdMetrics, time_compare, time_column, dynamic_subtitle_column, show_sparkline, target_metric, columns: fdColumns, groupby: fdGroupby, } = fd;
     return buildQueryContext(formData, (baseQueryObject) => {
         const isDual = calculation_mode === 'dual_metric';
         // In dual metric mode, request primary, comparison and any configured extra metrics
@@ -37,6 +37,9 @@ export default function buildQuery(formData) {
         }
         else {
             metrics = metric ? [metric] : [];
+        }
+        if (target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
+            metrics.push(target_metric);
         }
         // Normalize time_column if passed as an array or empty string
         const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;

@@ -141,6 +141,28 @@ export default function transformProps(chartProps) {
             });
         }
     }
+    // Target Tracking calculations
+    let targetProgressPercent = null;
+    const showProgressBar = Boolean(getProp('showProgressBar', 'show_progress_bar', false));
+    if (showProgressBar && primaryValue !== null) {
+        let targetValue = null;
+        // 1. Try dynamic metric from data
+        const targetMetricKey = getMetricLabel(fd.target_metric);
+        if (targetMetricKey && data && data.length > 0 && typeof data[0][targetMetricKey] === 'number') {
+            targetValue = parseNumericValue(data[0][targetMetricKey]);
+        }
+        // 2. Try static value if dynamic is missing or invalid
+        if (targetValue === null && fd.target_static_value) {
+            const parsedStatic = parseFloat(fd.target_static_value);
+            if (!isNaN(parsedStatic)) {
+                targetValue = parsedStatic;
+            }
+        }
+        // 3. Calculate percentage
+        if (targetValue !== null && targetValue > 0) {
+            targetProgressPercent = (primaryValue / targetValue) * 100;
+        }
+    }
     // Delta calculations
     let deltaAbsolute = null;
     let deltaPercent = null;
@@ -552,6 +574,8 @@ export default function transformProps(chartProps) {
         sparklineData,
         sparklineColor,
         sparklineFill: sparklineFill !== false,
+        showProgressBar,
+        targetProgressPercent,
     };
 }
 //# sourceMappingURL=transformProps.js.map
