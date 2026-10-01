@@ -7,6 +7,13 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-10-02
+
+### Added
+- **Global Theme Support**: The plugin now utilizes Superset's global semantic JSON theme tokens (`theme.colors.success`, `theme.colors.error`) instead of hardcoded hex values, ensuring perfect visual sync with custom dashboard themes.
+- **Advanced Conditional Formatting**: Added a new configuration `applyTrendColorTo` which allows users to decide if the semantic trend color should be applied exclusively to the Badge, applied to the Main Number text, or painted over the entire Card Background using subtle variants.
+- **Interactive Drill-through**: The card can now be turned into a clickable hyperlink. Added a dedicated "Interattività" tab to configure a URL and a navigation target (`_self` or `_blank`).
+
 ## [0.1.15] - 2026-10-02
 
 ### Added

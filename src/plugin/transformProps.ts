@@ -691,5 +691,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     sparklineFill: sparklineFill !== false,
     showProgressBar,
     targetProgressPercent,
+    applyTrendColorTo: getProp<'badge' | 'text' | 'background'>('applyTrendColorTo', 'apply_trend_color_to', 'badge'),
+    clickUrl: getProp<string>('clickUrl', 'click_url', ''),
+    clickTarget: getProp<'_blank' | '_self'>('clickTarget', 'click_target', '_self'),
   };
 }

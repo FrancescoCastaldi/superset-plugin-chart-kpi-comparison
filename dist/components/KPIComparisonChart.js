@@ -1,7 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useTheme } from '@superset-ui/core';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
-export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, }) => {
+export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
+    const theme = useTheme();
     // Dimensional tiers (decoupled height and width)
     const isVerticalUltraCompact = height < 90;
     const isVerticalCompact = height < 135;
@@ -73,6 +75,37 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
             border = 'none';
             break;
     }
+    // Resolving Semantic Colors from Theme
+    let finalTrendColor = trendColor;
+    let finalBadgeBg = badgeBackgroundColor;
+    let finalBadgeText = badgeTextColor;
+    let finalCardBg = cardBgColor;
+    let primaryValueColor = '#0f172a';
+    if (trendDirection === 'up' || trendDirection === 'down') {
+        const isPositive = (trendDirection === 'up' && trendColor === '#10b981') || // default green from transformProps
+            (trendDirection === 'down' && trendColor === '#10b981'); // inverted polarity green
+        const semanticColor = isPositive ? theme.colors.success : theme.colors.error;
+        // Always map trendColor to theme semantic base for sparklines/progress bar
+        finalTrendColor = semanticColor.base;
+        if (applyTrendColorTo === 'background') {
+            finalCardBg = isPositive ? theme.colors.success.light2 : theme.colors.error.light2;
+            primaryValueColor = isPositive ? theme.colors.success.dark2 : theme.colors.error.dark2;
+            // Neutral badge if background is already heavily colored
+            finalBadgeBg = 'rgba(255, 255, 255, 0.6)';
+            finalBadgeText = primaryValueColor;
+        }
+        else if (applyTrendColorTo === 'text') {
+            primaryValueColor = semanticColor.base;
+            // Neutral badge
+            finalBadgeBg = theme.colors.grayscale.light4;
+            finalBadgeText = theme.colors.grayscale.dark1;
+        }
+        else {
+            // Default: badge only
+            finalBadgeBg = badgeStyle === 'subtle' ? 'transparent' : semanticColor.light2;
+            finalBadgeText = semanticColor.dark1;
+        }
+    }
     const alignStyles = {
         textAlign: cardAlignment,
         alignItems: cardAlignment === 'center'
@@ -81,7 +114,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                 ? 'flex-end'
                 : 'flex-start',
     };
-    return (_jsxs("div", { style: {
+    return (_jsxs("div", { onClick: clickUrl ? () => window.open(clickUrl, clickTarget) : undefined, style: {
             width,
             height,
             boxSizing: 'border-box',
@@ -90,13 +123,15 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
             flexDirection: 'column',
             justifyContent: !showTitle ? 'center' : 'space-between',
             gap: !showTitle ? (height < 70 ? '2px' : '4px') : '0px',
-            backgroundColor: cardBgColor,
+            backgroundColor: finalCardBg,
             borderRadius,
             boxShadow,
             border,
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
             overflow: 'hidden',
             position: 'relative',
+            cursor: clickUrl ? 'pointer' : 'default',
+            transition: 'background-color 0.2s ease',
         }, title: !showTitle && kpiTitle
             ? kpiSubtitle
                 ? `${kpiTitle} — ${kpiSubtitle}`
@@ -158,7 +193,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                         }, children: prefixValue })), _jsx("span", { style: {
                             fontSize: `${primaryFontSizePx}px`,
                             fontWeight: 800,
-                            color: '#0f172a',
+                            color: primaryValueColor,
                             lineHeight: 1.05,
                             letterSpacing: '-0.025em',
                             whiteSpace: 'nowrap',
@@ -166,6 +201,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                             textOverflow: 'ellipsis',
                             minWidth: 0,
                             flexShrink: 1,
+                            transition: 'color 0.2s ease',
                         }, title: `${prefixValue}${formattedPrimary}${suffixValue}`, children: formattedPrimary }), suffixValue && (_jsx("span", { style: {
                             fontSize: `${Math.max(10, Math.round(primaryFontSizePx * 0.5))}px`,
                             fontWeight: 600,
@@ -192,7 +228,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                     lineHeight: 1.2,
                     flexShrink: 0,
                     overflow: 'hidden',
-                }, children: hasComparison ? (_jsxs(_Fragment, { children: [_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: badgeBackgroundColor, badgeTextColor: badgeTextColor, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute }), (showComparisonValue || comparisonLabel) && (_jsxs("div", { style: {
+                }, children: hasComparison ? (_jsxs(_Fragment, { children: [_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: finalBadgeBg, badgeTextColor: finalBadgeText, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute }), (showComparisonValue || comparisonLabel) && (_jsxs("div", { style: {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '3px',
@@ -249,7 +285,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                         }, children: _jsx("div", { style: {
                                 width: `${Math.min(targetProgressPercent, 100)}%`,
                                 height: '100%',
-                                backgroundColor: targetProgressPercent > 100 ? '#eab308' : trendColor !== '#94a3b8' ? trendColor : '#3b82f6',
+                                backgroundColor: targetProgressPercent > 100 ? theme.colors.warning.base : finalTrendColor !== '#94a3b8' ? finalTrendColor : theme.colors.primary.base,
                                 transition: 'width 0.5s ease-out',
                             } }) }), _jsxs("div", { style: {
                             fontSize: '0.7rem',

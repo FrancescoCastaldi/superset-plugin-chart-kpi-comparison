@@ -600,6 +600,9 @@ export default function transformProps(chartProps) {
         sparklineFill: sparklineFill !== false,
         showProgressBar,
         targetProgressPercent,
+        applyTrendColorTo: getProp('applyTrendColorTo', 'apply_trend_color_to', 'badge'),
+        clickUrl: getProp('clickUrl', 'click_url', ''),
+        clickTarget: getProp('clickTarget', 'click_target', '_self'),
     };
 }
 //# sourceMappingURL=transformProps.js.map

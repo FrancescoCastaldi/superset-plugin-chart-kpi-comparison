@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@superset-ui/core';
 import { KPIComparisonProps } from '../types';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
@@ -33,7 +34,12 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   cardBoxShadow = 'none',
   showProgressBar = false,
   targetProgressPercent = null,
+  applyTrendColorTo = 'badge',
+  clickUrl = '',
+  clickTarget = '_self',
 }) => {
+  const theme = useTheme();
+  
   // Dimensional tiers (decoupled height and width)
   const isVerticalUltraCompact = height < 90;
   const isVerticalCompact = height < 135;
@@ -126,6 +132,42 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
       break;
   }
 
+  // Resolving Semantic Colors from Theme
+  let finalTrendColor = trendColor;
+  let finalBadgeBg = badgeBackgroundColor;
+  let finalBadgeText = badgeTextColor;
+  let finalCardBg = cardBgColor;
+  let primaryValueColor = '#0f172a';
+
+  if (trendDirection === 'up' || trendDirection === 'down') {
+    const isPositive =
+      (trendDirection === 'up' && trendColor === '#10b981') || // default green from transformProps
+      (trendDirection === 'down' && trendColor === '#10b981'); // inverted polarity green
+      
+    const semanticColor = isPositive ? theme.colors.success : theme.colors.error;
+    
+    // Always map trendColor to theme semantic base for sparklines/progress bar
+    finalTrendColor = semanticColor.base;
+
+    if (applyTrendColorTo === 'background') {
+      finalCardBg = isPositive ? theme.colors.success.light2 : theme.colors.error.light2;
+      primaryValueColor = isPositive ? theme.colors.success.dark2 : theme.colors.error.dark2;
+      
+      // Neutral badge if background is already heavily colored
+      finalBadgeBg = 'rgba(255, 255, 255, 0.6)';
+      finalBadgeText = primaryValueColor;
+    } else if (applyTrendColorTo === 'text') {
+      primaryValueColor = semanticColor.base;
+      // Neutral badge
+      finalBadgeBg = theme.colors.grayscale.light4;
+      finalBadgeText = theme.colors.grayscale.dark1;
+    } else {
+      // Default: badge only
+      finalBadgeBg = badgeStyle === 'subtle' ? 'transparent' : semanticColor.light2;
+      finalBadgeText = semanticColor.dark1;
+    }
+  }
+
   const alignStyles: React.CSSProperties = {
     textAlign: cardAlignment,
     alignItems:
@@ -138,6 +180,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
 
   return (
     <div
+      onClick={clickUrl ? () => window.open(clickUrl, clickTarget) : undefined}
       style={{
         width,
         height,
@@ -147,7 +190,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         flexDirection: 'column',
         justifyContent: !showTitle ? 'center' : 'space-between',
         gap: !showTitle ? (height < 70 ? '2px' : '4px') : '0px',
-        backgroundColor: cardBgColor,
+        backgroundColor: finalCardBg,
         borderRadius,
         boxShadow,
         border,
@@ -155,6 +198,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         overflow: 'hidden',
         position: 'relative',
+        cursor: clickUrl ? 'pointer' : 'default',
+        transition: 'background-color 0.2s ease',
       }}
       title={
         !showTitle && kpiTitle
@@ -256,7 +301,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           style={{
             fontSize: `${primaryFontSizePx}px`,
             fontWeight: 800,
-            color: '#0f172a',
+            color: primaryValueColor,
             lineHeight: 1.05,
             letterSpacing: '-0.025em',
             whiteSpace: 'nowrap',
@@ -264,6 +309,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             textOverflow: 'ellipsis',
             minWidth: 0,
             flexShrink: 1,
+            transition: 'color 0.2s ease',
           }}
           title={`${prefixValue}${formattedPrimary}${suffixValue}`}
         >
@@ -316,8 +362,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               deltaAbsoluteStr={formattedDeltaAbsolute}
               trendDirection={trendDirection}
               badgeStyle={badgeStyle}
-              badgeBackgroundColor={badgeBackgroundColor}
-              badgeTextColor={badgeTextColor}
+              badgeBackgroundColor={finalBadgeBg}
+              badgeTextColor={finalBadgeText}
               showAbsoluteDelta={showAbsoluteDelta}
               isCompact={isVerticalCompact}
               isUltraCompact={isVerticalUltraCompact}
@@ -438,7 +484,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               style={{
                 width: `${Math.min(targetProgressPercent, 100)}%`,
                 height: '100%',
-                backgroundColor: targetProgressPercent > 100 ? '#eab308' : trendColor !== '#94a3b8' ? trendColor : '#3b82f6',
+                backgroundColor: targetProgressPercent > 100 ? theme.colors.warning.base : finalTrendColor !== '#94a3b8' ? finalTrendColor : theme.colors.primary.base,
                 transition: 'width 0.5s ease-out',
               }}
             />

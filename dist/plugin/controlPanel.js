@@ -363,6 +363,58 @@ const config = {
                         },
                     },
                 ],
+                [
+                    {
+                        name: 'apply_trend_color_to',
+                        config: {
+                            type: 'SelectControl',
+                            label: t('Applica Colore del Trend a:'),
+                            default: 'badge',
+                            choices: [
+                                ['badge', t('Solo Badge (In alto a dx)')],
+                                ['text', t('Testo del Valore Principale')],
+                                ['background', t('Sfondo intera Card (Sfumato)')],
+                            ],
+                            description: t("Determina dove applicare l'evidenziazione visiva semantica (Verde/Rosso)."),
+                            clearable: false,
+                            renderTrigger: true,
+                        },
+                    },
+                ],
+            ],
+        },
+        {
+            label: t('Interattività & Drill-through'),
+            expanded: false,
+            controlSetRows: [
+                [
+                    {
+                        name: 'click_url',
+                        config: {
+                            type: 'TextControl',
+                            label: t('URL di Navigazione (Drill-through)'),
+                            default: '',
+                            description: t('Inserisci un link (es. /superset/dashboard/123). Rende l\'intera card cliccabile.'),
+                            renderTrigger: true,
+                        },
+                    },
+                ],
+                [
+                    {
+                        name: 'click_target',
+                        config: {
+                            type: 'SelectControl',
+                            label: t('Comportamento del Link'),
+                            default: '_self',
+                            choices: [
+                                ['_self', t('Apri nella stessa finestra')],
+                                ['_blank', t('Apri in una nuova scheda')],
+                            ],
+                            clearable: false,
+                            renderTrigger: true,
+                        },
+                    },
+                ],
             ],
         },
         {

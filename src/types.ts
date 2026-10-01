@@ -49,6 +49,11 @@ export interface KPIComparisonFormData extends QueryFormData {
   badge_content?: 'delta' | 'percent_of_total';
   total_metric?: any;
   total_badge_color?: any;
+
+  // Formatting & Interactivity
+  apply_trend_color_to?: 'badge' | 'text' | 'background';
+  click_url?: string;
+  click_target?: '_blank' | '_self';
 }
 
 export interface KPIComparisonProps {
@@ -101,4 +106,9 @@ export interface KPIComparisonProps {
   // Target Tracking
   showProgressBar?: boolean;
   targetProgressPercent?: number | null;
+
+  // Interactivity & Theming
+  applyTrendColorTo?: 'badge' | 'text' | 'background';
+  clickUrl?: string;
+  clickTarget?: '_blank' | '_self';
 }
