@@ -58,23 +58,8 @@ export default function buildQuery(formData) {
         if (badge_content === 'percent_of_total' && total_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(total_metric))) {
             metrics.push(total_metric);
         }
-        // Normalize time_column if passed as an array or empty string
         const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;
-        const validTimeCol = typeof rawTimeCol === 'string' && rawTimeCol.trim().length > 0 ? rawTimeCol.trim() : null;
-        const isSparklineActive = Boolean(show_sparkline && validTimeCol);
-        const baseExtraCols = Array.isArray(fdColumns)
-            ? fdColumns
-            : Array.isArray(fdGroupby)
-                ? fdGroupby
-                : [];
-        const extraCols = [...baseExtraCols];
-        if (dynamic_subtitle_column && typeof dynamic_subtitle_column === 'string' && !extraCols.includes(dynamic_subtitle_column)) {
-            extraCols.push(dynamic_subtitle_column);
-        }
-        const rawColumns = isSparklineActive && validTimeCol
-            ? [validTimeCol, ...extraCols.filter((c) => c !== validTimeCol)]
-            : extraCols;
-        // Strict sanitization of columns to prevent Superset's get_column_name from throwing 'Missing label'
+        // Support modern Superset where groupby/columns can be objects { column_name: 'xxx' }
         const sanitizeColumn = (col) => {
             if (typeof col === 'string') {
                 const trimmed = col.trim();
@@ -90,6 +75,21 @@ export default function buildQuery(formData) {
             }
             return null;
         };
+        const validTimeCol = sanitizeColumn(rawTimeCol);
+        const isSparklineActive = Boolean(show_sparkline && validTimeCol);
+        const baseExtraCols = Array.isArray(fdColumns)
+            ? fdColumns
+            : Array.isArray(fdGroupby)
+                ? fdGroupby
+                : [];
+        const extraCols = [...baseExtraCols];
+        if (dynamic_subtitle_column && typeof dynamic_subtitle_column === 'string' && !extraCols.includes(dynamic_subtitle_column)) {
+            extraCols.push(dynamic_subtitle_column);
+        }
+        // Safely add validTimeCol to rawColumns if not present
+        const rawColumns = isSparklineActive && validTimeCol
+            ? [validTimeCol, ...extraCols.filter((c) => c !== validTimeCol && sanitizeColumn(c) !== sanitizeColumn(validTimeCol))]
+            : extraCols;
         const finalColumns = (rawColumns || [])
             .map(sanitizeColumn)
             .filter((c) => c !== null);

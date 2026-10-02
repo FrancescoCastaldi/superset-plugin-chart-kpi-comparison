@@ -7,6 +7,11 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-10-02
+### Fixed
+- **Sparkline Object Resolution**: Fixed a bug where modern column objects in 	ime_column were incorrectly parsed as strings, causing the sparkline to fail to query multiple rows and render.
+
+
 ## [0.1.18] - 2026-10-02
 
 ### Risolto (Fixed)

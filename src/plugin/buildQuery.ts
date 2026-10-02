@@ -66,9 +66,23 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       metrics.push(total_metric);
     }
 
-    // Normalize time_column if passed as an array or empty string
     const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;
-    const validTimeCol = typeof rawTimeCol === 'string' && rawTimeCol.trim().length > 0 ? rawTimeCol.trim() : null;
+    
+    // Support modern Superset where groupby/columns can be objects { column_name: 'xxx' }
+    const sanitizeColumn = (col: any): any => {
+      if (typeof col === 'string') {
+        const trimmed = col.trim();
+        return trimmed.length > 0 ? trimmed : null;
+      }
+      if (col && typeof col === 'object' && !Array.isArray(col)) {
+        if (typeof col.label === 'string' && col.label.trim()) return col;
+        if (typeof col.sqlExpression === 'string' && col.sqlExpression.trim()) return col;
+        if (typeof col.column_name === 'string' && col.column_name.trim()) return col.column_name.trim();
+      }
+      return null;
+    };
+
+    const validTimeCol = sanitizeColumn(rawTimeCol);
     const isSparklineActive = Boolean(show_sparkline && validTimeCol);
 
     const baseExtraCols = Array.isArray(fdColumns)
@@ -82,23 +96,10 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       extraCols.push(dynamic_subtitle_column);
     }
 
+    // Safely add validTimeCol to rawColumns if not present
     const rawColumns = isSparklineActive && validTimeCol
-      ? [validTimeCol, ...extraCols.filter((c: string) => c !== validTimeCol)]
+      ? [validTimeCol, ...extraCols.filter((c: any) => c !== validTimeCol && sanitizeColumn(c) !== sanitizeColumn(validTimeCol))]
       : extraCols;
-
-    // Strict sanitization of columns to prevent Superset's get_column_name from throwing 'Missing label'
-    const sanitizeColumn = (col: any): any => {
-      if (typeof col === 'string') {
-        const trimmed = col.trim();
-        return trimmed.length > 0 ? trimmed : null;
-      }
-      if (col && typeof col === 'object' && !Array.isArray(col)) {
-        if (typeof col.label === 'string' && col.label.trim()) return col;
-        if (typeof col.sqlExpression === 'string' && col.sqlExpression.trim()) return col;
-        if (typeof col.column_name === 'string' && col.column_name.trim()) return col.column_name.trim();
-      }
-      return null;
-    };
 
     const finalColumns = (rawColumns || [])
       .map(sanitizeColumn)
