@@ -7,6 +7,8 @@ import { KPISparkline } from './KPISparkline';
 export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   width,
   height,
+  primaryValue,
+  comparisonValue = null,
   formattedPrimary,
   formattedComparison,
   formattedDeltaAbsolute,
@@ -370,7 +372,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               hideAbsoluteDelta={hideBadgeAbsolute}
             />
 
-            {(showComparisonValue || comparisonLabel) && (
+            {((showComparisonValue && comparisonValue !== null) || comparisonLabel) && (
               <div
                 style={{
                   display: 'inline-flex',
@@ -390,7 +392,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                   minWidth: 0,
                 }}
                 title={
-                  comparisonLabel && showComparisonValue
+                  comparisonLabel && showComparisonValue && comparisonValue !== null
                     ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
                     : comparisonLabel ||
                       `${prefixValue}${formattedComparison}${suffixValue}`
@@ -404,10 +406,10 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {comparisonLabel}:
+                    {comparisonLabel}{showComparisonValue && comparisonValue !== null ? ':' : ''}
                   </span>
                 )}
-                {showComparisonValue && (
+                {showComparisonValue && comparisonValue !== null && (
                   <span
                     style={{
                       fontWeight: 600,

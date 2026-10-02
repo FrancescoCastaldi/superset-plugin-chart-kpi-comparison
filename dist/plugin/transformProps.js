@@ -16,6 +16,8 @@ export default function transformProps(chartProps) {
     const data = queriesData?.[0]?.data || [];
     // Determine calculation mode
     const calculationMode = getProp('calculationMode', 'calculation_mode', 'dual_metric');
+    const enableComparison = getProp('enableComparison', 'enable_comparison', true) &&
+        calculationMode !== 'none';
     const metricProp = getProp('metric', 'metric', fd.metric);
     const comparisonMetricProp = getProp('comparisonMetric', 'comparison_metric', fd?.comparison_metric);
     const primaryMetricKey = getMetricLabel(metricProp);
@@ -91,7 +93,23 @@ export default function transformProps(chartProps) {
             }
         }
         // 2. Comparison Value extraction
-        if (calculationMode === 'dual_metric') {
+        if (!enableComparison) {
+            comparisonValue = null;
+        }
+        else if (calculationMode === 'static_target') {
+            const staticVal = getProp('targetStaticValue', 'target_static_value', '');
+            const parsedStatic = parseFloat(staticVal);
+            if (!isNaN(parsedStatic)) {
+                comparisonValue = parsedStatic;
+            }
+            else {
+                const targetMetricKey = getMetricLabel(fd.target_metric);
+                if (targetMetricKey && referenceRow[targetMetricKey] !== undefined) {
+                    comparisonValue = parseNumericValue(referenceRow[targetMetricKey]);
+                }
+            }
+        }
+        else if (calculationMode === 'dual_metric') {
             if (comparisonMetricKey && referenceRow[comparisonMetricKey] !== undefined) {
                 comparisonValue = parseNumericValue(referenceRow[comparisonMetricKey]);
             }
@@ -101,8 +119,8 @@ export default function transformProps(chartProps) {
                     comparisonValue = parseNumericValue(referenceRow[foundCompKey]);
                 }
             }
-            // Robust fallback 1: search for keys containing comparison keywords
-            if (comparisonValue === null) {
+            // If comparisonMetricKey was configured but not matched directly, search for keys containing comparison keywords
+            if (comparisonValue === null && comparisonMetricKey) {
                 const keywordKey = Object.keys(referenceRow).find(k => k !== primaryKeyUsed &&
                     (k.toLowerCase().includes('conf') ||
                         k.toLowerCase().includes('prev') ||
@@ -113,15 +131,8 @@ export default function transformProps(chartProps) {
                     comparisonValue = parseNumericValue(referenceRow[keywordKey]);
                 }
             }
-            // Robust fallback 2: take any second numeric column in referenceRow that is not primaryKeyUsed
-            if (comparisonValue === null) {
-                const nextNumKey = Object.keys(referenceRow).find(k => k !== primaryKeyUsed && typeof referenceRow[k] === 'number');
-                if (nextNumKey) {
-                    comparisonValue = parseNumericValue(referenceRow[nextNumKey]);
-                }
-            }
         }
-        else {
+        else if (calculationMode === 'time_shift') {
             // Time-shift mode: inspect columns with offset suffix or second row
             const offsetKey = Object.keys(firstRow).find(k => k !== primaryMetricKey && (k.includes('__') || k.toLowerCase().includes('ago')));
             if (offsetKey) {
@@ -223,6 +234,7 @@ export default function transformProps(chartProps) {
         : '—';
     // Percent of Total override
     const badgeContent = getProp('badge_content', 'badge_content', 'delta');
+    let hasPercentOfTotal = false;
     if (badgeContent === 'percent_of_total' && primaryValue !== null) {
         const totalMetric = getProp('total_metric', 'total_metric', null);
         if (totalMetric) {
@@ -234,6 +246,7 @@ export default function transformProps(chartProps) {
                     formattedDeltaPercent = `${formatItalianNumber(pct, 1)}%`;
                     formattedDeltaAbsolute = '—'; // Hide absolute delta
                     trendDirection = 'none'; // Hide trend arrow
+                    hasPercentOfTotal = true;
                     // Badge color from user settings
                     const totalBadgeColor = getProp('total_badge_color', 'total_badge_color', { r: 99, g: 102, b: 241, a: 1 });
                     if (totalBadgeColor && totalBadgeColor.r !== undefined) {
@@ -444,7 +457,10 @@ export default function transformProps(chartProps) {
     else if (!resolvedComparisonLabel ||
         resolvedComparisonLabel === 'vs Periodo Prec.' ||
         resolvedComparisonLabel === 'vs Benchmark') {
-        if (calculationMode === 'time_shift') {
+        if (calculationMode === 'static_target') {
+            resolvedComparisonLabel = 'vs Obiettivo';
+        }
+        else if (calculationMode === 'time_shift') {
             const shift = getProp('timeCompare', 'time_compare', '1 year ago');
             switch (shift) {
                 case '1 year ago':
@@ -528,8 +544,8 @@ export default function transformProps(chartProps) {
     else {
         resolvedTitle = '';
     }
-    // If Peak or Min, comparison is strictly disabled
-    if (isPeak || isMin) {
+    // If Peak or Min or comparison disabled, comparison is strictly disabled
+    if (isPeak || isMin || !enableComparison) {
         comparisonValue = null;
         deltaAbsolute = null;
         deltaPercent = null;
@@ -537,11 +553,12 @@ export default function transformProps(chartProps) {
             dynamicSubtitle = dynamicMonth;
         }
     }
-    const hasComparison = !isPeak &&
+    const isBadgeNone = badgeContent === 'none';
+    const hasComparison = !isBadgeNone &&
+        !isPeak &&
         !isMin &&
         primaryValue !== null &&
-        comparisonValue !== null &&
-        deltaPercent !== null;
+        ((enableComparison && comparisonValue !== null && deltaPercent !== null) || hasPercentOfTotal);
     // Aesthetic Customization
     let cardBgColor = 'transparent';
     const cardBgColorCfg = getProp('cardBgColor', 'card_bg_color', undefined);

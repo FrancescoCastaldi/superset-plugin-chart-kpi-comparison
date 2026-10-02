@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 import { useTheme } from '@superset-ui/core';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
-export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
+export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValue = null, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
     const theme = useTheme();
     // Dimensional tiers (decoupled height and width)
     const isVerticalUltraCompact = height < 90;
@@ -228,7 +228,7 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                     lineHeight: 1.2,
                     flexShrink: 0,
                     overflow: 'hidden',
-                }, children: hasComparison ? (_jsxs(_Fragment, { children: [_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: finalBadgeBg, badgeTextColor: finalBadgeText, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute }), (showComparisonValue || comparisonLabel) && (_jsxs("div", { style: {
+                }, children: hasComparison ? (_jsxs(_Fragment, { children: [_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: finalBadgeBg, badgeTextColor: finalBadgeText, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute }), ((showComparisonValue && comparisonValue !== null) || comparisonLabel) && (_jsxs("div", { style: {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '3px',
@@ -244,14 +244,14 @@ export const KPIComparisonChart = ({ width, height, formattedPrimary, formattedC
                                 textOverflow: 'ellipsis',
                                 flexShrink: 1,
                                 minWidth: 0,
-                            }, title: comparisonLabel && showComparisonValue
+                            }, title: comparisonLabel && showComparisonValue && comparisonValue !== null
                                 ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
                                 : comparisonLabel ||
                                     `${prefixValue}${formattedComparison}${suffixValue}`, children: [comparisonLabel && (_jsxs("span", { style: {
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
-                                    }, children: [comparisonLabel, ":"] })), showComparisonValue && (_jsxs("span", { style: {
+                                    }, children: [comparisonLabel, showComparisonValue && comparisonValue !== null ? ':' : ''] })), showComparisonValue && comparisonValue !== null && (_jsxs("span", { style: {
                                         fontWeight: 600,
                                         color: '#334155',
                                         whiteSpace: 'nowrap',

@@ -1,11 +1,12 @@
 import { QueryFormData } from '@superset-ui/core';
-export type CalculationMode = 'dual_metric' | 'time_shift';
+export type CalculationMode = 'none' | 'dual_metric' | 'static_target' | 'time_shift';
 export type BadgeStyle = 'pill' | 'subtle' | 'full';
 export type CardAlignment = 'left' | 'center' | 'right';
 export type TrendDirection = 'up' | 'down' | 'flat' | 'none';
 export type CardBorderRadius = 'square' | 'subtle' | 'rounded' | 'pill';
 export type CardBoxShadow = 'none' | 'subtle' | 'elevated' | 'bordered';
 export interface KPIComparisonFormData extends QueryFormData {
+    enable_comparison?: boolean;
     calculation_mode?: CalculationMode;
     metric?: any;
     comparison_metric?: any;

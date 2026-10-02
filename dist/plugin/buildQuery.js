@@ -2,9 +2,11 @@ import { buildQueryContext, ensureIsArray } from '@superset-ui/core';
 import { getMetricLabel } from '../utils/formatters';
 export default function buildQuery(formData) {
     const fd = formData || {};
-    const { calculation_mode = 'dual_metric', metric, comparison_metric, metrics: fdMetrics, time_compare, time_column, dynamic_subtitle_column, show_sparkline, target_metric, columns: fdColumns, groupby: fdGroupby, } = fd;
+    const { enable_comparison = true, calculation_mode = 'dual_metric', metric, comparison_metric, metrics: fdMetrics, time_compare, time_column, dynamic_subtitle_column, show_sparkline, target_metric, columns: fdColumns, groupby: fdGroupby, } = fd;
+    const isComparisonActive = enable_comparison !== false && calculation_mode !== 'none';
+    const isDual = isComparisonActive && calculation_mode === 'dual_metric';
+    const isTimeShift = isComparisonActive && calculation_mode === 'time_shift';
     return buildQueryContext(formData, (baseQueryObject) => {
-        const isDual = calculation_mode === 'dual_metric';
         // In dual metric mode, request primary, comparison and any configured extra metrics
         let metrics = [];
         const titleLow = String(fd.kpi_title || fd.slice_name || '').toLowerCase();
@@ -28,17 +30,12 @@ export default function buildQuery(formData) {
             }
         }
         else if (isDual) {
-            if (metric && comparison_metric) {
-                metrics = [metric, comparison_metric];
-            }
-            else if (metric) {
-                metrics = [metric, comparison_metric || 'richieste_conf'].filter(Boolean);
-            }
+            metrics = [metric, comparison_metric].filter(Boolean);
         }
         else {
             metrics = metric ? [metric] : [];
         }
-        if (target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
+        if (isComparisonActive && target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
             metrics.push(target_metric);
         }
         if (fd.badge_content === 'percent_of_total' && fd.total_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(fd.total_metric))) {
@@ -99,11 +96,10 @@ export default function buildQuery(formData) {
         let cleanMetrics = (metrics || [])
             .map(sanitizeMetric)
             .filter((m) => m !== null);
-        if (cleanMetrics.length === 0) {
-            if (metric)
-                cleanMetrics = [metric];
-            else
-                cleanMetrics = ['richieste_corr'];
+        if (cleanMetrics.length === 0 && metric) {
+            const sanitized = sanitizeMetric(metric);
+            if (sanitized)
+                cleanMetrics = [sanitized];
         }
         // Clean baseQueryObject.columns to avoid polluted default groupby controls
         const cleanBaseColumns = (Array.isArray(baseQueryObject.columns) ? baseQueryObject.columns : [])
@@ -120,7 +116,7 @@ export default function buildQuery(formData) {
             query.orderby = [[validTimeCol, true]];
         }
         // In time shift mode, apply Superset's native time offset query
-        if (!isDual && time_compare) {
+        if (isTimeShift && time_compare) {
             query.time_offsets = ensureIsArray(time_compare);
         }
         return [query];

@@ -13,20 +13,36 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
+            name: 'enable_comparison',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Abilita Confronto / Delta %'),
+              default: true,
+              description: t(
+                'Attiva il confronto con una seconda metrica, un target fisso o un periodo temporale. Se disattivato, la card visualizza solo il KPI principale in modalità singola pulita.',
+              ),
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
             name: 'calculation_mode',
             config: {
               type: 'SelectControl',
-              label: t('Modalità di Calcolo del Delta'),
+              label: t('Modalità di Calcolo del Confronto'),
               default: 'dual_metric',
               choices: [
                 ['dual_metric', t('Doppia Metrica Esplicita (Dataset/SQL)')],
+                ['static_target', t('Valore Target Fisso (Obiettivo numerico)')],
                 ['time_shift', t('Time Shift (Offset Temporale Superset)')],
               ],
               description: t(
-                'Scegli se confrontare due colonne/metriche esplicite già aggregate nel dataset (es. Anno Corrente vs Anno Prec) o calcolare l’offset temporale automatico.',
+                'Scegli se confrontare due colonne/metriche esplicite già aggregate nel dataset, impostare un target fisso, o calcolare l’offset temporale automatico.',
               ),
               clearable: false,
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],
@@ -45,13 +61,16 @@ const config: ControlPanelConfig = {
             name: 'comparison_metric',
             config: {
               ...sharedControls.metric,
+              validators: [],
+              clearable: true,
               label: t('Metrica di Confronto (Opzionale)'),
               description: t(
-                'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget).',
+                'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget). Lasciare vuoto se non necessaria.',
               ),
               visibility: ({ controls }) =>
-                !controls?.calculation_mode?.value ||
-                controls?.calculation_mode?.value === 'dual_metric',
+                Boolean(controls?.enable_comparison?.value) &&
+                (!controls?.calculation_mode?.value ||
+                  controls?.calculation_mode?.value === 'dual_metric'),
             },
           },
         ],
@@ -71,6 +90,7 @@ const config: ControlPanelConfig = {
               description: t('Periodo temporale passato con cui confrontare il valore corrente.'),
               clearable: false,
               visibility: ({ controls }) =>
+                Boolean(controls?.enable_comparison?.value) &&
                 controls?.calculation_mode?.value === 'time_shift',
             },
           },
@@ -86,6 +106,7 @@ const config: ControlPanelConfig = {
                 'Testo descrittivo visualizzato accanto al valore di confronto (es. "vs Mese precedente"). Supporta segnaposto {comp_month} / {mese_prec} o risoluzione automatica.',
               ),
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],
@@ -105,8 +126,13 @@ const config: ControlPanelConfig = {
             name: 'target_metric',
             config: {
               ...sharedControls.metric,
+              validators: [],
+              clearable: true,
               label: t('Metrica Target / Obiettivo (Dinamica)'),
               description: t('Seleziona una metrica per calcolare il target in modo dinamico. Se impostata, ignora il valore fisso.'),
+              visibility: ({ controls }) =>
+                Boolean(controls?.enable_comparison?.value) &&
+                controls?.calculation_mode?.value !== 'none',
             },
           },
         ],
@@ -119,6 +145,9 @@ const config: ControlPanelConfig = {
               default: '',
               description: t('Inserisci un numero fisso come obiettivo (es. 150000). Verrà usato se non imposti la Metrica Target.'),
               renderTrigger: true,
+              visibility: ({ controls }) =>
+                Boolean(controls?.enable_comparison?.value) &&
+                (controls?.calculation_mode?.value === 'static_target' || controls?.calculation_mode?.value === 'dual_metric'),
             },
           },
         ],
@@ -131,6 +160,7 @@ const config: ControlPanelConfig = {
               default: false,
               description: t('Mostra una linea sottile in basso che indica la percentuale di raggiungimento del target.'),
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],
@@ -144,6 +174,7 @@ const config: ControlPanelConfig = {
               choices: [
                 ['delta', t('Delta vs Periodo Precedente')],
                 ['percent_of_total', t('% sul Totale')],
+                ['none', t('Nessun Badge')],
               ],
               description: t('Cosa mostrare nel badge colorato in alto a destra.'),
               renderTrigger: true,
@@ -347,6 +378,7 @@ const config: ControlPanelConfig = {
                 'Se attivo, una diminuzione percentuale risulterà VERDE (positiva) e un incremento ROSSO (negativo). Ideale per tempi di attesa, tasso di disdetta e costi.',
               ),
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],
@@ -364,6 +396,9 @@ const config: ControlPanelConfig = {
               ],
               clearable: false,
               renderTrigger: true,
+              visibility: ({ controls }) =>
+                Boolean(controls?.enable_comparison?.value) ||
+                controls?.badge_content?.value === 'percent_of_total',
             },
           },
         ],
@@ -375,6 +410,7 @@ const config: ControlPanelConfig = {
               label: t('Mostra Valore Numerico di Confronto'),
               default: true,
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
           {
@@ -384,6 +420,7 @@ const config: ControlPanelConfig = {
               label: t('Mostra Delta Assoluto tra Parentesi'),
               default: true,
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],
@@ -402,6 +439,7 @@ const config: ControlPanelConfig = {
               description: t("Determina dove applicare l'evidenziazione visiva semantica (Verde/Rosso)."),
               clearable: false,
               renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
           },
         ],

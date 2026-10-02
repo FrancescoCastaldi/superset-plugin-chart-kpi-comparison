@@ -7,6 +7,21 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-10-02
+
+### Added
+- **Opzione Disattivazione Confronto (`enable_comparison`)**: Introdotto un nuovo toggle esplicito `Abilita Confronto / Delta %` nel pannello di controllo. Se disattivato, la card opera in modalità KPI singolo puro, nascondendo tutti i controlli e le etichette relative al delta.
+- **Supporto Target Fisso Diretto (`static_target`)**: Aggiunta la modalità `Valore Target Fisso (Obiettivo numerico)` tra le scelte principali di calcolo, consentendo di confrontare la metrica primaria direttamente contro un valore target inserito manualmente (con label automatica `vs Obiettivo`).
+- **Scelta `Nessun Badge` (`badge_content: 'none'`)**: Aggiunta la possibilità di disabilitare esplicitamente il badge in alto a destra per una card minimale.
+
+### Changed
+- **Controlli Condizionali Dinamici**: I controlli secondari (`comparison_metric`, `time_compare`, `comparison_label`, `target_metric`, `target_static_value`, `show_progress_bar`, `Delta % & Polarità Semantica`) ora compaiono solo se il confronto è effettivamente abilitato (`enable_comparison === true`).
+- **Rimozione Vincolo di Obbligatorietà su Metrica di Confronto**: Rimosso il validatore `validateNonEmpty` da `comparison_metric` e abilitato `clearable: true`. Non appare più il punto esclamativo rosso di errore quando la seconda metrica non è valorizzata.
+
+### Fixed
+- **Eliminazione Fallback Hardcoded SQL**: Rimossi i fallback storici `richieste_conf` e `richieste_corr` da `buildQuery.ts` che causavano errori di query SQL su dataset privi di tali colonne quando la metrica di confronto veniva omessa.
+- **Risoluzione Sicura del Confronto**: Se `enable_comparison` è falso o non è configurata una metrica di confronto, `comparisonValue` rimane rigorosamente `null` ed evita fallback non deterministici su altre colonne numeriche del dataset.
+
 ## [0.1.16] - 2026-10-02
 
 ### Added
