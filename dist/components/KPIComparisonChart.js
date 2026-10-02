@@ -1,9 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { useTheme } from '@superset-ui/core';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
 export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValue = null, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
-    const theme = useTheme();
     // Dimensional tiers (decoupled height and width)
     const isVerticalUltraCompact = height < 90;
     const isVerticalCompact = height < 135;
@@ -84,12 +82,14 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
     if (trendDirection === 'up' || trendDirection === 'down') {
         const isPositive = (trendDirection === 'up' && trendColor === '#10b981') || // default green from transformProps
             (trendDirection === 'down' && trendColor === '#10b981'); // inverted polarity green
-        const semanticColor = isPositive ? theme.colors.success : theme.colors.error;
-        // Always map trendColor to theme semantic base for sparklines/progress bar
+        const semanticColor = isPositive
+            ? { base: '#10b981', light2: '#dcfce7', dark1: '#15803d', dark2: '#064e3b' }
+            : { base: '#ef4444', light2: '#fee2e2', dark1: '#b91c1c', dark2: '#7f1d1d' };
+        // Always map trendColor to semantic base for sparklines/progress bar
         finalTrendColor = semanticColor.base;
         if (applyTrendColorTo === 'background') {
-            finalCardBg = isPositive ? theme.colors.success.light2 : theme.colors.error.light2;
-            primaryValueColor = isPositive ? theme.colors.success.dark2 : theme.colors.error.dark2;
+            finalCardBg = semanticColor.light2;
+            primaryValueColor = semanticColor.dark2;
             // Neutral badge if background is already heavily colored
             finalBadgeBg = 'rgba(255, 255, 255, 0.6)';
             finalBadgeText = primaryValueColor;
@@ -97,8 +97,8 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
         else if (applyTrendColorTo === 'text') {
             primaryValueColor = semanticColor.base;
             // Neutral badge
-            finalBadgeBg = theme.colors.grayscale.light4;
-            finalBadgeText = theme.colors.grayscale.dark1;
+            finalBadgeBg = '#f1f5f9';
+            finalBadgeText = '#334155';
         }
         else {
             // Default: badge only
@@ -285,7 +285,11 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
                         }, children: _jsx("div", { style: {
                                 width: `${Math.min(targetProgressPercent, 100)}%`,
                                 height: '100%',
-                                backgroundColor: targetProgressPercent > 100 ? theme.colors.warning.base : finalTrendColor !== '#94a3b8' ? finalTrendColor : theme.colors.primary.base,
+                                backgroundColor: targetProgressPercent > 100
+                                    ? '#f59e0b'
+                                    : finalTrendColor !== '#94a3b8'
+                                        ? finalTrendColor
+                                        : '#2563eb',
                                 transition: 'width 0.5s ease-out',
                             } }) }), _jsxs("div", { style: {
                             fontSize: '0.7rem',
