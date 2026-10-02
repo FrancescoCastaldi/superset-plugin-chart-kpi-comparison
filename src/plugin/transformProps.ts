@@ -134,7 +134,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       if (!isNaN(parsedStatic)) {
         comparisonValue = parsedStatic;
       } else {
-        const targetMetricKey = getMetricLabel(fd.target_metric);
+        const targetMetricProp = getProp<any>('targetMetric', 'target_metric', null);
+        const targetMetricKey = getMetricLabel(targetMetricProp);
         if (targetMetricKey && referenceRow[targetMetricKey] !== undefined) {
           comparisonValue = parseNumericValue(referenceRow[targetMetricKey]);
         }
@@ -179,7 +180,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
 
     // 3. Sparkline data extraction if multiple rows present
-    if (fd.show_sparkline && data.length > 1) {
+    if (showSparkline && data.length > 1) {
       data.forEach(row => {
         const val = parseNumericValue(row[primaryMetricKey]);
         if (val !== null) {
@@ -197,14 +198,16 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     let targetValue: number | null = null;
     
     // 1. Try dynamic metric from data
-    const targetMetricKey = getMetricLabel(fd.target_metric);
+    const targetMetricProp = getProp<any>('targetMetric', 'target_metric', null);
+    const targetMetricKey = getMetricLabel(targetMetricProp);
     if (targetMetricKey && data && data.length > 0 && typeof data[0][targetMetricKey] === 'number') {
       targetValue = parseNumericValue(data[0][targetMetricKey]);
     }
     
     // 2. Try static value if dynamic is missing or invalid
-    if (targetValue === null && fd.target_static_value) {
-      const parsedStatic = parseFloat(fd.target_static_value);
+    const targetStaticVal = getProp<string>('targetStaticValue', 'target_static_value', '');
+    if (targetValue === null && targetStaticVal) {
+      const parsedStatic = parseFloat(targetStaticVal);
       if (!isNaN(parsedStatic)) {
         targetValue = parsedStatic;
       }
@@ -281,10 +284,10 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       : '—';
 
   // Percent of Total override
-  const badgeContent = getProp<string>('badge_content', 'badge_content', 'delta');
+  const badgeContent = getProp<string>('badgeContent', 'badge_content', 'delta');
   let hasPercentOfTotal = false;
   if (badgeContent === 'percent_of_total' && primaryValue !== null) {
-    const totalMetric = getProp<any>('total_metric', 'total_metric', null);
+    const totalMetric = getProp<any>('totalMetric', 'total_metric', null);
     if (totalMetric) {
       const totalMetricKey = getMetricLabel(totalMetric);
       if (totalMetricKey && data && data.length > 0 && typeof data[0][totalMetricKey] === 'number') {
@@ -297,7 +300,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           hasPercentOfTotal = true;
           
           // Badge color from user settings
-          const totalBadgeColor = getProp<any>('total_badge_color', 'total_badge_color', { r: 99, g: 102, b: 241, a: 1 });
+          const totalBadgeColor = getProp<any>('totalBadgeColor', 'total_badge_color', { r: 99, g: 102, b: 241, a: 1 });
           if (totalBadgeColor && totalBadgeColor.r !== undefined) {
             badgeBackgroundColor = `rgba(${totalBadgeColor.r}, ${totalBadgeColor.g}, ${totalBadgeColor.b}, ${totalBadgeColor.a ?? 1})`;
             const brightness = (totalBadgeColor.r * 299 + totalBadgeColor.g * 587 + totalBadgeColor.b * 114) / 1000;

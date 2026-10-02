@@ -2,14 +2,31 @@ import { buildQueryContext, ensureIsArray } from '@superset-ui/core';
 import { getMetricLabel } from '../utils/formatters';
 export default function buildQuery(formData) {
     const fd = formData || {};
-    const { enable_comparison = true, calculation_mode = 'dual_metric', metric, comparison_metric, metrics: fdMetrics, time_compare, time_column, dynamic_subtitle_column, show_sparkline, target_metric, columns: fdColumns, groupby: fdGroupby, } = fd;
+    const getFd = (snake, camel, defaultVal) => {
+        const val = fd[snake] ?? fd[camel];
+        return val !== undefined ? val : defaultVal;
+    };
+    const enable_comparison = getFd('enable_comparison', 'enableComparison', true);
+    const calculation_mode = getFd('calculation_mode', 'calculationMode', 'dual_metric');
+    const metric = getFd('metric', 'metric');
+    const comparison_metric = getFd('comparison_metric', 'comparisonMetric');
+    const fdMetrics = getFd('metrics', 'metrics');
+    const time_compare = getFd('time_compare', 'timeCompare');
+    const time_column = getFd('time_column', 'timeColumn');
+    const dynamic_subtitle_column = getFd('dynamic_subtitle_column', 'dynamicSubtitleColumn');
+    const show_sparkline = getFd('show_sparkline', 'showSparkline');
+    const target_metric = getFd('target_metric', 'targetMetric');
+    const badge_content = getFd('badge_content', 'badgeContent');
+    const total_metric = getFd('total_metric', 'totalMetric');
+    const fdColumns = getFd('columns', 'columns');
+    const fdGroupby = getFd('groupby', 'groupby');
     const isComparisonActive = enable_comparison !== false && calculation_mode !== 'none';
     const isDual = isComparisonActive && calculation_mode === 'dual_metric';
     const isTimeShift = isComparisonActive && calculation_mode === 'time_shift';
     return buildQueryContext(formData, (baseQueryObject) => {
         // In dual metric mode, request primary, comparison and any configured extra metrics
         let metrics = [];
-        const titleLow = String(fd.kpi_title || fd.slice_name || '').toLowerCase();
+        const titleLow = String(getFd('kpi_title', 'kpiTitle') || getFd('slice_name', 'sliceName') || '').toLowerCase();
         const isPeakOrMin = titleLow.includes('picco') ||
             titleLow.includes('peak') ||
             titleLow.includes('minimo') ||
@@ -38,8 +55,8 @@ export default function buildQuery(formData) {
         if (isComparisonActive && target_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(target_metric))) {
             metrics.push(target_metric);
         }
-        if (fd.badge_content === 'percent_of_total' && fd.total_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(fd.total_metric))) {
-            metrics.push(fd.total_metric);
+        if (badge_content === 'percent_of_total' && total_metric && !metrics.some(m => getMetricLabel(m) === getMetricLabel(total_metric))) {
+            metrics.push(total_metric);
         }
         // Normalize time_column if passed as an array or empty string
         const rawTimeCol = Array.isArray(time_column) ? time_column[0] : time_column;

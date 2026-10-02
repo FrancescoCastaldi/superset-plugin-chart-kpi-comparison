@@ -7,6 +7,13 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.18] - 2026-10-02
+
+### Risolto (Fixed)
+- **Risolto bug di mappatura CamelCase nelle proprietà**: Superset moderno passa la `formData` come React props formattate in CamelCase all'interno del frontend, ma il codice nativo di questo plugin andava a cercare direttamente proprietà con notazione snake_case (es. `fd.target_static_value` o `fd.target_metric`). Questo causava il fallimento silenzioso di funzionalità importanti come il **Valore Target Fisso**, la **Target Progress Bar**, il contenuto dinamico dei **Badge Percentuali** (sul totale) e la **Sparkline**, che seppur configurate non venivano renderizzate sul grafico.
+- Inserita e applicata uniformemente in tutto `transformProps.ts` e `buildQuery.ts` la funzione sicura `getProp` (e `getFd`) che valuta sempre entrambe le chiavi (`camelCase` e `snake_case`) per garantire la corretta estrapolazione da `rawFormData` e `formData`.
+- **Pulizia Validatori Nascosti**: Inseriti `clear_on_hide: true` e rimozione dell'obbligo di inserimento `validators: []` per i campi a tendina nascosti dalla UI, in modo che l'interfaccia di Superset non blocchi il grafico "Run Query" durante il cambio di modalità.
+
 ## [0.1.17] - 2026-10-02
 
 ### Added

@@ -63,6 +63,7 @@ const config: ControlPanelConfig = {
               ...sharedControls.metric,
               validators: [],
               clearable: true,
+              clear_on_hide: true,
               label: t('Metrica di Confronto (Opzionale)'),
               description: t(
                 'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget). Lasciare vuoto se non necessaria.',
@@ -128,11 +129,12 @@ const config: ControlPanelConfig = {
               ...sharedControls.metric,
               validators: [],
               clearable: true,
+              clear_on_hide: true,
               label: t('Metrica Target / Obiettivo (Dinamica)'),
               description: t('Seleziona una metrica per calcolare il target in modo dinamico. Se impostata, ignora il valore fisso.'),
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
-                controls?.calculation_mode?.value !== 'none',
+                (controls?.calculation_mode?.value === 'static_target' || Boolean(controls?.show_progress_bar?.value)),
             },
           },
         ],
@@ -143,11 +145,12 @@ const config: ControlPanelConfig = {
               type: 'TextControl',
               label: t('Valore Target Fisso (Opzionale)'),
               default: '',
+              clear_on_hide: true,
               description: t('Inserisci un numero fisso come obiettivo (es. 150000). Verrà usato se non imposti la Metrica Target.'),
               renderTrigger: true,
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
-                (controls?.calculation_mode?.value === 'static_target' || controls?.calculation_mode?.value === 'dual_metric'),
+                (controls?.calculation_mode?.value === 'static_target' || Boolean(controls?.show_progress_bar?.value)),
             },
           },
         ],
@@ -187,6 +190,9 @@ const config: ControlPanelConfig = {
             name: 'total_metric',
             config: {
               ...sharedControls.metric,
+              validators: [],
+              clearable: true,
+              clear_on_hide: true,
               label: t('Metrica per il Totale'),
               description: t('Metrica da usare come denominatore per calcolare la percentuale (es. SUM(valore) OVER() o metrica custom).'),
               visibility: ({ controls }) => controls?.badge_content?.value === 'percent_of_total',

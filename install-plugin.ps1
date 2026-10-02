@@ -353,10 +353,57 @@ if (-not $SkipCleanCache) {
 }
 
 # -------------------------------------------------------------
-# 7. Optional Frontend Rebuild
+# 7. Hotfix per Bugnoti Superset 6.x (Geostyler & Dipendenze)
+# -------------------------------------------------------------
+Write-Color "=== FASE 5: Patch Automatica Bugnoti Superset 6.x ===" "Cyan"
+$WebpackConfig = Join-Path $FrontendDir "webpack.config.js"
+if (Test-Path $WebpackConfig) {
+    $WebpackContent = [System.IO.File]::ReadAllText($WebpackConfig, [System.Text.Encoding]::UTF8)
+    # Fissa il problema di risoluzione path su Windows per geostyler (che rompe npm run build locale e docker)
+    $TargetGeostylerRegex = '/node_modules\\/.*geostyler.*\\/.*\\.(js|mjs)$/'
+    $FixedGeostylerRegex = '/node_modules[\\\\\\/].*geostyler.*[\\\\\\/].*\\.(js|mjs)$/'
+    if ($WebpackContent -match \[regex\]::Escape($TargetGeostylerRegex)) {
+        $WebpackContent = $WebpackContent -replace \[regex\]::Escape($TargetGeostylerRegex), $FixedGeostylerRegex
+        [System.IO.File]::WriteAllText($WebpackConfig, $WebpackContent, [System.Text.UTF8Encoding]::new($false))
+        Write-Color "[SUCCESS] Webpack config patchato: Risolto bug geostyler regex per Windows/ESM." "Green"
+    } else {
+        Write-Color "[INFO] Webpack config: patch geostyler gia' applicata o non trovata." "Gray"
+    }
+}
+
+$PackageJson = Join-Path $FrontendDir "package.json"
+if (Test-Path $PackageJson) {
+    $PkgContent = Get-Content -Raw $PackageJson
+    $Modified = $false
+    
+    # Aggiungi @react-spring/web se mancante (causa crash frequenti di visx)
+    if ($PkgContent -notmatch '"@react-spring/web"') {
+        $PkgContent = $PkgContent -replace '("dependencies"\s*:\s*\{)', "`$1`n    `"@react-spring/web`": `"^9.7.5`","
+        $Modified = $true
+        Write-Color "[SUCCESS] Aggiunto @react-spring/web a package.json." "Green"
+    }
+    
+    # Aggiungi @fontsource/inter se mancante
+    if ($PkgContent -notmatch '"@fontsource/inter"') {
+        $PkgContent = $PkgContent -replace '("dependencies"\s*:\s*\{)', "`$1`n    `"@fontsource/inter`": `"^5.2.6`","
+        $Modified = $true
+        Write-Color "[SUCCESS] Aggiunto @fontsource/inter a package.json." "Green"
+    }
+
+    if ($Modified) {
+        [System.IO.File]::WriteAllText($PackageJson, $PkgContent, [System.Text.UTF8Encoding]::new($false))
+        Write-Color "[INFO] Modifiche salvate in package.json (sara' necessario npm install / rebuild)." "Gray"
+    } else {
+        Write-Color "[INFO] Le dipendenze critiche (@react-spring/web, @fontsource/inter) sono gia' presenti." "Gray"
+    }
+}
+Write-Color ""
+
+# -------------------------------------------------------------
+# 8. Optional Frontend Rebuild
 # -------------------------------------------------------------
 if ($RebuildFrontend) {
-    Write-Color "=== FASE 5: Ricompilazione Frontend Apache Superset ===" "Cyan"
+    Write-Color "=== FASE 6: Ricompilazione Frontend Apache Superset ===" "Cyan"
     $NpmCmd = Get-Command "npm" -ErrorAction SilentlyContinue
     if ($NpmCmd) {
         Write-Color "[INFO] Avvio 'npm run build' in '$FrontendDir'..." "Yellow"
