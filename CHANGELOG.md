@@ -7,6 +7,13 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-10-02
+### Fixed
+- **Time Shift Backend Crash**: Protected backend queries against the An enclosed time range must be specified error when using Time Shift without a time range filter.
+- **Time Range Control**: Added 	ime_range picker to the control panel to allow users to set the required bounded range natively on the chart.
+- **Time Shift UX**: Added graceful fallback ⚠️ Richiede Filtro Temporale when comparison data is omitted due to missing time range boundaries.
+
+
 ## [0.1.19] - 2026-10-02
 ### Fixed
 - **Sparkline Object Resolution**: Fixed a bug where modern column objects in 	ime_column were incorrectly parsed as strings, causing the sparkline to fail to query multiple rows and render.

@@ -1,1 +1,1 @@
-{"version":3,"file":"transformProps.d.ts","sourceRoot":"","sources":["../../src/plugin/transformProps.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,mBAAmB,CAAC;AAC/C,OAAO,EAOL,kBAAkB,EAEnB,MAAM,UAAU,CAAC;AAWlB,MAAM,CAAC,OAAO,UAAU,cAAc,CAAC,UAAU,EAAE,UAAU,GAAG,kBAAkB,CAmrBjF"}
+{"version":3,"file":"transformProps.d.ts","sourceRoot":"","sources":["../../src/plugin/transformProps.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,mBAAmB,CAAC;AAC/C,OAAO,EAOL,kBAAkB,EAEnB,MAAM,UAAU,CAAC;AAWlB,MAAM,CAAC,OAAO,UAAU,cAAc,CAAC,UAAU,EAAE,UAAU,GAAG,kBAAkB,CAurBjF"}

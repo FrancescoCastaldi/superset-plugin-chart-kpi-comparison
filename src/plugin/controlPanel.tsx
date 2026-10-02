@@ -8,6 +8,22 @@ const t = (str: string) => str;
 const config: ControlPanelConfig = {
   controlPanelSections: [
     {
+      label: t('Filtri Temporali'),
+      expanded: true,
+      controlSetRows: [
+        [
+          {
+            name: 'time_range',
+            config: {
+              ...sharedControls.time_range,
+              label: t('Filtro Temporale (Range)'),
+              description: t('Obbligatorio per far funzionare il Time Shift. Specifica il periodo di indagine chiuso (inizio e fine).'),
+            },
+          },
+        ],
+      ],
+    },
+    {
       label: t('Configurazione Metriche & Confronto'),
       expanded: true,
       controlSetRows: [

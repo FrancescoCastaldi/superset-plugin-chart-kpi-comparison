@@ -534,22 +534,26 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     if (calculationMode === 'static_target') {
       resolvedComparisonLabel = 'vs Obiettivo';
     } else if (calculationMode === 'time_shift') {
-      const shift = getProp<string>('timeCompare', 'time_compare', '1 year ago');
-      switch (shift) {
-        case '1 year ago':
-          resolvedComparisonLabel = 'vs Stesso Periodo Anno Prec.';
-          break;
-        case '1 month ago':
-          resolvedComparisonLabel = 'vs Mese Prec.';
-          break;
-        case '1 week ago':
-          resolvedComparisonLabel = 'vs Settimana Prec.';
-          break;
-        case '28 days ago':
-          resolvedComparisonLabel = 'vs 4 Settimane Fa';
-          break;
-        default:
-          resolvedComparisonLabel = `vs ${shift}`;
+      if (comparisonValue === null) {
+        resolvedComparisonLabel = '⚠️ Richiede Filtro Temporale';
+      } else {
+        const shift = getProp<string>('timeCompare', 'time_compare', '1 year ago');
+        switch (shift) {
+          case '1 year ago':
+            resolvedComparisonLabel = 'vs Stesso Periodo Anno Prec.';
+            break;
+          case '1 month ago':
+            resolvedComparisonLabel = 'vs Mese Prec.';
+            break;
+          case '1 week ago':
+            resolvedComparisonLabel = 'vs Settimana Prec.';
+            break;
+          case '28 days ago':
+            resolvedComparisonLabel = 'vs 4 Settimane Fa';
+            break;
+          default:
+            resolvedComparisonLabel = `vs ${shift}`;
+        }
       }
     } else if (
       comparisonMetricKey &&

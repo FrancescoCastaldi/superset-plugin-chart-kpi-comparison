@@ -133,7 +133,10 @@ export default function buildQuery(formData) {
             query.orderby = [[validTimeCol, true]];
         }
         // In time shift mode, apply Superset's native time offset query
-        if (isTimeShift && time_compare) {
+        // Superset requires an enclosed time_range for time_offsets. If missing or 'No filter', suppress time_offsets to prevent the 'Data error'.
+        const timeRangeValue = formData.time_range || baseQueryObject.time_range;
+        const isTimeRangeEnclosed = typeof timeRangeValue === 'string' && timeRangeValue !== 'No filter' && timeRangeValue.trim() !== '';
+        if (isTimeShift && time_compare && isTimeRangeEnclosed) {
             query.time_offsets = ensureIsArray(time_compare);
         }
         return [query];
