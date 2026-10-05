@@ -7,6 +7,10 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.21] - 2026-10-05
+### Fixed
+- **Install Script Syntax Error**: Risolto errore di sintassi PowerShell in `install-plugin.ps1` alla riga 365 (`\[regex\]::Escape` non valido in PowerShell) sostituendolo con metodi stringa nativi `.Contains()` e `.Replace()` per la patch Geostyler di Webpack.
+
 ## [0.1.20] - 2026-10-02
 ### Fixed
 - **Time Shift Backend Crash**: Protected backend queries against the An enclosed time range must be specified error when using Time Shift without a time range filter.

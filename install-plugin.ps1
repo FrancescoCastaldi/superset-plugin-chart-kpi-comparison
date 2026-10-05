@@ -360,10 +360,10 @@ $WebpackConfig = Join-Path $FrontendDir "webpack.config.js"
 if (Test-Path $WebpackConfig) {
     $WebpackContent = [System.IO.File]::ReadAllText($WebpackConfig, [System.Text.Encoding]::UTF8)
     # Fissa il problema di risoluzione path su Windows per geostyler (che rompe npm run build locale e docker)
-    $TargetGeostylerRegex = '/node_modules\\/.*geostyler.*\\/.*\\.(js|mjs)$/'
-    $FixedGeostylerRegex = '/node_modules[\\\\\\/].*geostyler.*[\\\\\\/].*\\.(js|mjs)$/'
-    if ($WebpackContent -match \[regex\]::Escape($TargetGeostylerRegex)) {
-        $WebpackContent = $WebpackContent -replace \[regex\]::Escape($TargetGeostylerRegex), $FixedGeostylerRegex
+    $TargetGeostylerRegex = '/node_modules\/.*geostyler.*\/.*\.(js|mjs)$/'
+    $FixedGeostylerRegex = '/node_modules[\\\/].*geostyler.*[\\\/].*\.(js|mjs)$/'
+    if ($WebpackContent.Contains($TargetGeostylerRegex)) {
+        $WebpackContent = $WebpackContent.Replace($TargetGeostylerRegex, $FixedGeostylerRegex)
         [System.IO.File]::WriteAllText($WebpackConfig, $WebpackContent, [System.Text.UTF8Encoding]::new($false))
         Write-Color "[SUCCESS] Webpack config patchato: Risolto bug geostyler regex per Windows/ESM." "Green"
     } else {
