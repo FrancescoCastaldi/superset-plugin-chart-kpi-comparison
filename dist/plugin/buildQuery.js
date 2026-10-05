@@ -139,6 +139,9 @@ export default function buildQuery(formData) {
         if (isTimeShift && time_compare && isTimeRangeEnclosed) {
             query.time_offsets = ensureIsArray(time_compare);
         }
+        else {
+            delete query.time_offsets;
+        }
         return [query];
     });
 }

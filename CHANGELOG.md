@@ -7,7 +7,15 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
-## [0.1.21] - 2026-10-05
+## [0.1.22] - 2026-10-05
+### Added
+- **Controlli Nativi di Visibilita in Explore**: Aggiunte caselle di controllo (checkbox) indipendenti per mostrare o nascondere con un click gli elementi visivi della card direttamente da Explore:
+  - `show_title` ("Mostra Titolo Superiore"): attiva o disattiva l'etichetta del titolo sopra il valore numerico principale.
+  - `show_badge` ("Mostra Badge Delta % / Percentuale"): attiva o disattiva il badge percentuale in alto a destra.
+  - `show_comparison_label` ("Mostra Etichetta Testo Confronto"): attiva o disattiva la dicitura descrittiva del confronto (es. "vs Mese precedente").
+- **Collasso Spazi Vuoti**: Ottimizzato il calcolo delle altezze dinamiche in `KPIComparisonChart.tsx` per azzerare margini e padding orfani quando il titolo superiore o la riga inferiore di confronto sono deselezionati.
+### Fixed
+- **Inibizione Residui Query**: Garantita la totale soppressione di time offsets e metriche fantasma quando il confronto e disabilitato (`enable_comparison === false`).
 ### Fixed
 - **Install Script Syntax Error**: Risolto errore di sintassi PowerShell in `install-plugin.ps1` alla riga 365 (`\[regex\]::Escape` non valido in PowerShell) sostituendolo con metodi stringa nativi `.Contains()` e `.Replace()` per la patch Geostyler di Webpack.
 

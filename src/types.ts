@@ -17,6 +17,7 @@ export interface KPIComparisonFormData extends QueryFormData {
   time_column?: string;
 
   // Header & Display
+  show_title?: boolean;
   kpi_title?: string;
   kpi_subtitle?: string;
   dynamic_subtitle_column?: string;
@@ -33,7 +34,9 @@ export interface KPIComparisonFormData extends QueryFormData {
   invert_polarity?: boolean;
   badge_style?: BadgeStyle;
   card_alignment?: CardAlignment;
+  show_badge?: boolean;
   show_comparison_value?: boolean;
+  show_comparison_label?: boolean;
   show_absolute_delta?: boolean;
 
   // Sparkline
@@ -92,7 +95,10 @@ export interface KPIComparisonProps {
   cardBoxShadow: CardBoxShadow;
 
   // Config Flags
+  showTitle?: boolean;
   hasComparison?: boolean;
+  showBadge?: boolean;
+  showComparisonLabel?: boolean;
   badgeStyle: BadgeStyle;
   cardAlignment: CardAlignment;
   showComparisonValue: boolean;

@@ -633,6 +633,11 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     resolvedTitle = '';
   }
 
+  const showTitle = getProp<boolean>('showTitle', 'show_title', true) !== false;
+  if (!showTitle) {
+    resolvedTitle = '';
+  }
+
   // If Peak or Min or comparison disabled, comparison is strictly disabled
   if (isPeak || isMin || !enableComparison) {
     comparisonValue = null;
@@ -673,6 +678,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   const suffixValue = getProp<string>('suffixValue', 'suffix_value', '');
   const cardAlignment = getProp<CardAlignment>('cardAlignment', 'card_alignment', 'left');
   const showComparisonValue = getProp<boolean>('showComparisonValue', 'show_comparison_value', true);
+  const showComparisonLabel = getProp<boolean>('showComparisonLabel', 'show_comparison_label', true);
+  const showBadge = getProp<boolean>('showBadge', 'show_badge', true);
   const showAbsoluteDelta = getProp<boolean>('showAbsoluteDelta', 'show_absolute_delta', true);
   const sparklineFill = getProp<boolean>('sparklineFill', 'sparkline_fill', true);
 
@@ -702,7 +709,10 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     cardBoxShadow,
     badgeStyle,
     cardAlignment,
+    showTitle: showTitle !== false,
+    showBadge: showBadge !== false,
     showComparisonValue: showComparisonValue !== false,
+    showComparisonLabel: showComparisonLabel !== false,
     showAbsoluteDelta: showAbsoluteDelta !== false,
     showSparkline,
     sparklineData,

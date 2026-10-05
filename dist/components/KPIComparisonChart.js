@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
-export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValue = null, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showComparisonValue = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
+export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValue = null, formattedPrimary, formattedComparison, formattedDeltaAbsolute, formattedDeltaPercent, trendDirection, trendColor, badgeStyle, badgeBackgroundColor, badgeTextColor, kpiTitle, kpiSubtitle, comparisonLabel, prefixValue, suffixValue, hasComparison = true, cardAlignment = 'left', showTitle = true, showBadge = true, showComparisonValue = true, showComparisonLabel = true, showAbsoluteDelta = true, showSparkline = false, sparklineData = [], sparklineColor = '#2563eb', sparklineFill = true, cardBgColor = 'transparent', cardBorderRadius = 'square', cardBoxShadow = 'none', showProgressBar = false, targetProgressPercent = null, applyTrendColorTo = 'badge', clickUrl = '', clickTarget = '_self', }) => {
     // Dimensional tiers (decoupled height and width)
     const isVerticalUltraCompact = height < 90;
     const isVerticalCompact = height < 135;
@@ -10,9 +10,17 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
     // Title intelligence:
     // When vertical height is very small (< 90px), vertical space is prioritized 100%
     // for the primary KPI value and comparison delta badge. Title is preserved in container tooltip.
-    const showTitle = !isVerticalUltraCompact && Boolean(kpiTitle && kpiTitle.trim().length > 0);
+    const canRenderTitle = showTitle &&
+        !isVerticalUltraCompact &&
+        Boolean(kpiTitle && kpiTitle.trim().length > 0);
     const isTitleMini = isHorizontalUltraCompact;
-    const showSubtitle = height >= 140 && width >= 200 && Boolean(kpiSubtitle);
+    const showSubtitle = canRenderTitle && height >= 140 && width >= 200 && Boolean(kpiSubtitle);
+    // Bottom row content detection
+    const hasBottomComparisonContent = Boolean(hasComparison &&
+        (showBadge ||
+            (showComparisonValue && comparisonValue !== null) ||
+            (showComparisonLabel && Boolean(comparisonLabel))));
+    const hasBottomContent = hasBottomComparisonContent || (!hasComparison && Boolean(kpiSubtitle));
     // Sparkline: requires sufficient vertical room (>= 125px)
     const canRenderSparkline = showSparkline && sparklineData && sparklineData.length > 1 && height >= 125;
     const sparklineHeight = canRenderSparkline ? (height < 160 ? 22 : 36) : 0;
@@ -20,8 +28,10 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
     const padV = height < 65 ? 2 : height < 80 ? 4 : height < 100 ? 6 : height < 140 ? 10 : height < 180 ? 14 : 18;
     const padH = width < 150 ? 6 : width < 200 ? 10 : width < 280 ? 14 : 20;
     // Fluid responsive font size calculation
-    const titleHeight = showTitle ? (showSubtitle ? 32 : isTitleMini ? 14 : 18) : 0;
-    const bottomHeight = isVerticalUltraCompact ? 18 : isVerticalCompact ? 22 : 26;
+    const titleHeight = canRenderTitle ? (showSubtitle ? 32 : isTitleMini ? 14 : 18) : 0;
+    const bottomHeight = hasBottomContent
+        ? (isVerticalUltraCompact ? 18 : isVerticalCompact ? 22 : 26)
+        : 0;
     const innerGap = isVerticalUltraCompact ? 2 : isVerticalCompact ? 4 : 8;
     const availWidth = Math.max(30, width - padH * 2);
     const effectiveChars = (formattedPrimary ? formattedPrimary.length * 0.58 : 1) +
@@ -132,11 +142,11 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
             position: 'relative',
             cursor: clickUrl ? 'pointer' : 'default',
             transition: 'background-color 0.2s ease',
-        }, title: !showTitle && kpiTitle
+        }, title: !canRenderTitle && kpiTitle
             ? kpiSubtitle
-                ? `${kpiTitle} — ${kpiSubtitle}`
+                ? `${kpiTitle}: ${kpiSubtitle}`
                 : kpiTitle
-            : undefined, children: [showTitle && (_jsxs("div", { style: {
+            : undefined, children: [canRenderTitle && (_jsxs("div", { style: {
                     display: 'flex',
                     flexDirection: 'column',
                     width: '100%',
@@ -209,7 +219,7 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
                             marginLeft: '3px',
                             lineHeight: 1,
                             flexShrink: 0,
-                        }, children: suffixValue }))] }), _jsx("div", { style: {
+                        }, children: suffixValue }))] }), hasBottomContent && (_jsx("div", { style: {
                     display: 'flex',
                     flexWrap: 'nowrap',
                     alignItems: 'center',
@@ -228,7 +238,8 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
                     lineHeight: 1.2,
                     flexShrink: 0,
                     overflow: 'hidden',
-                }, children: hasComparison ? (_jsxs(_Fragment, { children: [_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: finalBadgeBg, badgeTextColor: finalBadgeText, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute }), ((showComparisonValue && comparisonValue !== null) || comparisonLabel) && (_jsxs("div", { style: {
+                }, children: hasComparison ? (_jsxs(_Fragment, { children: [showBadge && (_jsx(KPIComparisonBadge, { deltaPercentStr: formattedDeltaPercent, deltaAbsoluteStr: formattedDeltaAbsolute, trendDirection: trendDirection, badgeStyle: badgeStyle, badgeBackgroundColor: finalBadgeBg, badgeTextColor: finalBadgeText, showAbsoluteDelta: showAbsoluteDelta, isCompact: isVerticalCompact, isUltraCompact: isVerticalUltraCompact, hideAbsoluteDelta: hideBadgeAbsolute })), ((showComparisonValue && comparisonValue !== null) ||
+                            (showComparisonLabel && Boolean(comparisonLabel))) && (_jsxs("div", { style: {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '3px',
@@ -244,10 +255,10 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
                                 textOverflow: 'ellipsis',
                                 flexShrink: 1,
                                 minWidth: 0,
-                            }, title: comparisonLabel && showComparisonValue && comparisonValue !== null
+                            }, title: showComparisonLabel && comparisonLabel && showComparisonValue && comparisonValue !== null
                                 ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
-                                : comparisonLabel ||
-                                    `${prefixValue}${formattedComparison}${suffixValue}`, children: [comparisonLabel && (_jsxs("span", { style: {
+                                : (showComparisonLabel && comparisonLabel) ||
+                                    `${prefixValue}${formattedComparison}${suffixValue}`, children: [showComparisonLabel && comparisonLabel && (_jsxs("span", { style: {
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
@@ -269,7 +280,7 @@ export const KPIComparisonChart = ({ width, height, primaryValue, comparisonValu
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                    }, title: kpiSubtitle, children: kpiSubtitle }))) }), canRenderSparkline && (_jsx("div", { style: { width: '100%', marginTop: 'auto', flexShrink: 0 }, children: _jsx(KPISparkline, { data: sparklineData, color: sparklineColor, fill: sparklineFill, height: height < 160 ? 22 : 36 }) })), showProgressBar && targetProgressPercent !== null && (_jsxs("div", { style: {
+                    }, title: kpiSubtitle, children: kpiSubtitle }))) })), canRenderSparkline && (_jsx("div", { style: { width: '100%', marginTop: 'auto', flexShrink: 0 }, children: _jsx(KPISparkline, { data: sparklineData, color: sparklineColor, fill: sparklineFill, height: height < 160 ? 22 : 36 }) })), showProgressBar && targetProgressPercent !== null && (_jsxs("div", { style: {
                     width: '100%',
                     marginTop: 'auto',
                     paddingTop: '6px',

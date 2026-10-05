@@ -93,7 +93,8 @@ const config = {
                                 ['28 days ago', t('28 giorni fa (4 settimane fa)')],
                             ],
                             description: t('Periodo temporale passato con cui confrontare il valore corrente.'),
-                            clearable: false,
+                            clearable: true,
+                            clear_on_hide: true,
                             visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value) &&
                                 controls?.calculation_mode?.value === 'time_shift',
                         },
@@ -220,6 +221,18 @@ const config = {
             controlSetRows: [
                 [
                     {
+                        name: 'show_title',
+                        config: {
+                            type: 'CheckboxControl',
+                            label: t('Mostra Titolo Superiore'),
+                            default: true,
+                            description: t('Mostra o nasconde l’etichetta testuale del titolo sopra il valore numerico principale.'),
+                            renderTrigger: true,
+                        },
+                    },
+                ],
+                [
+                    {
                         name: 'kpi_title',
                         config: {
                             type: 'TextControl',
@@ -227,6 +240,7 @@ const config = {
                             default: '',
                             description: t('Titolo in evidenza sopra il valore numerico. Supporta segnaposto dinamici: {month} / {mese} e {period} / {periodo}, o risoluzione automatica da dati e filtri.'),
                             renderTrigger: true,
+                            visibility: ({ controls }) => controls?.show_title?.value !== false,
                         },
                     },
                 ],
@@ -378,6 +392,20 @@ const config = {
                 ],
                 [
                     {
+                        name: 'show_badge',
+                        config: {
+                            type: 'CheckboxControl',
+                            label: t('Mostra Badge Delta % / Percentuale'),
+                            default: true,
+                            description: t('Mostra o nasconde il badge colorato con la percentuale del confronto o sul totale.'),
+                            renderTrigger: true,
+                            visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value) ||
+                                controls?.badge_content?.value === 'percent_of_total',
+                        },
+                    },
+                ],
+                [
+                    {
                         name: 'badge_style',
                         config: {
                             type: 'SelectControl',
@@ -390,8 +418,9 @@ const config = {
                             ],
                             clearable: false,
                             renderTrigger: true,
-                            visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value) ||
-                                controls?.badge_content?.value === 'percent_of_total',
+                            visibility: ({ controls }) => (Boolean(controls?.enable_comparison?.value) ||
+                                controls?.badge_content?.value === 'percent_of_total') &&
+                                controls?.show_badge?.value !== false,
                         },
                     },
                 ],
@@ -407,13 +436,27 @@ const config = {
                         },
                     },
                     {
+                        name: 'show_comparison_label',
+                        config: {
+                            type: 'CheckboxControl',
+                            label: t('Mostra Etichetta Testo Confronto'),
+                            default: true,
+                            description: t('Mostra o nasconde la dicitura descrittiva del confronto (es. "vs Mese precedente").'),
+                            renderTrigger: true,
+                            visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
+                        },
+                    },
+                ],
+                [
+                    {
                         name: 'show_absolute_delta',
                         config: {
                             type: 'CheckboxControl',
                             label: t('Mostra Delta Assoluto tra Parentesi'),
                             default: true,
                             renderTrigger: true,
-                            visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
+                            visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value) &&
+                                controls?.show_badge?.value !== false,
                         },
                     },
                 ],

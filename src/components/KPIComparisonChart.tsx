@@ -24,7 +24,10 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   suffixValue,
   hasComparison = true,
   cardAlignment = 'left',
+  showTitle = true,
+  showBadge = true,
   showComparisonValue = true,
+  showComparisonLabel = true,
   showAbsoluteDelta = true,
   showSparkline = false,
   sparklineData = [],
@@ -48,9 +51,21 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   // Title intelligence:
   // When vertical height is very small (< 90px), vertical space is prioritized 100%
   // for the primary KPI value and comparison delta badge. Title is preserved in container tooltip.
-  const showTitle = !isVerticalUltraCompact && Boolean(kpiTitle && kpiTitle.trim().length > 0);
+  const canRenderTitle =
+    showTitle &&
+    !isVerticalUltraCompact &&
+    Boolean(kpiTitle && kpiTitle.trim().length > 0);
   const isTitleMini = isHorizontalUltraCompact;
-  const showSubtitle = height >= 140 && width >= 200 && Boolean(kpiSubtitle);
+  const showSubtitle = canRenderTitle && height >= 140 && width >= 200 && Boolean(kpiSubtitle);
+
+  // Bottom row content detection
+  const hasBottomComparisonContent = Boolean(
+    hasComparison &&
+      (showBadge ||
+        (showComparisonValue && comparisonValue !== null) ||
+        (showComparisonLabel && Boolean(comparisonLabel)))
+  );
+  const hasBottomContent = hasBottomComparisonContent || (!hasComparison && Boolean(kpiSubtitle));
 
   // Sparkline: requires sufficient vertical room (>= 125px)
   const canRenderSparkline =
@@ -63,8 +78,10 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   const padH = width < 150 ? 6 : width < 200 ? 10 : width < 280 ? 14 : 20;
 
   // Fluid responsive font size calculation
-  const titleHeight = showTitle ? (showSubtitle ? 32 : isTitleMini ? 14 : 18) : 0;
-  const bottomHeight = isVerticalUltraCompact ? 18 : isVerticalCompact ? 22 : 26;
+  const titleHeight = canRenderTitle ? (showSubtitle ? 32 : isTitleMini ? 14 : 18) : 0;
+  const bottomHeight = hasBottomContent
+    ? (isVerticalUltraCompact ? 18 : isVerticalCompact ? 22 : 26)
+    : 0;
   const innerGap = isVerticalUltraCompact ? 2 : isVerticalCompact ? 4 : 8;
 
   const availWidth = Math.max(30, width - padH * 2);
@@ -203,15 +220,15 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         transition: 'background-color 0.2s ease',
       }}
       title={
-        !showTitle && kpiTitle
+        !canRenderTitle && kpiTitle
           ? kpiSubtitle
-            ? `${kpiTitle} — ${kpiSubtitle}`
+            ? `${kpiTitle}: ${kpiSubtitle}`
             : kpiTitle
           : undefined
       }
     >
       {/* Top Section: Title & Subtitle */}
-      {showTitle && (
+      {canRenderTitle && (
         <div
           style={{
             display: 'flex',
@@ -333,121 +350,127 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
       </div>
 
       {/* Bottom Section: Comparison Badge if hasComparison, or dynamic Month/Subtitle */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          alignItems: 'center',
-          gap: isHorizontalUltraCompact ? '3px' : '5px',
-          width: '100%',
-          justifyContent:
-            cardAlignment === 'center'
-              ? 'center'
-              : cardAlignment === 'right'
-              ? 'flex-end'
-              : 'flex-start',
-          fontSize: isVerticalUltraCompact
-            ? '0.72rem'
-            : isVerticalCompact
-            ? '0.78rem'
-            : '0.84rem',
-          lineHeight: 1.2,
-          flexShrink: 0,
-          overflow: 'hidden',
-        }}
-      >
-        {hasComparison ? (
-          <>
-            <KPIComparisonBadge
-              deltaPercentStr={formattedDeltaPercent}
-              deltaAbsoluteStr={formattedDeltaAbsolute}
-              trendDirection={trendDirection}
-              badgeStyle={badgeStyle}
-              badgeBackgroundColor={finalBadgeBg}
-              badgeTextColor={finalBadgeText}
-              showAbsoluteDelta={showAbsoluteDelta}
-              isCompact={isVerticalCompact}
-              isUltraCompact={isVerticalUltraCompact}
-              hideAbsoluteDelta={hideBadgeAbsolute}
-            />
+      {hasBottomContent && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            alignItems: 'center',
+            gap: isHorizontalUltraCompact ? '3px' : '5px',
+            width: '100%',
+            justifyContent:
+              cardAlignment === 'center'
+                ? 'center'
+                : cardAlignment === 'right'
+                ? 'flex-end'
+                : 'flex-start',
+            fontSize: isVerticalUltraCompact
+              ? '0.72rem'
+              : isVerticalCompact
+              ? '0.78rem'
+              : '0.84rem',
+            lineHeight: 1.2,
+            flexShrink: 0,
+            overflow: 'hidden',
+          }}
+        >
+          {hasComparison ? (
+            <>
+              {showBadge && (
+                <KPIComparisonBadge
+                  deltaPercentStr={formattedDeltaPercent}
+                  deltaAbsoluteStr={formattedDeltaAbsolute}
+                  trendDirection={trendDirection}
+                  badgeStyle={badgeStyle}
+                  badgeBackgroundColor={finalBadgeBg}
+                  badgeTextColor={finalBadgeText}
+                  showAbsoluteDelta={showAbsoluteDelta}
+                  isCompact={isVerticalCompact}
+                  isUltraCompact={isVerticalUltraCompact}
+                  hideAbsoluteDelta={hideBadgeAbsolute}
+                />
+              )}
 
-            {((showComparisonValue && comparisonValue !== null) || comparisonLabel) && (
+              {((showComparisonValue && comparisonValue !== null) ||
+                (showComparisonLabel && Boolean(comparisonLabel))) && (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '3px',
+                    color: '#64748b',
+                    fontSize: isVerticalUltraCompact
+                      ? '0.70rem'
+                      : isVerticalCompact
+                      ? '0.74rem'
+                      : '0.80rem',
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    flexShrink: 1,
+                    minWidth: 0,
+                  }}
+                  title={
+                    showComparisonLabel && comparisonLabel && showComparisonValue && comparisonValue !== null
+                      ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
+                      : (showComparisonLabel && comparisonLabel) ||
+                        `${prefixValue}${formattedComparison}${suffixValue}`
+                  }
+                >
+                  {showComparisonLabel && comparisonLabel && (
+                    <span
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {comparisonLabel}
+                      {showComparisonValue && comparisonValue !== null ? ':' : ''}
+                    </span>
+                  )}
+                  {showComparisonValue && comparisonValue !== null && (
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        color: '#334155',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {prefixValue}
+                      {formattedComparison}
+                      {suffixValue}
+                    </span>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            /* NO COMPARISON: Render dynamic month and year as bottom subtitle */
+            kpiSubtitle && (
               <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '3px',
                   color: '#64748b',
                   fontSize: isVerticalUltraCompact
-                    ? '0.70rem'
-                    : isVerticalCompact
                     ? '0.74rem'
-                    : '0.80rem',
+                    : isVerticalCompact
+                    ? '0.78rem'
+                    : '0.84rem',
                   fontWeight: 500,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  flexShrink: 1,
-                  minWidth: 0,
                 }}
-                title={
-                  comparisonLabel && showComparisonValue && comparisonValue !== null
-                    ? `${comparisonLabel}: ${prefixValue}${formattedComparison}${suffixValue}`
-                    : comparisonLabel ||
-                      `${prefixValue}${formattedComparison}${suffixValue}`
-                }
+                title={kpiSubtitle}
               >
-                {comparisonLabel && (
-                  <span
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {comparisonLabel}{showComparisonValue && comparisonValue !== null ? ':' : ''}
-                  </span>
-                )}
-                {showComparisonValue && comparisonValue !== null && (
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      color: '#334155',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {prefixValue}
-                    {formattedComparison}
-                    {suffixValue}
-                  </span>
-                )}
+                {kpiSubtitle}
               </div>
-            )}
-          </>
-        ) : (
-          /* NO COMPARISON: Render dynamic month and year as bottom subtitle */
-          kpiSubtitle && (
-            <div
-              style={{
-                color: '#64748b',
-                fontSize: isVerticalUltraCompact
-                  ? '0.74rem'
-                  : isVerticalCompact
-                  ? '0.78rem'
-                  : '0.84rem',
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-              title={kpiSubtitle}
-            >
-              {kpiSubtitle}
-            </div>
-          )
-        )}
-      </div>
+            )
+          )}
+        </div>
+      )}
 
       {/* Optional Sparkline Area */}
       {canRenderSparkline && (

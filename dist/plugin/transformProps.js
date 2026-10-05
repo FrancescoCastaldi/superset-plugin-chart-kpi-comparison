@@ -552,6 +552,10 @@ export default function transformProps(chartProps) {
     else {
         resolvedTitle = '';
     }
+    const showTitle = getProp('showTitle', 'show_title', true) !== false;
+    if (!showTitle) {
+        resolvedTitle = '';
+    }
     // If Peak or Min or comparison disabled, comparison is strictly disabled
     if (isPeak || isMin || !enableComparison) {
         comparisonValue = null;
@@ -589,6 +593,8 @@ export default function transformProps(chartProps) {
     const suffixValue = getProp('suffixValue', 'suffix_value', '');
     const cardAlignment = getProp('cardAlignment', 'card_alignment', 'left');
     const showComparisonValue = getProp('showComparisonValue', 'show_comparison_value', true);
+    const showComparisonLabel = getProp('showComparisonLabel', 'show_comparison_label', true);
+    const showBadge = getProp('showBadge', 'show_badge', true);
     const showAbsoluteDelta = getProp('showAbsoluteDelta', 'show_absolute_delta', true);
     const sparklineFill = getProp('sparklineFill', 'sparkline_fill', true);
     return {
@@ -617,7 +623,10 @@ export default function transformProps(chartProps) {
         cardBoxShadow,
         badgeStyle,
         cardAlignment,
+        showTitle: showTitle !== false,
+        showBadge: showBadge !== false,
         showComparisonValue: showComparisonValue !== false,
+        showComparisonLabel: showComparisonLabel !== false,
         showAbsoluteDelta: showAbsoluteDelta !== false,
         showSparkline,
         sparklineData,
