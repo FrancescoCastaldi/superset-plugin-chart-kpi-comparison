@@ -8,7 +8,7 @@
     3. Copies plugin files into superset-frontend/plugins/superset-plugin-chart-kpi-comparison.
     4. Safely parses and updates MainPreset.ts with backup and idempotency:
        - import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';
-       - new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }).register(),
+       - new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),
     5. Cleans stale Webpack/Babel cache.
 .PARAMETER SupersetPath
     Path to the Apache Superset root directory (e.g. D:\Sviluppo\superset).
@@ -274,7 +274,7 @@ $RawContent = [System.IO.File]::ReadAllText($PresetFile, [System.Text.Encoding]:
 $NL = if ($RawContent.Contains("`r`n")) { "`r`n" } else { "`n" }
 
 $TargetImport = "import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';"
-$TargetRegister = "        new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }).register(),"
+$TargetRegister = "        new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),"
 
 # Verifica idempotenza
 $hasExactImport = $RawContent.Contains($TargetImport)
