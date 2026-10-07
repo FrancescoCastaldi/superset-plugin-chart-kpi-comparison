@@ -7,6 +7,13 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.24] - 2026-10-07
+### Added
+- **Build Standalone**: Aggiunte le devDependencies `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@superset-ui/core` e `@superset-ui/chart-controls` con versioni allineate a `superset-frontend` 6.1.0 (React 17, @superset-ui 0.20.x): `npm run build` ora termina con exit 0 anche fuori dall'albero Superset, senza gli errori TS2307/TS2875. Aggiunto `.npmrc` con `legacy-peer-deps` per un'installazione zero-friction delle dipendenze e `package-lock.json` rigenerato con l'albero completo.
+- **Suite di Unit Test Jest**: Setup jest + ts-jest (stesso pattern di superset-plugin-chart-hierarchical-table) con script `test` e `test:watch` basati sulla catena di fallback resiliente. Prima suite di 47 test verdi che copre `utils/formatters.ts` (`formatItalianNumber`, `formatDeltaPercent`, `parseNumericValue`, `getMetricLabel`, `formatMonthYearItalian`) e i rami di `plugin/buildQuery.ts` (dual-metric vs time-shift, soppressione dei time offsets senza range chiuso, metriche peak/min, sparkline e limiti di riga).
+### Fixed
+- **Tipizzazione `time_range`**: Il campo `time_range` e' ora dichiarato esplicitamente come opzionale nell'interfaccia `KPIComparisonFormData`, risolvendo l'errore TS2339 in `buildQuery.ts` senza alcuna modifica alla logica della query.
+
 ## [0.1.23] - 2026-10-07
 ### Fixed
 - **Idempotenza Rigida della Registrazione in `MainPreset.ts`**: La verifica di configurazione esistente in `install-plugin.ps1` e' ora riga-esatta sulla forma canonica `new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),`, con controllo duplicati su import e registrazioni: le varianti legacy con `.register()` e le indentazioni anomale vengono normalizzate alla forma canonica invece di essere considerate gia' configurate.

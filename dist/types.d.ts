@@ -11,6 +11,7 @@ export interface KPIComparisonFormData extends QueryFormData {
     metric?: any;
     comparison_metric?: any;
     time_compare?: string;
+    time_range?: string;
     comparison_label?: string;
     time_column?: string;
     show_title?: boolean;

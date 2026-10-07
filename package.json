@@ -1,6 +1,6 @@
 {
   "name": "superset-plugin-chart-kpi-comparison",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "KPI Comparison Card — All-in-One KPI Card with Temporal & Dual Metric Delta % for Apache Superset",
   "homepage": "https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison",
   "repository": {
@@ -17,6 +17,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.json || node node_modules/typescript/lib/tsc.js --project tsconfig.json || npx tsc --project tsconfig.json",
     "clean": "rimraf dist",
+    "test": "node ./node_modules/jest/bin/jest.js --preset=ts-jest || node ../../node_modules/jest/bin/jest.js --preset=ts-jest",
+    "test:watch": "node ./node_modules/jest/bin/jest.js --preset=ts-jest --watch || node ../../node_modules/jest/bin/jest.js --preset=ts-jest --watch",
     "install:plugin": "powershell -ExecutionPolicy Bypass -File ./install-plugin.ps1"
   },
   "keywords": [
@@ -45,7 +47,16 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@superset-ui/chart-controls": "^0.20.3",
+    "@superset-ui/core": "^0.20.4",
+    "@types/jest": "^29.5.12",
     "@types/node": "^16.18.126",
+    "@types/react": "^17.0.83",
+    "@types/react-dom": "^17.0.26",
+    "jest": "^29.7.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "ts-jest": "^29.1.2",
     "typescript": "~5.9.2"
   }
 }
