@@ -9,6 +9,8 @@
     4. Safely parses and updates MainPreset.ts with backup and idempotency:
        - import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';
        - new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),
+       Legacy registration variants (`.register()` lines, odd indentation, duplicates)
+       are normalized to the canonical form instead of adding new lines.
     5. Cleans stale Webpack/Babel cache.
 .PARAMETER SupersetPath
     Path to the Apache Superset root directory (e.g. D:\Sviluppo\superset).
@@ -276,11 +278,16 @@ $NL = if ($RawContent.Contains("`r`n")) { "`r`n" } else { "`n" }
 $TargetImport = "import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';"
 $TargetRegister = "        new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),"
 
-# Verifica idempotenza
-$hasExactImport = $RawContent.Contains($TargetImport)
-$hasExactRegister = $RawContent.Contains("new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }).register()")
+# Verifica idempotenza sulla FORMA CANONICA (riga-esatta): le varianti legacy
+# (riga con `.register()`, indentazioni anomale, duplicati) non contano come
+# configurazione valida e vengono normalizzate dal ramo else.
+$PresetLineList = [System.Collections.Generic.List[string]]($RawContent -split "\r?\n")
+$hasExactImport = ($PresetLineList -contains $TargetImport)
+$hasExactRegister = ($PresetLineList -contains $TargetRegister)
+$importCount = ([regex]::Matches($RawContent, "from\s*['`"][^'`"]*superset-plugin-chart-kpi-comparison")).Count
+$registerCount = ([regex]::Matches($RawContent, "new\s+KPIComparisonChartPlugin")).Count
 
-if (-not $CleanReinstall -and $hasExactImport -and $hasExactRegister) {
+if (-not $CleanReinstall -and $hasExactImport -and $hasExactRegister -and ($importCount -eq 1) -and ($registerCount -eq 1)) {
     Write-Color "[INFO] MainPreset.ts e' gia' registrato correttamente (idempotente - nessuna modifica necessaria)." "Green"
 } else {
     Write-Color "[INFO] Aggiornamento import e registrazione in corso..." "Yellow"

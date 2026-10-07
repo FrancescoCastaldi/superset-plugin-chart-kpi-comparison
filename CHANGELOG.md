@@ -7,6 +7,10 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.23] - 2026-10-07
+### Fixed
+- **Idempotenza Rigida della Registrazione in `MainPreset.ts`**: La verifica di configurazione esistente in `install-plugin.ps1` e' ora riga-esatta sulla forma canonica `new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),`, con controllo duplicati su import e registrazioni: le varianti legacy con `.register()` e le indentazioni anomale vengono normalizzate alla forma canonica invece di essere considerate gia' configurate.
+
 ## [0.1.22] - 2026-10-05
 ### Added
 - **Controlli Nativi di Visibilita in Explore**: Aggiunte caselle di controllo (checkbox) indipendenti per mostrare o nascondere con un click gli elementi visivi della card direttamente da Explore:
