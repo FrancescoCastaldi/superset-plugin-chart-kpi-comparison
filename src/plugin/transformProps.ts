@@ -17,7 +17,19 @@ import {
   getMetricLabel,
   parseNumericValue,
 } from '../utils/formatters';
-
+import {
+  getContrastTextColor,
+  getTrendColors,
+  resolveCardBgColor,
+  resolveSparklineColor,
+  toRgbaString,
+} from '../utils/colors';
+import {
+  classifyExtremeTitle,
+  extractSparklineData,
+  selectReferenceRow,
+} from '../utils/series';
+import { computeDelta, getTrendPolarity } from '../utils/trend';
 
 export default function transformProps(chartProps: ChartProps): KPIComparisonProps {
   const { width, height, formData, queriesData } = chartProps;
@@ -52,52 +64,19 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   let primaryValue: number | null = null;
   let comparisonValue: number | null = null;
   let primaryKeyUsed: string | null = null;
-  const sparklineData: number[] = [];
+  let sparklineData: number[] = [];
   let referenceRow: Record<string, any> | undefined;
 
   const rawTitle = getProp<string>('kpiTitle', 'kpi_title', '') || getProp<string>('sliceName', 'slice_name', '');
-  const titleLower = rawTitle.toLowerCase();
-  const isPeak = titleLower.includes('picco') || titleLower.includes('peak');
-  const isMin =
-    titleLower.includes('minimo') ||
-    titleLower.includes('basso') ||
-    titleLower.includes('lowest');
+  const { isPeak, isMin } = classifyExtremeTitle(rawTitle);
 
   if (data.length > 0) {
-    if (isPeak) {
-      // Find row with MAXIMUM primary metric
-      let maxVal = -Infinity;
-      let peakRow = data[0];
-      data.forEach(r => {
-        const v = parseNumericValue(primaryMetricKey ? r[primaryMetricKey] : null) ??
-                  parseNumericValue(Object.values(r).find(val => typeof val === 'number'));
-        if (v !== null && v > maxVal) {
-          maxVal = v;
-          peakRow = r;
-        }
-      });
-      referenceRow = peakRow;
-    } else if (isMin) {
-      // Find row with MINIMUM primary metric
-      let minVal = Infinity;
-      let minRow = data[0];
-      data.forEach(r => {
-        const v = parseNumericValue(primaryMetricKey ? r[primaryMetricKey] : null) ??
-                  parseNumericValue(Object.values(r).find(val => typeof val === 'number'));
-        if (v !== null && v < minVal) {
-          minVal = v;
-          minRow = r;
-        }
-      });
-      referenceRow = minRow;
-    } else {
-      referenceRow =
-        calculationMode === 'dual_metric' &&
-        showSparkline &&
-        data.length > 1
-          ? data[data.length - 1]
-          : data[0];
-    }
+    referenceRow = selectReferenceRow(data, primaryMetricKey, {
+      isPeak,
+      isMin,
+      calculationMode,
+      showSparkline,
+    });
     const firstRow = data[0];
 
     // 1. Primary Value extraction
@@ -181,12 +160,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
     // 3. Sparkline data extraction if multiple rows present
     if (showSparkline && data.length > 1) {
-      data.forEach(row => {
-        const val = parseNumericValue(row[primaryMetricKey]);
-        if (val !== null) {
-          sparklineData.push(val);
-        }
-      });
+      sparklineData = extractSparklineData(data, primaryMetricKey);
     }
   }
 
@@ -220,58 +194,17 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Delta calculations
-  let deltaAbsolute: number | null = null;
-  let deltaPercent: number | null = null;
-  let trendDirection: TrendDirection = 'flat';
-
-  if (primaryValue !== null && comparisonValue !== null) {
-    deltaAbsolute = primaryValue - comparisonValue;
-    if (comparisonValue !== 0) {
-      deltaPercent = (deltaAbsolute / Math.abs(comparisonValue)) * 100;
-    } else if (primaryValue === 0) {
-      deltaPercent = 0;
-    } else {
-      deltaPercent = 100;
-    }
-
-    if (deltaPercent > 0.001) {
-      trendDirection = 'up';
-    } else if (deltaPercent < -0.001) {
-      trendDirection = 'down';
-    } else {
-      trendDirection = 'flat';
-    }
-  }
+  const delta = computeDelta(primaryValue, comparisonValue);
+  let deltaAbsolute: number | null = delta.deltaAbsolute;
+  let deltaPercent: number | null = delta.deltaPercent;
+  let trendDirection: TrendDirection = delta.trendDirection;
 
   // Semantic color coding and polarity
   const invertPolarity = Boolean(getProp('invertPolarity', 'invert_polarity', false));
-  let trendColor = '#64748b'; // default slate grey
-  let badgeBackgroundColor = '#f1f5f9';
-  let badgeTextColor = '#475569';
-
-  const isPositiveTrend =
-    (!invertPolarity && trendDirection === 'up') ||
-    (invertPolarity && trendDirection === 'down');
-
-  const isNegativeTrend =
-    (!invertPolarity && trendDirection === 'down') ||
-    (invertPolarity && trendDirection === 'up');
-
   const badgeStyle: BadgeStyle = getProp<BadgeStyle>('badgeStyle', 'badge_style', 'pill');
-
-  if (isPositiveTrend) {
-    trendColor = '#10b981'; // emerald green
-    badgeBackgroundColor = badgeStyle === 'subtle' ? 'transparent' : '#dcfce7';
-    badgeTextColor = '#15803d';
-  } else if (isNegativeTrend) {
-    trendColor = '#ef4444'; // rose red
-    badgeBackgroundColor = badgeStyle === 'subtle' ? 'transparent' : '#fee2e2';
-    badgeTextColor = '#b91c1c';
-  } else {
-    trendColor = '#94a3b8';
-    badgeBackgroundColor = badgeStyle === 'subtle' ? 'transparent' : '#f1f5f9';
-    badgeTextColor = '#64748b';
-  }
+  const trendColors = getTrendColors(getTrendPolarity(trendDirection, invertPolarity), badgeStyle);
+  const { trendColor } = trendColors;
+  let { badgeBackgroundColor, badgeTextColor } = trendColors;
 
   // Format strings
   const numberFormat = getProp<string | undefined>('numberFormat', 'number_format', undefined);
@@ -302,9 +235,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           // Badge color from user settings
           const totalBadgeColor = getProp<any>('totalBadgeColor', 'total_badge_color', { r: 99, g: 102, b: 241, a: 1 });
           if (totalBadgeColor && totalBadgeColor.r !== undefined) {
-            badgeBackgroundColor = `rgba(${totalBadgeColor.r}, ${totalBadgeColor.g}, ${totalBadgeColor.b}, ${totalBadgeColor.a ?? 1})`;
-            const brightness = (totalBadgeColor.r * 299 + totalBadgeColor.g * 587 + totalBadgeColor.b * 114) / 1000;
-            badgeTextColor = brightness > 125 ? '#0f172a' : '#ffffff';
+            badgeBackgroundColor = toRgbaString(totalBadgeColor);
+            badgeTextColor = getContrastTextColor(totalBadgeColor);
           }
         }
       }
@@ -312,15 +244,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   }
 
   // Sparkline color
-  let sparklineColor = '#2563eb';
-  const sparklineColorCfg = getProp<any>('sparklineColor', 'sparkline_color', undefined);
-  if (sparklineColorCfg) {
-    if (typeof sparklineColorCfg === 'string') {
-      sparklineColor = sparklineColorCfg;
-    } else if (sparklineColorCfg.r !== undefined && sparklineColorCfg.g !== undefined && sparklineColorCfg.b !== undefined) {
-      sparklineColor = `rgba(${sparklineColorCfg.r}, ${sparklineColorCfg.g}, ${sparklineColorCfg.b}, ${sparklineColorCfg.a ?? 1})`;
-    }
-  }
+  const sparklineColor = resolveSparklineColor(
+    getProp<any>('sparklineColor', 'sparkline_color', undefined),
+  );
 
   // Dynamic context: extract active time range filter from dashboard
   const activeTimeRange =
@@ -408,13 +334,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     });
 
     if (dateCol) {
-      const rawTitle = getProp<string>('kpiTitle', 'kpi_title', '');
-      const titleLower = rawTitle.toLowerCase();
-      const isPeak = titleLower.includes('picco') || titleLower.includes('peak');
-      const isMin =
-        titleLower.includes('minimo') ||
-        titleLower.includes('basso') ||
-        titleLower.includes('lowest');
+      // Only the explicit KPI title counts here: a peak/min slice name alone
+      // still labels the card with the latest row month.
+      const { isPeak, isMin } = classifyExtremeTitle(getProp<string>('kpiTitle', 'kpi_title', ''));
 
       if (isPeak) {
         let maxVal = -Infinity;
@@ -658,19 +580,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     ((enableComparison && comparisonValue !== null && deltaPercent !== null) || hasPercentOfTotal);
 
   // Aesthetic Customization
-  let cardBgColor = 'transparent';
-  const cardBgColorCfg = getProp<any>('cardBgColor', 'card_bg_color', undefined);
-  if (cardBgColorCfg) {
-    if (typeof cardBgColorCfg === 'string') {
-      cardBgColor = cardBgColorCfg;
-    } else if (cardBgColorCfg.r !== undefined && cardBgColorCfg.g !== undefined && cardBgColorCfg.b !== undefined) {
-      if (cardBgColorCfg.a === 0) {
-        cardBgColor = 'transparent';
-      } else {
-        cardBgColor = `rgba(${cardBgColorCfg.r}, ${cardBgColorCfg.g}, ${cardBgColorCfg.b}, ${cardBgColorCfg.a ?? 1})`;
-      }
-    }
-  }
+  const cardBgColor = resolveCardBgColor(getProp<any>('cardBgColor', 'card_bg_color', undefined));
 
   const cardBorderRadius: CardBorderRadius = getProp<CardBorderRadius>('cardBorderRadius', 'card_border_radius', 'square');
   const cardBoxShadow: CardBoxShadow = getProp<CardBoxShadow>('cardBoxShadow', 'card_box_shadow', 'none');

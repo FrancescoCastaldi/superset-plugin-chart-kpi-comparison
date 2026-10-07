@@ -7,6 +7,16 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+## [0.1.25] - 2026-10-08
+### Changed
+- **Refactor conservativo di `transformProps.ts`**: La logica pura e' stata estratta in moduli dedicati senza alcuna modifica a formule, colori, output props o `controlPanel.tsx`:
+  - `utils/trend.ts`: `computeDeltaPercent`, `getTrendDirection` (soglia flat `0.001`), `computeDelta` e `getTrendPolarity` (inversione di polarita').
+  - `utils/colors.ts`: `getPerceivedBrightness` (formula di luminosita' W3C `(R*299 + G*587 + B*114) / 1000`, prima inline nel badge percentuale sul totale), `getContrastTextColor` (soglia 125), `toRgbaString`, `getTrendColors` (palette badge verde/rosso/neutra e stile `subtle`), `resolveSparklineColor`, `resolveCardBgColor`.
+  - `utils/series.ts`: `classifyExtremeTitle` (card picco/minimo), `selectReferenceRow` (riga di riferimento per picco/minimo/sparkline) ed `extractSparklineData`.
+### Added
+- **Test**: Suite di caratterizzazione di `transformProps` (scritta e verificata verde prima del refactor) e unit test diretti per ogni funzione estratta e per `formatMetricValue`: 165 test verdi (47 preesistenti invariati + 118 nuovi).
+- **Mock `@superset-ui/core`**: `test/__mocks__/supersetCoreMock.js` replica ora fedelmente `getNumberFormatter` di @superset-ui/core 0.20.4 (registry con default `SMART_NUMBER`, formatter adattivo, formati d3-format v1 con locale di default, gestione dei formati non validi e dei valori null/NaN/infiniti).
+
 ## [0.1.24] - 2026-10-07
 ### Added
 - **Build Standalone**: Aggiunte le devDependencies `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@superset-ui/core` e `@superset-ui/chart-controls` con versioni allineate a `superset-frontend` 6.1.0 (React 17, @superset-ui 0.20.x): `npm run build` ora termina con exit 0 anche fuori dall'albero Superset, senza gli errori TS2307/TS2875. Aggiunto `.npmrc` con `legacy-peer-deps` per un'installazione zero-friction delle dipendenze e `package-lock.json` rigenerato con l'albero completo.
