@@ -6,7 +6,6 @@ import { KPISparkline } from './KPISparkline';
 export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   width,
   height,
-  primaryValue,
   comparisonValue = null,
   formattedPrimary,
   formattedComparison,
@@ -46,7 +45,6 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   const isVerticalUltraCompact = height < 90;
   const isVerticalCompact = height < 135;
   const isHorizontalUltraCompact = width < 180;
-  const isHorizontalCompact = width < 230;
 
   // Title intelligence:
   // When vertical height is very small (< 90px), vertical space is prioritized 100%

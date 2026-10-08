@@ -6,6 +6,13 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/)
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- **Bundle ESM minificato con esbuild**: Il nuovo `scripts/build.mjs` (esbuild `^0.25`) genera un singolo `dist/index.esm.js` minificato (target `es2020`/`chrome110`/`firefox110`/`safari16`, sourcemap linked senza `sourcesContent`) con React e `@superset-ui/*` esterni. `npm run build` esegue ora `tsc --emitDeclarationOnly` (solo tipi `.d.ts`) seguito da `build:esm`: la cartella `dist/` scende da 177.909 B a circa 95 KB ed elimina i file JS per-modulo. `main` e `module` puntano entrambi a `dist/index.esm.js` (prima `main` puntava a `dist/index.js` e `module` a un file inesistente). Le immagini della gallery (~700 KB ciascuna) non vengono inlinate: il bundle le importa da `src/images`, gia' incluso nel pacchetto. Superset continua a compilare il plugin da `src/` tramite `install.bat`, nessun impatto a runtime.
+- **`sideEffects: false`** in `package.json`: il plugin non importa CSS ne' esegue codice al caricamento dei moduli, quindi il bundler host puo' rimuovere gli export non usati (tree-shaking).
+- **TypeScript strict**: `tsconfig.json` abilita `strict`, `noUnusedLocals`, `noUnusedParameters` e `noImplicitReturns`. Correzioni minime senza modifiche di comportamento: rimossi l'import inutilizzato `NumberFormatter` in `utils/formatters.ts`, il prop destrutturato ma non usato `primaryValue` e la costante `isHorizontalCompact` in `KPIComparisonChart.tsx`; in `transformProps.ts` la riga di riferimento ricade esplicitamente sulla prima riga (garantita da `data.length > 0`).
+- **React 18 nelle devDependencies**: `react`, `react-dom`, `@types/react` e `@types/react-dom` passano a `^18.2.0`, allineati alle `peerDependencies` (prima `^17`).
+### Removed
+- **Dipendenze runtime inutilizzate**: rimosse `classnames`, `lodash` e `d3-format`, mai importate da `src/`. Il mock di test `supersetCoreMock.js` continua a usare la copia di `d3-format` v1 annidata in `@superset-ui/core`, quindi non serve spostarla nelle devDependencies.
 
 ## [0.1.25] - 2026-10-08
 ### Changed

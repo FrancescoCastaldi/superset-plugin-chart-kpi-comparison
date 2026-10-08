@@ -13,7 +13,7 @@ describe('KPI Comparison buildQuery', () => {
     const context = build({ metric: 'sum_richieste' });
     expect(context.queries).toHaveLength(1);
     expect(context.datasource).toEqual({ id: 1, type: 'table' });
-    expect(context.form_data.datasource).toBe('1__table');
+    expect(context.form_data?.datasource).toBe('1__table');
   });
 
   describe('dual metric mode', () => {

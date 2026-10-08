@@ -1,4 +1,4 @@
-import { getNumberFormatter, NumberFormatter } from '@superset-ui/core';
+import { getNumberFormatter } from '@superset-ui/core';
 
 /**
  * Format a number using Italian convention (dot as thousands separator, comma as decimal).

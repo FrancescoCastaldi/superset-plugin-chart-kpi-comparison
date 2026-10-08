@@ -71,13 +71,14 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   const { isPeak, isMin } = classifyExtremeTitle(rawTitle);
 
   if (data.length > 0) {
-    referenceRow = selectReferenceRow(data, primaryMetricKey, {
-      isPeak,
-      isMin,
-      calculationMode,
-      showSparkline,
-    });
     const firstRow = data[0];
+    referenceRow =
+      selectReferenceRow(data, primaryMetricKey, {
+        isPeak,
+        isMin,
+        calculationMode,
+        showSparkline,
+      }) ?? firstRow;
 
     // 1. Primary Value extraction
     if (primaryMetricKey && referenceRow[primaryMetricKey] !== undefined) {
@@ -96,7 +97,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     if (primaryValue === null) {
       // Fallback: first numeric column
       const firstNumKey = Object.keys(referenceRow).find(
-        k => typeof referenceRow[k] === 'number',
+        k => typeof referenceRow?.[k] === 'number',
       );
       if (firstNumKey) {
         primaryValue = parseNumericValue(referenceRow[firstNumKey]);
