@@ -82,7 +82,10 @@ export default function App() {
         },
       ],
     };
-    return transformProps(chartProps);
+    const res = transformProps(chartProps);
+    (window as any).__TRANSFORMED_PROPS__ = res;
+    (window as any).__FORM_DATA__ = formData;
+    return res;
   }, [width, height, formData, scenario.data]);
 
   return (
@@ -237,59 +240,57 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Modalità Dimensione Testo</label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => updateFormData('kpi_font_size_mode', 'auto')}
-                      style={{
-                        flex: 1,
-                        padding: '6px',
-                        borderRadius: '6px',
-                        border: '1px solid #334155',
-                        background: (formData.kpi_font_size_mode || 'auto') === 'auto' ? '#3b82f6' : '#1e293b',
-                        color: '#fff',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Auto-Fit Fluido
-                    </button>
-                    <button
-                      onClick={() => updateFormData('kpi_font_size_mode', 'manual')}
-                      style={{
-                        flex: 1,
-                        padding: '6px',
-                        borderRadius: '6px',
-                        border: '1px solid #334155',
-                        background: formData.kpi_font_size_mode === 'manual' ? '#3b82f6' : '#1e293b',
-                        color: '#fff',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Dimensione Fissa (px)
-                    </button>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Dimensione Valore Principale</label>
+                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    {[
+                      { id: 'auto', label: 'Auto-Fit' },
+                      { id: 'small', label: 'Small (24px)' },
+                      { id: 'medium', label: 'Medium (36px)' },
+                      { id: 'large', label: 'Large (48px)' },
+                      { id: 'xlarge', label: 'XLarge (64px)' },
+                      { id: 'manual', label: 'Custom' },
+                    ].map((mode) => (
+                      <button
+                        key={mode.id}
+                        onClick={() => updateFormData('kpi_font_size_mode', mode.id)}
+                        style={{
+                          flex: 1,
+                          minWidth: '70px',
+                          padding: '6px 4px',
+                          borderRadius: '6px',
+                          border: '1px solid #334155',
+                          background: (formData.kpi_font_size_mode || 'auto') === mode.id ? '#3b82f6' : '#1e293b',
+                          color: '#fff',
+                          fontSize: '11px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {formData.kpi_font_size_mode === 'manual' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#cbd5e1' }}>
-                      <span>Dimensione Valore Principale</span>
-                      <span style={{ color: '#38bdf8', fontWeight: 700 }}>{formData.kpi_font_size_manual || 36}px</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="14"
-                      max="84"
-                      value={formData.kpi_font_size_manual || 36}
-                      onChange={(e) => updateFormData('kpi_font_size_manual', Number(e.target.value))}
-                      style={{ width: '100%', cursor: 'pointer' }}
-                    />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#cbd5e1' }}>
+                    <span>Regolazione Pixel (Slider)</span>
+                    <span style={{ color: '#38bdf8', fontWeight: 700 }}>
+                      {formData.kpi_font_size_manual || 36}px
+                    </span>
                   </div>
-                )}
+                  <input
+                    type="range"
+                    min="14"
+                    max="100"
+                    value={formData.kpi_font_size_manual || 36}
+                    onChange={(e) => {
+                      updateFormData('kpi_font_size_mode', 'manual');
+                      updateFormData('kpi_font_size_manual', Number(e.target.value));
+                    }}
+                    style={{ width: '100%', cursor: 'pointer' }}
+                  />
+                </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Peso Font / Grassetto (Font Weight)</label>

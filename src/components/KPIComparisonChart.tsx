@@ -3,6 +3,16 @@ import { KPIComparisonProps } from '../types';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
 
+const GOOGLE_FONTS_MAP: Record<string, string> = {
+  Inter: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
+  Roboto: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap',
+  Montserrat: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap',
+  Poppins: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap',
+  Oswald: 'https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap',
+  'JetBrains Mono': 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap',
+  'Fira Code': 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap',
+};
+
 export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   width,
   height,
@@ -62,6 +72,22 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   clickUrl = '',
   clickTarget = '_self',
 }) => {
+  // Dynamically load Google Fonts if a web font is requested
+  React.useEffect(() => {
+    if (!kpiFontFamily || kpiFontFamily === 'inherit') return;
+    const fontUrl = GOOGLE_FONTS_MAP[kpiFontFamily];
+    if (fontUrl && typeof document !== 'undefined') {
+      const linkId = `kpi-font-${kpiFontFamily.replace(/\s+/g, '-').toLowerCase()}`;
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement('link');
+        link.id = linkId;
+        link.rel = 'stylesheet';
+        link.href = fontUrl;
+        document.head.appendChild(link);
+      }
+    }
+  }, [kpiFontFamily]);
+
   // Dimensional tiers (decoupled height and width)
   const isVerticalUltraCompact = height < 90;
   const isVerticalCompact = height < 135;
@@ -117,23 +143,39 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   );
   const maxFontFromHeight = Math.floor(availHeight / 1.05);
 
-  // Primary font size: Auto-fit fluid scaling or manual pixel specification
+  // Primary font size: Auto-fit fluid scaling, size presets, or manual pixel specification
   const calculatedFontPx = Math.max(
     13,
     Math.min(64, maxFontFromWidth, maxFontFromHeight),
   );
-  const primaryFontSizePx =
-    kpiFontSizeMode === 'manual' && kpiFontSizeManual
-      ? Math.max(12, Math.min(120, Number(kpiFontSizeManual)))
-      : calculatedFontPx;
+  let primaryFontSizePx: number;
+  if (kpiFontSizeMode === 'small') {
+    primaryFontSizePx = 24;
+  } else if (kpiFontSizeMode === 'medium') {
+    primaryFontSizePx = 36;
+  } else if (kpiFontSizeMode === 'large') {
+    primaryFontSizePx = 48;
+  } else if (kpiFontSizeMode === 'xlarge') {
+    primaryFontSizePx = 64;
+  } else if (kpiFontSizeMode === 'manual') {
+    primaryFontSizePx = Math.max(12, Math.min(120, Number(kpiFontSizeManual) || 36));
+  } else {
+    // auto-fit fluid
+    primaryFontSizePx = calculatedFontPx;
+  }
 
-  const finalFontWeight = kpiFontWeight || 800;
+  const finalFontWeight = Number(kpiFontWeight) || (kpiFontWeight as any) || 800;
   const finalLetterSpacing =
     kpiLetterSpacing === 'normal'
       ? '0em'
       : kpiLetterSpacing === 'wide'
       ? '0.04em'
       : '-0.025em';
+
+  const resolvedFontFamily =
+    kpiFontFamily && kpiFontFamily !== 'inherit' && !kpiFontFamily.includes('-apple-system')
+      ? `"${kpiFontFamily}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
+      : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
   // Absolute delta in badge: hide when horizontal width is tight (< 220px) to prevent crowded bottom row
   const hideBadgeAbsolute = !showAbsoluteDelta || width < 220;
@@ -246,9 +288,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         borderRadius,
         boxShadow,
         border,
-        fontFamily: kpiFontFamily
-          ? `${kpiFontFamily}, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
-          : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        fontFamily: resolvedFontFamily,
         overflow: 'hidden',
         position: 'relative',
         cursor: clickUrl ? 'pointer' : 'default',
@@ -275,6 +315,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         >
           <div
             style={{
+              fontFamily: resolvedFontFamily,
               fontSize:
                 titleFontSize === 'small'
                   ? '0.70rem'
@@ -304,6 +345,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           {showSubtitle && (
             <div
               style={{
+                fontFamily: resolvedFontFamily,
                 fontSize:
                   subtitleFontSize === 'medium'
                     ? '0.82rem'
@@ -365,6 +407,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         )}
         <span
           style={{
+            fontFamily: resolvedFontFamily,
             fontSize: `${primaryFontSizePx}px`,
             fontWeight: finalFontWeight as any,
             fontVariantNumeric: kpiTabularNums !== false ? 'tabular-nums' : 'normal',
@@ -385,6 +428,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         {suffixValue && (
           <span
             style={{
+              fontFamily: resolvedFontFamily,
               fontSize: `${Math.max(10, Math.round(primaryFontSizePx * 0.5))}px`,
               fontWeight: 600,
               color: '#64748b',
@@ -402,6 +446,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
       {hasBottomContent && (
         <div
           style={{
+            fontFamily: resolvedFontFamily,
             display: 'flex',
             flexWrap: 'nowrap',
             alignItems: 'center',
@@ -444,6 +489,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                 (showComparisonLabel && Boolean(comparisonLabel))) && (
                 <div
                   style={{
+                    fontFamily: resolvedFontFamily,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '3px',

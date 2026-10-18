@@ -27,7 +27,7 @@ export interface KPIComparisonFormData extends QueryFormData {
     card_border_color?: string;
     card_border_width?: number;
     kpi_font_family?: string;
-    kpi_font_size_mode?: 'auto' | 'manual';
+    kpi_font_size_mode?: 'auto' | 'small' | 'medium' | 'large' | 'xlarge' | 'manual' | string;
     kpi_font_size_manual?: number;
     kpi_font_weight?: string | number;
     kpi_letter_spacing?: 'normal' | 'tight' | 'wide' | string;
@@ -86,7 +86,7 @@ export interface KPIComparisonProps {
     prefixValue: string;
     suffixValue: string;
     kpiFontFamily?: string;
-    kpiFontSizeMode?: 'auto' | 'manual';
+    kpiFontSizeMode?: 'auto' | 'small' | 'medium' | 'large' | 'xlarge' | 'manual' | string;
     kpiFontSizeManual?: number;
     kpiFontWeight?: string | number;
     kpiLetterSpacing?: string;

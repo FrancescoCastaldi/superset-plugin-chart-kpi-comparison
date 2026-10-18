@@ -18,7 +18,7 @@
 
 ![KPI Comparison Card Workbench](docs/images/kpi_comparison_preview.png)
 
-*Figure 1: KPI Comparison Card v0.2.0 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
+*Figure 1: KPI Comparison Card v0.2.1 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
 
 <p align="center">
   <img src="docs/images/kpi_card_showcase.png" alt="KPI Comparison Card Isolated Preview" width="460" />
@@ -83,7 +83,7 @@ flowchart LR
 
 ```
 superset-plugin-chart-kpi-comparison/
-├── package.json                    # Plugin manifest & dependencies (v0.2.0)
+├── package.json                    # Plugin manifest & dependencies (v0.2.1)
 ├── tsconfig.json                   # TypeScript build configuration
 ├── dev.bat                         # Quick launcher for local Dev Studio
 ├── dev-studio/                     # Interactive Vite + React HMR workbench

@@ -462,7 +462,11 @@ const config: ControlPanelConfig = {
               default: 'auto',
               choices: [
                 ['auto', t('Auto-Fit Dinamico (Consigliato, scala con la card)')],
-                ['manual', t('Dimensione Fissa in Pixel')],
+                ['small', t('Piccolo (24px)')],
+                ['medium', t('Medio (36px)')],
+                ['large', t('Grande (48px)')],
+                ['xlarge', t('Molto Grande (64px)')],
+                ['manual', t('Personalizzato in Pixel (px)')],
               ],
               clearable: false,
               renderTrigger: true,

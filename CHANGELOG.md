@@ -5,6 +5,15 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-19
+### Fixed
+- **Iniezione Dinamica Web Fonts (Google Fonts)**: Risolto il mancato rendering visivo della famiglia di font in Superset e nei browser privi dei font locali (Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code). Introdotto caricatore dinamico `useEffect` che inietta il tag `<link>` ufficiale dei Google Fonts in `document.head`.
+- **Ereditarieta CSS ed Evitamento Sintassi Invalida**: Corretta la sintassi CSS per `inherit` ed elementi con spazi (es. `"JetBrains Mono"`), garantendo applicazione diretta dello stile `fontFamily`, `fontSize` e `fontWeight` su tutti gli elementi testuali della card (valore principale, titolo, sottotitolo e confronto).
+
+### Added
+- **Preset Dimensioni Testo e Slider Rapido**: Aggiunti pulsanti preset diretti (Auto-Fit, Small 24px, Medium 36px, Large 48px, XLarge 64px, Custom) con regolazione rapida a slider per un controllo immediato della dimensione numerica del KPI.
+- **Suite di Test Live Headless**: Aggiunto script di test Playwright headless `scripts/verify_typography_live.py` per validazione continua dei computed styles dei font nel Dev Studio su Chromium.
+
 ## [0.2.0] - 2026-10-19
 ### Added
 - **Dev Studio Interattivo Locale**: Ambiente autonomo Vite + React HMR in `dev-studio/` per anteprima in tempo reale e test visivo rapido delle configurazioni del chart con launcher `dev.bat` e comando `npm run studio` su `http://localhost:5175/`. Include selettore scenari realistici (visite ambulatoriali IDI, tempi di attesa pronto soccorso, budget ricavi con progress bar, glassmorphism dark executive), controlli interattivi completi e switch tema canvas.

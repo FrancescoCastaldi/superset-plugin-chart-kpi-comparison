@@ -590,7 +590,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   // Typography Customization
   const kpiFontFamily = getProp<string>('kpiFontFamily', 'kpi_font_family', '');
-  const kpiFontSizeMode = getProp<'auto' | 'manual'>('kpiFontSizeMode', 'kpi_font_size_mode', 'auto');
+  const kpiFontSizeMode = getProp<string>('kpiFontSizeMode', 'kpi_font_size_mode', 'auto');
   const kpiFontSizeManual = getProp<number>('kpiFontSizeManual', 'kpi_font_size_manual', 36);
   const kpiFontWeight = getProp<string | number>('kpiFontWeight', 'kpi_font_weight', '800');
   const kpiLetterSpacing = getProp<string>('kpiLetterSpacing', 'kpi_letter_spacing', 'tight');
