@@ -73,8 +73,16 @@ flowchart LR
 
 ```
 superset-plugin-chart-kpi-comparison/
-├── package.json                    # Plugin manifest & dependencies
+├── package.json                    # Plugin manifest & dependencies (v0.2.0)
 ├── tsconfig.json                   # TypeScript build configuration
+├── dev.bat                         # Quick launcher for local Dev Studio
+├── dev-studio/                     # Interactive Vite + React HMR workbench
+│   ├── index.html                  # Web sandbox with Google Fonts
+│   ├── vite.config.ts              # Vite configuration with src aliases
+│   └── src/
+│       ├── App.tsx                 # Interactive parameter control workbench
+│       ├── mockData.ts             # Realistic healthcare & business datasets
+│       └── supersetMock.ts         # Lightweight Superset Core mock
 ├── install-plugin.ps1              # Unified PowerShell automated installer
 ├── install.bat                     # Windows batch menu launcher
 ├── src/
@@ -86,12 +94,18 @@ superset-plugin-chart-kpi-comparison/
 │   │   ├── controlPanel.tsx        # Superset Explore form controls
 │   │   └── transformProps.ts       # Numeric deltas, trend badges & formatting
 │   ├── components/
-│   │   ├── KPIComparison.tsx       # Main React KPI Card component
-│   │   └── Sparkline.tsx           # Lightweight native SVG sparkline component
+│   │   ├── KPIComparisonChart.tsx  # Main React KPI Card component
+│   │   └── KPISparkline.tsx        # Responsive SVG sparkline component
+│   ├── utils/
+│   │   ├── colors.ts               # Contrast & color calculations
+│   │   ├── formatters.ts           # Metric & percentage formatters
+│   │   ├── series.ts               # Time series reference extraction
+│   │   ├── sparkline.ts            # SVG path & cubic Bezier curve math
+│   │   └── trend.ts                # Delta and polarity calculations
 │   └── images/
 │       ├── thumbnail.png           # Chart picker thumbnail
 │       └── example.png             # Full gallery preview image
-└── test/                           # Unit tests & verification
+└── test/                           # Unit tests & verification (173 tests)
 ```
 
 ---
@@ -164,40 +178,88 @@ Navigate to `http://localhost:8088`, create a new chart, and select **KPI Compar
 | Section | Control (`name`) | UI Label | Type | Default | Description |
 |:---|:---|:---|:---|:---|:---|
 | **Metrics & Comparison** | `calculation_mode` | Calculation Mode | Select | `dual_metric` | Comparison mode: `dual_metric` (pre-aggregated SQL) or `time_shift`. |
-| | `metric` | Primary Metric | Metric | — | Prominent reference metric (e.g. `SUM(current_visits)`). |
-| | `comparison_metric` | Comparison Metric | Metric | — | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
+| | `metric` | Primary Metric | Metric | (none) | Prominent reference metric (e.g. `SUM(current_visits)`). |
+| | `comparison_metric` | Comparison Metric | Metric | (none) | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
 | | `time_compare` | Time Shift Offset | Select | `1 year ago` | Temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`). |
 | | `comparison_label` | Comparison Label | Text | `"vs Periodo Prec."` | Descriptive benchmark text (e.g., `"vs 2025"`, `"vs Target"`). |
-| | `time_column` | Time Column | Select | — | Date/time dimension used to order the vector sparkline. |
+| | `time_column` | Time Column | Select | (none) | Date/time dimension used to order the vector sparkline. |
 | **Card Appearance** | `kpi_title` | KPI Title | Text | `""` | Top uppercase heading (e.g., `"TOTAL OUTPATIENT VISITS"`). |
+| | `show_title` | Show Title | Checkbox | `true` | Toggles visibility of top title label. |
 | | `kpi_subtitle` | Subtitle / Detail | Text | `""` | Secondary context line (e.g., `"Clinical Department - FY 2026"`). |
 | | `card_alignment` | Content Alignment | Select | `left` | Text alignment: `left`, `center`, or `right`. |
 | | `prefix_value` | Value Prefix | Text | `""` | Currency symbols (`$`, `€`) prepended to values. |
 | | `suffix_value` | Value Suffix | Text | `""` | Units (`%`, `days`, `hrs`) appended to values. |
 | | `number_format` | Number Format | Select | `SMART_NUMBER` | d3-format preset or custom formatting pattern. |
-| **Delta % & Polarity** | `invert_polarity` | Invert Color Polarity | Checkbox | `false` | **"Lower is Better" mode**: decreases turn **Green**, increases turn **Red**. |
-| | `badge_style` | Delta Badge Style | Select | `pill` | Visual appearance: `pill` (Rounded Pill), `full` (Box), or `subtle` (Text). |
-| | `show_comparison_value`| Show Comparison Value | Checkbox | `true` | Displays baseline comparison number alongside the card. |
-| | `show_absolute_delta` | Show Absolute Delta | Checkbox | `true` | Appends numeric difference in parentheses (e.g. `(+2,640)`). |
-| **Card Styling** | `card_bg_color` | Card Background Color | Color | `#ffffff` | RGBA color picker with transparency support. |
-| | `card_border_radius` | Card Corner Radius | Select | `subtle` | Preset radius: `square` (0px), `subtle` (8px), `rounded` (14px), `pill` (24px). |
-| | `card_box_shadow` | Card Shadow / Elevation | Select | `none` | Border & shadow style: `none`, `subtle`, `elevated`, `bordered`. |
-| **Sparkline** | `show_sparkline` | Show Sparkline | Checkbox | `false` | Renders inline vector trend curve at the bottom of the card. |
-| | `sparkline_color` | Sparkline Color | Color | `#2563eb` | Line stroke color. |
-| | `sparkline_fill` | Fill Below Curve | Checkbox | `true` | Adds soft gradient fill below the sparkline curve. |
+| **Tipografia & Testo** | `kpi_font_family` | Famiglia Font Valore | Select | `inherit` | Font: Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code. |
+| | `kpi_font_size_mode` | Modalita Dimensione Valore | Select | `auto` | Scaling automatico reattivo (`auto`) o dimensione fissa in pixel (`manual`). |
+| | `kpi_font_size_px` | Dimensione Fissa (px) | Slider | `48` | Dimensione del font quando in modalita manuale (12-120px). |
+| | `kpi_font_weight` | Peso Font Valore | Select | `700` | Peso tipografico: da Light 300 a Black 900. |
+| | `kpi_letter_spacing` | Spaziatura Caratteri | Select | `normal` | Spaziatura testo: `tight`, `normal`, `wide`. |
+| | `kpi_tabular_nums` | Allineamento Numeri Tabulare | Checkbox | `true` | Attiva `tabular-nums` per cifre a larghezza costante anti-jitter. |
+| | `kpi_color` | Colore Valore KPI | Color | (auto) | Colore personalizzato del valore principale. |
+| | `title_font_size` | Dimensione Titolo | Select | `medium` | Dimensione etichetta superiore: `small`, `medium`, `large`, `xlarge`. |
+| | `title_font_weight` | Peso Font Titolo | Select | `600` | Spessore del titolo da Regular a Bold. |
+| | `title_transform_uppercase` | Titolo Tutto Maiuscolo | Checkbox | `true` | Forza la visualizzazione in maiuscolo. |
+| | `title_color` | Colore Titolo | Color | (auto) | Tinta del titolo della card. |
+| | `subtitle_font_size` | Dimensione Sottotitolo | Select | `medium` | Scala dimensionale del sottotitolo. |
+| | `subtitle_font_weight` | Peso Font Sottotitolo | Select | `400` | Peso del font del sottotitolo. |
+| | `subtitle_color` | Colore Sottotitolo | Color | (auto) | Colore del sottotitolo. |
+| | `comparison_font_size` | Dimensione Testo Confronto | Select | `medium` | Scala dimensionale del testo di confronto inferiore. |
+| | `comparison_font_weight` | Peso Font Confronto | Select | `400` | Peso tipografico della riga di benchmark. |
+| | `comparison_label_color` | Colore Etichetta Confronto | Color | (auto) | Colore dedicato alla dicitura descrittiva. |
+| **Delta % & Polarity** | `invert_polarity` | Invert Color Polarity | Checkbox | `false` | **"Lower is Better" mode**: decrescita in **Verde**, crescita in **Rosso**. |
+| | `badge_style` | Delta Badge Style | Select | `pill` | Stile visivo: `pill` (Pillola), `full` (Box solido), o `subtle` (Testo). |
+| | `show_badge` | Show Delta Badge | Checkbox | `true` | Mostra o nasconde il badge percentuale. |
+| | `show_comparison_label` | Show Comparison Label | Checkbox | `true` | Mostra o nasconde la dicitura descrittiva del confronto. |
+| | `show_comparison_value`| Show Comparison Value | Checkbox | `true` | Mostra o nasconde il valore numerico di riferimento. |
+| | `show_absolute_delta` | Show Absolute Delta | Checkbox | `true` | Differenza assoluta tra parentesi (es. `(+2,640)`). |
+| **Card Styling** | `card_bg_color` | Card Background Color | Color | `#ffffff` | Colore di sfondo con supporto trasparenza RGBA. |
+| | `card_border_radius` | Card Corner Radius | Select | `subtle` | Raggio angoli: `square` (0px), `subtle` (8px), `rounded` (14px), `pill` (24px). |
+| | `card_box_shadow` | Card Shadow / Elevation | Select | `none` | Elevazione e ombra: `none`, `subtle`, `elevated`, `bordered`. |
+| | `card_border_width` | Spessore Bordo | Select | `0` | Bordo esplicito: `0` (nessuno), `1px`, `2px`, `3px`. |
+| | `card_border_color` | Colore Bordo | Color | `#e2e8f0` | Tinta del bordo perimetrale. |
+| **Sparkline** | `show_sparkline` | Show Sparkline | Checkbox | `false` | Curva di andamento temporale integrata nella card. |
+| | `sparkline_color` | Sparkline Color | Color | `#2563eb` | Colore del tracciato SVG. |
+| | `sparkline_fill` | Fill Below Curve | Checkbox | `true` | Sfumatura gradiente sotto la curva. |
+| | `sparkline_curve` | Stile Curva | Select | `smooth` | Tracciato morbido spline di Bezier (`smooth`) o angolare (`linear`). |
+| | `sparkline_show_peak_marker` | Marker Punto Massimo | Checkbox | `false` | Punto visivo sul picco massimo della serie. |
+| | `sparkline_show_last_marker` | Marker Valore Attuale | Checkbox | `false` | Punto visivo sull'ultimo valore temporale rilevato. |
+
+---
+
+## 🎨 Dev Studio Locale & Live Preview
+
+Il repository include un ambiente autonomo **Vite + React HMR** dedicato al collaudo visivo immediato senza dover avviare l'intera istanza Superset:
+
+```bash
+# Avvio rapido su Windows tramite launcher batch
+.\dev.bat
+
+# Oppure tramite comando npm
+npm run studio
+```
+
+Il Dev Studio e accessibile su **`http://localhost:5175/`** e offre:
+- **Hot Module Replacement (HMR)** istantaneo: qualsiasi modifica ai componenti o agli stili in `src/` si riflette in tempo reale nel browser.
+- **Scenari Clinici e Direzionali Preconfigurati**: visite ambulatoriali IDI, tempi di attesa pronto soccorso con polarita invertita, budget ricavi e glassmorphism dark executive.
+- **Slider e Controlli Interattivi**: regolazione in tempo reale di larghezza/altezza card, famiglie di font, pesi, spaziature, ombreggiature, curve sparkline e marker.
+- **Sfondo Canvas Personalizzabile**: switch immediato tra sfondo chiaro, scuro ed executive dark per verificare contrasto e accessibilita.
 
 ---
 
 ## 💻 Local Development & Build
 
 ```bash
-# Install dependencies
+# Installazione dipendenze
 npm install
 
-# Compile TypeScript sources
+# Esecuzione suite di test (173 test)
+npm test
+
+# Compilazione bundle ESM e dichiarazioni TypeScript
 npm run build
 
-# Clean build directory
+# Pulizia cartella di compilazione
 npm run clean
 ```
 

@@ -585,6 +585,34 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
 
   const cardBorderRadius: CardBorderRadius = getProp<CardBorderRadius>('cardBorderRadius', 'card_border_radius', 'square');
   const cardBoxShadow: CardBoxShadow = getProp<CardBoxShadow>('cardBoxShadow', 'card_box_shadow', 'none');
+  const cardBorderColor = getProp<string>('cardBorderColor', 'card_border_color', '');
+  const cardBorderWidth = getProp<number>('cardBorderWidth', 'card_border_width', 1);
+
+  // Typography Customization
+  const kpiFontFamily = getProp<string>('kpiFontFamily', 'kpi_font_family', '');
+  const kpiFontSizeMode = getProp<'auto' | 'manual'>('kpiFontSizeMode', 'kpi_font_size_mode', 'auto');
+  const kpiFontSizeManual = getProp<number>('kpiFontSizeManual', 'kpi_font_size_manual', 36);
+  const kpiFontWeight = getProp<string | number>('kpiFontWeight', 'kpi_font_weight', '800');
+  const kpiLetterSpacing = getProp<string>('kpiLetterSpacing', 'kpi_letter_spacing', 'tight');
+  const kpiTabularNums = getProp<boolean>('kpiTabularNums', 'kpi_tabular_nums', true);
+  const kpiColor = getProp<string>('kpiColor', 'kpi_color', '');
+
+  const titleFontSize = getProp<string>('titleFontSize', 'title_font_size', 'auto');
+  const titleFontWeight = getProp<string | number>('titleFontWeight', 'title_font_weight', '600');
+  const titleColor = getProp<string>('titleColor', 'title_color', '');
+  const titleTextTransform = getProp<'uppercase' | 'capitalize' | 'none'>('titleTextTransform', 'title_text_transform', 'uppercase');
+
+  const subtitleFontSize = getProp<string>('subtitleFontSize', 'subtitle_font_size', 'small');
+  const subtitleFontWeight = getProp<string | number>('subtitleFontWeight', 'subtitle_font_weight', '400');
+  const subtitleColor = getProp<string>('subtitleColor', 'subtitle_color', '');
+
+  const comparisonFontSize = getProp<string>('comparisonFontSize', 'comparison_font_size', 'small');
+  const comparisonFontWeight = getProp<string | number>('comparisonFontWeight', 'comparison_font_weight', '500');
+  const comparisonColor = getProp<string>('comparisonColor', 'comparison_color', '');
+
+  const sparklineCurve = getProp<'smooth' | 'linear'>('sparklineCurve', 'sparkline_curve', 'smooth');
+  const sparklineShowPoints = getProp<boolean>('sparklineShowPoints', 'sparkline_show_points', false);
+
   const prefixValue = getProp<string>('prefixValue', 'prefix_value', '');
   const suffixValue = getProp<string>('suffixValue', 'suffix_value', '');
   const cardAlignment = getProp<CardAlignment>('cardAlignment', 'card_alignment', 'left');
@@ -618,6 +646,25 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     cardBgColor,
     cardBorderRadius,
     cardBoxShadow,
+    cardBorderColor,
+    cardBorderWidth,
+    kpiFontFamily,
+    kpiFontSizeMode,
+    kpiFontSizeManual,
+    kpiFontWeight,
+    kpiLetterSpacing,
+    kpiTabularNums,
+    kpiColor,
+    titleFontSize,
+    titleFontWeight,
+    titleColor,
+    titleTextTransform,
+    subtitleFontSize,
+    subtitleFontWeight,
+    subtitleColor,
+    comparisonFontSize,
+    comparisonFontWeight,
+    comparisonColor,
     badgeStyle,
     cardAlignment,
     showTitle: showTitle !== false,
@@ -629,6 +676,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     sparklineData,
     sparklineColor,
     sparklineFill: sparklineFill !== false,
+    sparklineCurve,
+    sparklineShowPoints,
     showProgressBar,
     targetProgressPercent,
     applyTrendColorTo: getProp<'badge' | 'text' | 'background'>('applyTrendColorTo', 'apply_trend_color_to', 'badge'),

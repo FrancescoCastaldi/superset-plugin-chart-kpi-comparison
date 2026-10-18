@@ -1,7 +1,7 @@
 {
   "name": "superset-plugin-chart-kpi-comparison",
-  "version": "0.1.26",
-  "description": "KPI Comparison Card — All-in-One KPI Card with Temporal & Dual Metric Delta % for Apache Superset",
+  "version": "0.2.0",
+  "description": "KPI Comparison Card: All-in-One KPI Card with Temporal & Dual Metric Delta % for Apache Superset",
   "homepage": "https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison",
   "repository": {
     "type": "git",
@@ -19,6 +19,8 @@
     "build": "(tsc --project tsconfig.json --emitDeclarationOnly || node node_modules/typescript/lib/tsc.js --project tsconfig.json --emitDeclarationOnly || npx tsc --project tsconfig.json --emitDeclarationOnly) && npm run build:esm",
     "build:esm": "node scripts/build.mjs",
     "clean": "rimraf dist",
+    "dev": "dev.bat",
+    "studio": "npm --prefix dev-studio run dev",
     "test": "node ./node_modules/jest/bin/jest.js --preset=ts-jest || node ../../node_modules/jest/bin/jest.js --preset=ts-jest",
     "test:watch": "node ./node_modules/jest/bin/jest.js --preset=ts-jest --watch || node ../../node_modules/jest/bin/jest.js --preset=ts-jest --watch",
     "install:plugin": "powershell -ExecutionPolicy Bypass -File ./install-plugin.ps1"

@@ -32,9 +32,30 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   sparklineData = [],
   sparklineColor = '#2563eb',
   sparklineFill = true,
+  sparklineCurve = 'smooth',
+  sparklineShowPoints = false,
   cardBgColor = 'transparent',
   cardBorderRadius = 'square',
   cardBoxShadow = 'none',
+  cardBorderColor = '',
+  cardBorderWidth = 1,
+  kpiFontFamily = '',
+  kpiFontSizeMode = 'auto',
+  kpiFontSizeManual = 36,
+  kpiFontWeight = '800',
+  kpiLetterSpacing = 'tight',
+  kpiTabularNums = true,
+  kpiColor = '',
+  titleFontSize = 'auto',
+  titleFontWeight = '600',
+  titleColor = '',
+  titleTextTransform = 'uppercase',
+  subtitleFontSize = 'small',
+  subtitleFontWeight = '400',
+  subtitleColor = '',
+  comparisonFontSize = 'small',
+  comparisonFontWeight = '500',
+  comparisonColor = '',
   showProgressBar = false,
   targetProgressPercent = null,
   applyTrendColorTo = 'badge',
@@ -96,11 +117,23 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   );
   const maxFontFromHeight = Math.floor(availHeight / 1.05);
 
-  // Primary font size dynamically scales and fills space smoothly, bounded between 13px and 64px
-  const primaryFontSizePx = Math.max(
+  // Primary font size: Auto-fit fluid scaling or manual pixel specification
+  const calculatedFontPx = Math.max(
     13,
     Math.min(64, maxFontFromWidth, maxFontFromHeight),
   );
+  const primaryFontSizePx =
+    kpiFontSizeMode === 'manual' && kpiFontSizeManual
+      ? Math.max(12, Math.min(120, Number(kpiFontSizeManual)))
+      : calculatedFontPx;
+
+  const finalFontWeight = kpiFontWeight || 800;
+  const finalLetterSpacing =
+    kpiLetterSpacing === 'normal'
+      ? '0em'
+      : kpiLetterSpacing === 'wide'
+      ? '0.04em'
+      : '-0.025em';
 
   // Absolute delta in badge: hide when horizontal width is tight (< 220px) to prevent crowded bottom row
   const hideBadgeAbsolute = !showAbsoluteDelta || width < 220;
@@ -125,24 +158,27 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
 
   // Aesthetic shadow and border
   let boxShadow = 'none';
-  let border = 'none';
+  let border = cardBorderColor
+    ? `${cardBorderWidth || 1}px solid ${cardBorderColor}`
+    : 'none';
   switch (cardBoxShadow) {
     case 'subtle':
       boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px -1px rgba(0, 0, 0, 0.05)';
-      border = '1px solid rgba(0, 0, 0, 0.06)';
+      if (!cardBorderColor) border = '1px solid rgba(0, 0, 0, 0.06)';
       break;
     case 'elevated':
       boxShadow = '0 8px 16px -4px rgba(0, 0, 0, 0.10), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
-      border = '1px solid rgba(0, 0, 0, 0.05)';
+      if (!cardBorderColor) border = '1px solid rgba(0, 0, 0, 0.05)';
       break;
     case 'bordered':
-      border = '1px solid #e2e8f0';
+      border = cardBorderColor
+        ? `${cardBorderWidth || 1}px solid ${cardBorderColor}`
+        : '1px solid #e2e8f0';
       boxShadow = 'none';
       break;
     case 'none':
     default:
       boxShadow = 'none';
-      border = 'none';
       break;
   }
 
@@ -210,8 +246,9 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         borderRadius,
         boxShadow,
         border,
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        fontFamily: kpiFontFamily
+          ? `${kpiFontFamily}, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`
+          : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         overflow: 'hidden',
         position: 'relative',
         cursor: clickUrl ? 'pointer' : 'default',
@@ -238,15 +275,22 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         >
           <div
             style={{
-              fontSize: isTitleMini
-                ? '0.70rem'
-                : isVerticalCompact
-                ? '0.74rem'
-                : '0.90rem',
-              fontWeight: 600,
-              color: '#475569',
+              fontSize:
+                titleFontSize === 'small'
+                  ? '0.70rem'
+                  : titleFontSize === 'medium'
+                  ? '0.82rem'
+                  : titleFontSize === 'large'
+                  ? '0.96rem'
+                  : isTitleMini
+                  ? '0.70rem'
+                  : isVerticalCompact
+                  ? '0.74rem'
+                  : '0.90rem',
+              fontWeight: (titleFontWeight as any) || 600,
+              color: titleColor || '#475569',
               letterSpacing: '0.02em',
-              textTransform: 'uppercase',
+              textTransform: (titleTextTransform as any) || 'uppercase',
               lineHeight: 1.2,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -260,8 +304,14 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           {showSubtitle && (
             <div
               style={{
-                fontSize: '0.74rem',
-                color: '#94a3b8',
+                fontSize:
+                  subtitleFontSize === 'medium'
+                    ? '0.82rem'
+                    : subtitleFontSize === 'large'
+                    ? '0.92rem'
+                    : '0.74rem',
+                fontWeight: (subtitleFontWeight as any) || 400,
+                color: subtitleColor || '#94a3b8',
                 marginTop: '1px',
                 lineHeight: 1.2,
                 whiteSpace: 'nowrap',
@@ -316,10 +366,11 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         <span
           style={{
             fontSize: `${primaryFontSizePx}px`,
-            fontWeight: 800,
-            color: primaryValueColor,
+            fontWeight: finalFontWeight as any,
+            fontVariantNumeric: kpiTabularNums !== false ? 'tabular-nums' : 'normal',
+            color: kpiColor || primaryValueColor,
             lineHeight: 1.05,
-            letterSpacing: '-0.025em',
+            letterSpacing: finalLetterSpacing,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -396,13 +447,18 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '3px',
-                    color: '#64748b',
-                    fontSize: isVerticalUltraCompact
-                      ? '0.70rem'
-                      : isVerticalCompact
-                      ? '0.74rem'
-                      : '0.80rem',
-                    fontWeight: 500,
+                    color: comparisonColor || '#64748b',
+                    fontSize:
+                      comparisonFontSize === 'medium'
+                        ? '0.84rem'
+                        : comparisonFontSize === 'large'
+                        ? '0.92rem'
+                        : isVerticalUltraCompact
+                        ? '0.70rem'
+                        : isVerticalCompact
+                        ? '0.74rem'
+                        : '0.80rem',
+                    fontWeight: (comparisonFontWeight as any) || 500,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -432,7 +488,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                     <span
                       style={{
                         fontWeight: 600,
-                        color: '#334155',
+                        color: comparisonColor ? comparisonColor : '#334155',
                         whiteSpace: 'nowrap',
                         flexShrink: 0,
                       }}
@@ -478,6 +534,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             color={sparklineColor}
             fill={sparklineFill}
             height={height < 160 ? 22 : 36}
+            curve={sparklineCurve}
+            showPoints={sparklineShowPoints}
           />
         </div>
       )}

@@ -199,4 +199,10 @@ module.exports = {
     return Array.isArray(value) ? value : [value];
   },
   getNumberFormatter,
+  sharedControls: {
+    time_range: { type: 'DateFilterControl', label: 'Time Range' },
+    metric: { type: 'MetricsControl', label: 'Metric' },
+    groupby: { type: 'SelectControl', label: 'Group By' },
+    y_axis_format: { type: 'SelectControl', label: 'Y Axis Format' },
+  },
 };

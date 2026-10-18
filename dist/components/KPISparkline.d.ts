@@ -5,6 +5,8 @@ interface KPISparklineProps {
     fill?: boolean;
     height?: number;
     width?: number | string;
+    curve?: 'smooth' | 'linear';
+    showPoints?: boolean;
 }
 export declare const KPISparkline: React.FC<KPISparklineProps>;
 export {};

@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { calculateSparklinePoints, calculateSparklinePath } from '../utils/sparkline';
 
 interface KPISparklineProps {
   data: number[];
@@ -6,6 +7,8 @@ interface KPISparklineProps {
   fill?: boolean;
   height?: number;
   width?: number | string;
+  curve?: 'smooth' | 'linear';
+  showPoints?: boolean;
 }
 
 export const KPISparkline: React.FC<KPISparklineProps> = ({
@@ -14,37 +17,27 @@ export const KPISparkline: React.FC<KPISparklineProps> = ({
   fill = true,
   height = 40,
   width = '100%',
+  curve = 'smooth',
+  showPoints = false,
 }) => {
-  const gradientId = useMemo(() => `sparkline-gradient-${Math.random().toString(36).substr(2, 9)}`, []);
-
   if (!data || data.length < 2) {
     return null;
   }
 
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min === 0 ? 1 : max - min;
-  const paddingY = 4;
-  const graphHeight = height - paddingY * 2;
   const graphWidth = 100; // viewBox relative coordinates
-
-  // Generate SVG path coordinates
-  const points = data.map((val, idx) => {
-    const x = (idx / (data.length - 1)) * graphWidth;
-    const y = paddingY + graphHeight - ((val - min) / range) * graphHeight;
-    return { x, y };
-  });
-
-  const pathD = points.reduce((acc, pt, idx) => {
-    return idx === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`;
-  }, '');
-
+  const points = calculateSparklinePoints(data, height, 4, graphWidth);
+  const pathD = calculateSparklinePath(points, curve);
   const areaD = `${pathD} L ${graphWidth},${height} L 0,${height} Z`;
 
   const lastPoint = points[points.length - 1];
+  const max = Math.max(...data);
+  const peakPoint = points.find((p) => p.val === max);
+
+  // Clean deterministic gradient ID
+  const gradientId = 'kpi-sparkline-gradient';
 
   return (
-    <div style={{ width: width, height, marginTop: '8px', overflow: 'hidden' }}>
+    <div style={{ width: width, height, marginTop: '4px', overflow: 'hidden' }}>
       <svg
         viewBox={`0 0 ${graphWidth} ${height}`}
         preserveAspectRatio="none"
@@ -52,7 +45,7 @@ export const KPISparkline: React.FC<KPISparklineProps> = ({
       >
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.35} />
             <stop offset="100%" stopColor={color} stopOpacity={0.0} />
           </linearGradient>
         </defs>
@@ -69,14 +62,27 @@ export const KPISparkline: React.FC<KPISparklineProps> = ({
           vectorEffect="non-scaling-stroke"
         />
 
+        {/* Peak point marker if enabled */}
+        {showPoints && peakPoint && (
+          <circle
+            cx={peakPoint.x}
+            cy={peakPoint.y}
+            r="2.5"
+            fill="#38bdf8"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+        )}
+
+        {/* Last / current point pulse indicator */}
         {lastPoint && (
           <circle
             cx={lastPoint.x}
             cy={lastPoint.y}
-            r="3"
+            r={showPoints ? '3' : '2.5'}
             fill={color}
             stroke="#ffffff"
-            strokeWidth="1.5"
+            strokeWidth="1.2"
           />
         )}
       </svg>

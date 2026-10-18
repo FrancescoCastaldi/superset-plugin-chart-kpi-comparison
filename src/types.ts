@@ -30,6 +30,27 @@ export interface KPIComparisonFormData extends QueryFormData {
   card_bg_color?: any;
   card_border_radius?: CardBorderRadius;
   card_box_shadow?: CardBoxShadow;
+  card_border_color?: string;
+  card_border_width?: number;
+
+  // Typography Customization
+  kpi_font_family?: string;
+  kpi_font_size_mode?: 'auto' | 'manual';
+  kpi_font_size_manual?: number;
+  kpi_font_weight?: string | number;
+  kpi_letter_spacing?: 'normal' | 'tight' | 'wide' | string;
+  kpi_tabular_nums?: boolean;
+  kpi_color?: string;
+  title_font_size?: 'auto' | 'small' | 'medium' | 'large' | string;
+  title_font_weight?: string | number;
+  title_color?: string;
+  title_text_transform?: 'uppercase' | 'capitalize' | 'none';
+  subtitle_font_size?: 'small' | 'medium' | 'large' | string;
+  subtitle_font_weight?: string | number;
+  subtitle_color?: string;
+  comparison_font_size?: 'small' | 'medium' | 'large' | string;
+  comparison_font_weight?: string | number;
+  comparison_color?: string;
 
   // Semantic & Polarity
   invert_polarity?: boolean;
@@ -44,6 +65,8 @@ export interface KPIComparisonFormData extends QueryFormData {
   show_sparkline?: boolean;
   sparkline_color?: string;
   sparkline_fill?: boolean;
+  sparkline_curve?: 'smooth' | 'linear';
+  sparkline_show_points?: boolean;
 
   // Target Tracking
   target_metric?: any;
@@ -90,10 +113,31 @@ export interface KPIComparisonProps {
   prefixValue: string;
   suffixValue: string;
 
+  // Advanced Typography Props
+  kpiFontFamily?: string;
+  kpiFontSizeMode?: 'auto' | 'manual';
+  kpiFontSizeManual?: number;
+  kpiFontWeight?: string | number;
+  kpiLetterSpacing?: string;
+  kpiTabularNums?: boolean;
+  kpiColor?: string;
+  titleFontSize?: string;
+  titleFontWeight?: string | number;
+  titleColor?: string;
+  titleTextTransform?: 'uppercase' | 'capitalize' | 'none';
+  subtitleFontSize?: string;
+  subtitleFontWeight?: string | number;
+  subtitleColor?: string;
+  comparisonFontSize?: string;
+  comparisonFontWeight?: string | number;
+  comparisonColor?: string;
+
   // Aesthetic Customization
   cardBgColor: string;
   cardBorderRadius: CardBorderRadius;
   cardBoxShadow: CardBoxShadow;
+  cardBorderColor?: string;
+  cardBorderWidth?: number;
 
   // Config Flags
   showTitle?: boolean;
@@ -110,6 +154,8 @@ export interface KPIComparisonProps {
   sparklineData: number[];
   sparklineColor: string;
   sparklineFill: boolean;
+  sparklineCurve?: 'smooth' | 'linear';
+  sparklineShowPoints?: boolean;
 
   // Target Tracking
   showProgressBar?: boolean;

@@ -399,6 +399,201 @@ const config: ControlPanelConfig = {
             },
           },
         ],
+        [
+          {
+            name: 'card_border_color',
+            config: {
+              type: 'TextControl',
+              label: t('Colore Bordo Personalizzato (es. #e2e8f0)'),
+              default: '',
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'card_border_width',
+            config: {
+              type: 'SelectControl',
+              label: t('Spessore Bordo'),
+              default: 1,
+              choices: [
+                [1, t('1 pixel (Fine)')],
+                [2, t('2 pixel (Medio)')],
+                [3, t('3 pixel (Evidente)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+      ],
+    },
+    {
+      label: t('Tipografia & Personalizzazione Testo'),
+      expanded: false,
+      controlSetRows: [
+        [
+          {
+            name: 'kpi_font_family',
+            config: {
+              type: 'SelectControl',
+              label: t('Famiglia Font (Font Family)'),
+              default: '',
+              choices: [
+                ['', t('Predefinito di Sistema (UI Nativo)')],
+                ['Inter', t('Inter (Pulito & Moderno)')],
+                ['Roboto', t('Roboto (Material Design)')],
+                ['Montserrat', t('Montserrat (Geometrico)')],
+                ['Poppins', t('Poppins (Arrotondato Morbido)')],
+                ['Oswald', t('Oswald (Condensato Impatto)')],
+                ['JetBrains Mono', t('JetBrains Mono (Monospace Tech)')],
+                ['Fira Code', t('Fira Code (Tabular Dev)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'kpi_font_size_mode',
+            config: {
+              type: 'SelectControl',
+              label: t('Modalità Dimensione Valore Principale'),
+              default: 'auto',
+              choices: [
+                ['auto', t('Auto-Fit Dinamico (Consigliato, scala con la card)')],
+                ['manual', t('Dimensione Fissa in Pixel')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'kpi_font_size_manual',
+            config: {
+              type: 'TextControl',
+              label: t('Dimensione Manuale (px)'),
+              default: '36',
+              description: t('Dimensione del font in pixel (es. 24, 36, 48, 64).'),
+              renderTrigger: true,
+              visibility: ({ controls }) => controls?.kpi_font_size_mode?.value === 'manual',
+            },
+          },
+        ],
+        [
+          {
+            name: 'kpi_font_weight',
+            config: {
+              type: 'SelectControl',
+              label: t('Peso Font Valore Principale (Grassetto)'),
+              default: '800',
+              choices: [
+                ['300', t('Light (300)')],
+                ['400', t('Normale / Regular (400)')],
+                ['500', t('Medio / Medium (500)')],
+                ['600', t('Semigrassetto / Semi-Bold (600)')],
+                ['700', t('Grassetto / Bold (700)')],
+                ['800', t('Extra-Bold (800 - Default)')],
+                ['900', t('Black Massimo (900)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'kpi_letter_spacing',
+            config: {
+              type: 'SelectControl',
+              label: t('Spaziatura Caratteri Valore'),
+              default: 'tight',
+              choices: [
+                ['tight', t('Stretta (-0.025em)')],
+                ['normal', t('Normale (0em)')],
+                ['wide', t('Larga (+0.04em)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'kpi_tabular_nums',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Allineamento Numerico Tabulare (tabular-nums)'),
+              default: true,
+              description: t('Garantisce larghezza uniforme a tutte le cifre per prevenire jittering.'),
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'title_font_size',
+            config: {
+              type: 'SelectControl',
+              label: t('Dimensione Titolo'),
+              default: 'auto',
+              choices: [
+                ['auto', t('Scalato Dinamico')],
+                ['small', t('Compatto (11px)')],
+                ['medium', t('Medio (13px)')],
+                ['large', t('Grande (15px)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'title_font_weight',
+            config: {
+              type: 'SelectControl',
+              label: t('Peso Font Titolo'),
+              default: '600',
+              choices: [
+                ['400', t('Normale (400)')],
+                ['500', t('Medio (500)')],
+                ['600', t('Semigrassetto (600)')],
+                ['700', t('Grassetto (700)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'title_text_transform',
+            config: {
+              type: 'SelectControl',
+              label: t('Trasformazione Lettere Titolo'),
+              default: 'uppercase',
+              choices: [
+                ['uppercase', t('Tutto Maiuscolo (UPPERCASE)')],
+                ['capitalize', t('Iniziali Maiuscole (Capitalize)')],
+                ['none', t('Come Inserito (Nessuna)')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'comparison_font_size',
+            config: {
+              type: 'SelectControl',
+              label: t('Dimensione Riga Confronto'),
+              default: 'small',
+              choices: [
+                ['small', t('Compatto')],
+                ['medium', t('Medio')],
+                ['large', t('Grande')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+        ],
       ],
     },
     {
@@ -584,6 +779,31 @@ const config: ControlPanelConfig = {
               type: 'CheckboxControl',
               label: t('Sfumatura di Riempimento'),
               default: true,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'sparkline_curve',
+            config: {
+              type: 'SelectControl',
+              label: t('Stile Curva Sparkline'),
+              default: 'smooth',
+              choices: [
+                ['smooth', t('Curva Morbida Spline (Bezier)')],
+                ['linear', t('Lineare Poligonale Standard')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+            },
+          },
+          {
+            name: 'sparkline_show_points',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Evidenzia Punto di Picco e Valore Corrente'),
+              default: false,
               renderTrigger: true,
             },
           },
