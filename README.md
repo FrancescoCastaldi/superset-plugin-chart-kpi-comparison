@@ -8,13 +8,23 @@
 
 **KPI Comparison Card** is a custom visualization plugin for **Apache Superset** engineered to display an all-in-one, high-impact executive summary card. It seamlessly combines primary reference metrics, period-over-period or budget benchmarks, absolute difference, automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion, and integrated vector sparklines.
 
+![KPI Comparison Dev Studio Live Demo](docs/images/dev_studio_demo.gif)
+
+*Live Dev Studio: Interactive workbench featuring real-time Explore control panel synchronization, granular typography settings (font family, weight, tabular numbers), cubic Bezier sparklines, inverted polarity, and sub-50ms Hot Module Reloading.*
+
 ---
 
 ## 📸 Visual Preview
 
-![KPI Comparison Card Preview](./src/images/thumbnail.png)
+![KPI Comparison Card Workbench](docs/images/kpi_comparison_preview.png)
 
-*Figure 1: KPI Comparison Card displaying current outpatient volume, percentage gain over prior year (+10.8%), absolute delta (+2,640), and an integrated SVG vector sparkline.*
+*Figure 1: KPI Comparison Card v0.2.0 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
+
+<p align="center">
+  <img src="docs/images/kpi_card_showcase.png" alt="KPI Comparison Card Isolated Preview" width="460" />
+</p>
+
+*Figure 2: Crisp close-up view of the rendered KPI Comparison Card component.*
 
 ---
 

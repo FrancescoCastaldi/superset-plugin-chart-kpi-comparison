@@ -4,20 +4,54 @@ import { KPIComparisonChart } from '@/components/KPIComparisonChart';
 import { SCENARIOS } from './mockData';
 
 export default function App() {
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(SCENARIOS[0].id);
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const sc = params.get('scenario');
+      if (sc && SCENARIOS.some((s) => s.id === sc)) return sc;
+    } catch {}
+    return SCENARIOS[0].id;
+  });
   const scenario = useMemo(
     () => SCENARIOS.find((s) => s.id === selectedScenarioId) || SCENARIOS[0],
     [selectedScenarioId]
   );
 
   // Dimension states
-  const [width, setWidth] = useState<number>(320);
-  const [height, setHeight] = useState<number>(160);
-  const [canvasBg, setCanvasBg] = useState<'dark' | 'light' | 'white'>('dark');
+  const [width, setWidth] = useState<number>(() => {
+    try {
+      const w = Number(new URLSearchParams(window.location.search).get('w'));
+      if (w >= 180 && w <= 800) return w;
+    } catch {}
+    return 340;
+  });
+  const [height, setHeight] = useState<number>(() => {
+    try {
+      const h = Number(new URLSearchParams(window.location.search).get('h'));
+      if (h >= 100 && h <= 500) return h;
+    } catch {}
+    return 170;
+  });
+  const [canvasBg, setCanvasBg] = useState<'dark' | 'light' | 'white'>(() => {
+    try {
+      const bg = new URLSearchParams(window.location.search).get('bg');
+      if (bg === 'light' || bg === 'white' || bg === 'dark') return bg;
+    } catch {}
+    return 'dark';
+  });
 
   // Control state derived from scenario
-  const [formData, setFormData] = useState<Record<string, any>>(scenario.formData);
-  const [activeTab, setActiveTab] = useState<'typography' | 'aesthetic' | 'sparkline' | 'comparison' | 'json'>('typography');
+  const [formData, setFormData] = useState<Record<string, any>>(() => {
+    const sc = SCENARIOS.find((s) => s.id === selectedScenarioId) || SCENARIOS[0];
+    return { ...sc.formData };
+  });
+  const [activeTab, setActiveTab] = useState<'typography' | 'aesthetic' | 'sparkline' | 'comparison' | 'json'>(() => {
+    try {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab === 'aesthetic' || tab === 'sparkline' || tab === 'comparison' || tab === 'json' || tab === 'typography') return tab as any;
+    } catch {}
+    return 'typography';
+  });
 
   // Sync formData when scenario changes
   const handleScenarioChange = (scenarioId: string) => {
@@ -719,15 +753,18 @@ export default function App() {
             overflow: 'auto',
           }}>
             {/* Visual boundary container */}
-            <div style={{
-              position: 'relative',
-              width: `${width}px`,
-              height: `${height}px`,
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
-              outline: '1px dashed rgba(56, 189, 248, 0.35)',
-              outlineOffset: '2px',
-              transition: 'all 0.1s ease-out',
-            }}>
+            <div
+              id="kpi-card-container"
+              style={{
+                position: 'relative',
+                width: `${width}px`,
+                height: `${height}px`,
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
+                outline: '1px dashed rgba(56, 189, 248, 0.35)',
+                outlineOffset: '2px',
+                transition: 'all 0.1s ease-out',
+              }}
+            >
               {/* THE CHART COMPONENT */}
               <KPIComparisonChart {...transformedProps} />
             </div>
