@@ -17,7 +17,7 @@ export const SCENARIOS: ScenarioData[] = [
       calculation_mode: 'dual_metric',
       enable_comparison: true,
       kpi_title: 'Visite Ambulatoriali',
-      kpi_subtitle: 'Totale prestazioni erogate IDI',
+      kpi_subtitle: 'Totale prestazioni ambulatoriali erogate',
       comparison_label: 'vs Anno Prec.',
       show_title: true,
       show_badge: true,

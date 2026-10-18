@@ -87,7 +87,7 @@ src/
 ### [2026-09-08 10:27] — Inizializzazione Completa del Progetto (v0.1.0)
 - **Agente**: Antigravity (Gemini 3.8 Flash)
 - **Attività svolte**:
-  1. Definizione e approvazione dell'implementation plan per il chart KPI all-in-one con confronto temporale e delta integrato per il modulo Programmazione Sanitaria di IDI.
+  1. Definizione e approvazione dell'implementation plan per il chart KPI all-in-one con confronto temporale e delta integrato per il modulo Programmazione Sanitaria.
   2. Creazione della configurazione package (`package.json`, `tsconfig.json`, `.gitignore`).
   3. Implementazione di `src/types.ts` e delle utility di formattazione italiana `src/utils/formatters.ts`.
   4. Sviluppo del componente vettoriale sparkline SVG `KPISparkline.tsx` e del badge semantico con supporto polarità invertita `KPIComparisonBadge.tsx`.

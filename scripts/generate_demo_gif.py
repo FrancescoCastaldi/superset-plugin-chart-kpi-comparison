@@ -20,7 +20,7 @@ FRAMES = [
     {
         "name": "01_outpatient_visits.png",
         "url": "http://localhost:5175/?scenario=outpatient-visits&tab=typography&bg=dark&w=340&h=170",
-        "description": "Visite Ambulatoriali IDI: Dual Metric Comparison (+10.8%), Inter Font, Cubic Bezier Sparkline",
+        "description": "Visite Ambulatoriali: Dual Metric Comparison (+10.8%), Inter Font, Cubic Bezier Sparkline",
     },
     {
         "name": "02_wait_time_inverted_polarity.png",

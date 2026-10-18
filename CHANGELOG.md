@@ -5,6 +5,10 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-10-19
+### Security
+- **Privacy e Bonifica Riferimenti Aziendali**: Rimossi tutti i riferimenti a denominazioni aziendali interne e codici cliente dai dataset dimostrativi, dalle didascalie del README, dal Dev Studio e dalle immagini di anteprima (screenshot e GIF animata).
+
 ## [0.2.1] - 2026-10-19
 ### Fixed
 - **Iniezione Dinamica Web Fonts (Google Fonts)**: Risolto il mancato rendering visivo della famiglia di font in Superset e nei browser privi dei font locali (Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code). Introdotto caricatore dinamico `useEffect` che inietta il tag `<link>` ufficiale dei Google Fonts in `document.head`.
@@ -16,7 +20,7 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.2.0] - 2026-10-19
 ### Added
-- **Dev Studio Interattivo Locale**: Ambiente autonomo Vite + React HMR in `dev-studio/` per anteprima in tempo reale e test visivo rapido delle configurazioni del chart con launcher `dev.bat` e comando `npm run studio` su `http://localhost:5175/`. Include selettore scenari realistici (visite ambulatoriali IDI, tempi di attesa pronto soccorso, budget ricavi con progress bar, glassmorphism dark executive), controlli interattivi completi e switch tema canvas.
+- **Dev Studio Interattivo Locale**: Ambiente autonomo Vite + React HMR in `dev-studio/` per anteprima in tempo reale e test visivo rapido delle configurazioni del chart con launcher `dev.bat` e comando `npm run studio` su `http://localhost:5175/`. Include selettore scenari realistici (visite ambulatoriali, tempi di attesa pronto soccorso, budget ricavi con progress bar, glassmorphism dark executive), controlli interattivi completi e switch tema canvas.
 - **Controlli Tipografici Completi in Explore**: Nuova sezione espandibile "Tipografia & Personalizzazione Testo" nel control panel di Superset con personalizzazione granulare:
   - Scelta della famiglia di font (Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code, System Default).
   - Modalita di dimensionamento del valore numerico principale: auto-fit scalato reattivo oppure dimensione fissa manuale in pixel (da 12px a 120px).
@@ -222,9 +226,7 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
   attiva, sono letti dall'ULTIMA riga (periodo piu' recente); senza sparkline
   (row_limit 1) il comportamento resta identico (prima riga). Il ramo
   `time_shift` non viene toccato.
-- Serve al KPI "Richieste · mese corrente" della Dashboard 29 IDI (Tab 4:
-  numero grande = mese corrente, confronto = mese precedente, sparkline =
-  serie mensile 12 mesi sulla coppia lag-1 della vista).
+- Serve al KPI "Richieste · mese corrente" (numero grande = mese corrente, confronto = mese precedente, sparkline = serie mensile 12 mesi sulla coppia lag-1 della vista).
 
 ---
 
@@ -272,7 +274,7 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 - **Architettura Plugin Ufficiale**: Inizializzazione del plugin `superset-plugin-chart-kpi-comparison` per Apache Superset conforme allo standard `@superset-ui/core`.
 - **Card KPI All-in-One**: Visualizzazione compatta con metrica primaria in risalto, valore di confronto, delta assoluto e delta percentuale integrato ($\Delta\%$).
 - **Modalità di Calcolo Ibrida**:
-  - `Doppia Metrica Esplicita`: Calcolo diretto $\Delta\% = \frac{\text{Rif} - \text{Conf}}{\text{Conf}} \times 100$ per dataset già aggregati (es. dataset 68 IDI).
+  - `Doppia Metrica Esplicita`: Calcolo diretto $\Delta\% = \frac{\text{Rif} - \text{Conf}}{\text{Conf}} \times 100$ per dataset già aggregati (es. due metriche nella stessa riga).
   - `Time Shift`: Supporto per offset temporale nativo Superset (`1 year ago`, `1 month ago`, `1 week ago`, ecc.).
 - **Semantica dei Colori e Polarità Invertita**:
   - Polarità standard: incremento in Verde (`#10b981`), decremento in Rosso (`#ef4444`).

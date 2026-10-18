@@ -18,7 +18,7 @@
 
 ![KPI Comparison Card Workbench](docs/images/kpi_comparison_preview.png)
 
-*Figure 1: KPI Comparison Card v0.2.1 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
+*Figure 1: KPI Comparison Card v0.2.2 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
 
 <p align="center">
   <img src="docs/images/kpi_card_showcase.png" alt="KPI Comparison Card Isolated Preview" width="460" />
@@ -83,7 +83,7 @@ flowchart LR
 
 ```
 superset-plugin-chart-kpi-comparison/
-├── package.json                    # Plugin manifest & dependencies (v0.2.1)
+├── package.json                    # Plugin manifest & dependencies (v0.2.2)
 ├── tsconfig.json                   # TypeScript build configuration
 ├── dev.bat                         # Quick launcher for local Dev Studio
 ├── dev-studio/                     # Interactive Vite + React HMR workbench
@@ -251,7 +251,7 @@ npm run studio
 
 Il Dev Studio e accessibile su **`http://localhost:5175/`** e offre:
 - **Hot Module Replacement (HMR)** istantaneo: qualsiasi modifica ai componenti o agli stili in `src/` si riflette in tempo reale nel browser.
-- **Scenari Clinici e Direzionali Preconfigurati**: visite ambulatoriali IDI, tempi di attesa pronto soccorso con polarita invertita, budget ricavi e glassmorphism dark executive.
+- **Scenari Clinici e Direzionali Preconfigurati**: visite ambulatoriali, tempi di attesa pronto soccorso con polarita invertita, budget ricavi e glassmorphism dark executive.
 - **Slider e Controlli Interattivi**: regolazione in tempo reale di larghezza/altezza card, famiglie di font, pesi, spaziature, ombreggiature, curve sparkline e marker.
 - **Sfondo Canvas Personalizzabile**: switch immediato tra sfondo chiaro, scuro ed executive dark per verificare contrasto e accessibilita.
 

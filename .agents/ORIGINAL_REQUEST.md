@@ -13,7 +13,7 @@ Integrity mode: development
   - `D:\Sviluppo\superset-plugins\superset-plugin-chart-calendar-filter`
   - `D:\Sviluppo\superset-plugins\superset-plugin-chart-hierarchical-table`
 - Directory sorgenti e build Apache Superset: `D:\Sviluppo\superset`
-- Dataset di riferimento IDI con colonne di confronto già presenti (`dataset 68` su `https://kpi-yasi-clinika.idi.lan`)
+- Dataset di riferimento clinico con colonne di confronto già presenti
 
 ## Requirements
 
@@ -23,7 +23,7 @@ Costruire un plugin custom conforme a `@superset-ui/core`:
 - **Control Panel Superset**: Controlli nell'Explore per selezionare la modalità di calcolo (Doppia metrica esplicita o Time-shift temporale), metrica primaria, metrica di confronto, formattazione del valore (es. `27,1k`, decimali), prefissi/suffissi, opzione "Inverti polarità colore" (utile per metriche di costo/tempo di attesa dove una diminuzione è positiva).
 
 ### R2. Modalità di Calcolo del Delta (Ibrida Flessibile)
-- **Modalità Doppia Metrica**: Calcolo diretto $\Delta\% = \frac{\text{Metrica Rif} - \text{Metrica Conf}}{\text{Metrica Conf}} \times 100$, compatibile con i dataset aggregati correnti (come `dataset 68` di IDI).
+- **Modalità Doppia Metrica**: Calcolo diretto $\Delta\% = \frac{\text{Metrica Rif} - \text{Metrica Conf}}{\text{Metrica Conf}} \times 100$, compatibile con i dataset aggregati correnti.
 - **Modalità Time-Shift**: Calcolo della metrica su periodo di riferimento e recupero del medesimo valore spostato nel tempo in base al filtro temporale configurato.
 
 ### R3. Repository Git e Installer Automatico Funzionante

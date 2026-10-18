@@ -1,4 +1,4 @@
-﻿# Dispatch Log
+# Dispatch Log
 
 ## 2026-09-08T08:15:03Z
 
@@ -15,5 +15,4 @@ You are the Project Orchestrator for developing the custom official Apache Super
   - D:\Sviluppo\superset-plugins\superset-plugin-chart-stratum-heatmap
   - D:\Sviluppo\superset-plugins\superset-plugin-chart-calendar-filter
   - D:\Sviluppo\superset-plugins\superset-plugin-chart-hierarchical-table
-- Apache Superset source and build tree: D:\Sviluppo\superset
-- IDI reference dataset: dataset 68 on https://kpi-yasi-clinika.idi.lan
+- Clinical reference dataset: pre-aggregated dataset with comparison columns
