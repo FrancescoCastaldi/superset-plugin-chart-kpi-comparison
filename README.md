@@ -16,15 +16,23 @@
 
 ## 📸 Visual Preview
 
+### 🖥️ Live Production Dashboard Showcase
+
+![KPI Comparison Live Dashboard Showcase](docs/images/live_dashboard_showcase.png)
+
+*Figure 1: KPI Comparison Card live production rendering on Apache Superset with hospital production vs billing benchmark, automated +2.9% (+222.056) delta variance, trend indicator, and comparison metric display.*
+
+### 🔍 Isolated Component Showcase & Dev Studio
+
 ![KPI Comparison Card Workbench](docs/images/kpi_comparison_preview.png)
 
-*Figure 1: KPI Comparison Card v0.2.2 Live Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
+*Figure 2: KPI Comparison Card Dev Studio Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
 
 <p align="center">
   <img src="docs/images/kpi_card_showcase.png" alt="KPI Comparison Card Isolated Preview" width="460" />
 </p>
 
-*Figure 2: Crisp close-up view of the rendered KPI Comparison Card component.*
+*Figure 3: Crisp close-up view of the rendered KPI Comparison Card component.*
 
 ---
 
