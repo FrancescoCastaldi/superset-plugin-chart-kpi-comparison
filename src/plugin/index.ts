@@ -8,7 +8,7 @@ import example from '../images/example.png';
 const t = (str: string) => str;
 
 const metadata = new ChartMetadata({
-  name: t('KPI Comparison Card — Delta % Integrato'),
+  name: t('StratumKPI — Comparison Card & Delta %'),
   description: t(
     'Card KPI compatta all-in-one con confronto temporale o doppia metrica, calcolo automatico del Delta %, indicatore semantico colorato, inversione polarità (es. tempi attesa/costi) e sparkline opzionale.',
   ),

@@ -1,4 +1,4 @@
-# KPI Comparison Card - Benchmark & Delta % Plugin for Apache Superset
+# StratumKPI (KPI Comparison Card) - Benchmark & Delta % Plugin for Apache Superset
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Apache Superset](https://img.shields.io/badge/Apache%20Superset-3.x%20%7C%204.x%20%7C%206.x-green.svg)](https://superset.apache.org/)
@@ -6,7 +6,7 @@
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 [![Vector Engine](https://img.shields.io/badge/Sparkline-Native%20SVG-orange.svg)](#)
 
-**KPI Comparison Card** is a custom visualization plugin for **Apache Superset** engineered to display an all-in-one, high-impact executive summary card. It seamlessly combines primary reference metrics, period-over-period or budget benchmarks, absolute difference, automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion, and integrated vector sparklines.
+**StratumKPI** (KPI Comparison Card) is a custom visualization plugin for **Apache Superset** engineered to display an all-in-one, high-impact executive summary card. It seamlessly combines primary reference metrics, period-over-period or budget benchmarks, absolute difference, automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion, and integrated vector sparklines.
 
 ![KPI Comparison Dev Studio Live Demo](docs/images/dev_studio_demo.gif)
 
