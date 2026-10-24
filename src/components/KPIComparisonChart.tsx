@@ -24,6 +24,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   trendDirection,
   trendColor,
   badgeStyle,
+  badgePosition = 'bottom_left',
+  cleanCardMode = false,
   badgeBackgroundColor,
   badgeTextColor,
   kpiTitle,
@@ -106,7 +108,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   // Bottom row content detection
   const hasBottomComparisonContent = Boolean(
     hasComparison &&
-      (showBadge ||
+      ((showBadge && badgePosition === 'bottom_left') ||
         (showComparisonValue && comparisonValue !== null) ||
         (showComparisonLabel && Boolean(comparisonLabel)))
   );
@@ -279,15 +281,15 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         width,
         height,
         boxSizing: 'border-box',
-        padding: `${padV}px ${padH}px`,
+        padding: cleanCardMode ? '4px 6px' : `${padV}px ${padH}px`,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: !showTitle ? 'center' : 'space-between',
         gap: !showTitle ? (height < 70 ? '2px' : '4px') : '0px',
         backgroundColor: finalCardBg,
-        borderRadius,
-        boxShadow,
-        border,
+        borderRadius: cleanCardMode ? '0px' : borderRadius,
+        boxShadow: cleanCardMode ? 'none' : boxShadow,
+        border: cleanCardMode ? 'none' : border,
         fontFamily: resolvedFontFamily,
         overflow: 'hidden',
         position: 'relative',
@@ -307,63 +309,90 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
             width: '100%',
             flexShrink: 0,
-            ...alignStyles,
           }}
         >
           <div
             style={{
-              fontFamily: resolvedFontFamily,
-              fontSize:
-                titleFontSize === 'small'
-                  ? '0.70rem'
-                  : titleFontSize === 'medium'
-                  ? '0.82rem'
-                  : titleFontSize === 'large'
-                  ? '0.96rem'
-                  : isTitleMini
-                  ? '0.70rem'
-                  : isVerticalCompact
-                  ? '0.74rem'
-                  : '0.90rem',
-              fontWeight: (titleFontWeight as any) || 600,
-              color: titleColor || '#475569',
-              letterSpacing: '0.02em',
-              textTransform: (titleTextTransform as any) || 'uppercase',
-              lineHeight: 1.2,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              minWidth: 0,
+              ...alignStyles,
             }}
-            title={kpiTitle}
           >
-            {kpiTitle}
-          </div>
-          {showSubtitle && (
             <div
               style={{
                 fontFamily: resolvedFontFamily,
                 fontSize:
-                  subtitleFontSize === 'medium'
+                  titleFontSize === 'small'
+                    ? '0.70rem'
+                    : titleFontSize === 'medium'
                     ? '0.82rem'
-                    : subtitleFontSize === 'large'
-                    ? '0.92rem'
-                    : '0.74rem',
-                fontWeight: (subtitleFontWeight as any) || 400,
-                color: subtitleColor || '#94a3b8',
-                marginTop: '1px',
+                    : titleFontSize === 'large'
+                    ? '0.96rem'
+                    : isTitleMini
+                    ? '0.70rem'
+                    : isVerticalCompact
+                    ? '0.74rem'
+                    : '0.90rem',
+                fontWeight: (titleFontWeight as any) || 600,
+                color: titleColor || '#475569',
+                letterSpacing: '0.02em',
+                textTransform: (titleTextTransform as any) || 'uppercase',
                 lineHeight: 1.2,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 maxWidth: '100%',
               }}
-              title={kpiSubtitle}
+              title={kpiTitle}
             >
-              {kpiSubtitle}
+              {kpiTitle}
+            </div>
+            {showSubtitle && (
+              <div
+                style={{
+                  fontFamily: resolvedFontFamily,
+                  fontSize:
+                    subtitleFontSize === 'medium'
+                      ? '0.82rem'
+                      : subtitleFontSize === 'large'
+                      ? '0.92rem'
+                      : '0.74rem',
+                  fontWeight: (subtitleFontWeight as any) || 400,
+                  color: subtitleColor || '#94a3b8',
+                  marginTop: '1px',
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%',
+                }}
+                title={kpiSubtitle}
+              >
+                {kpiSubtitle}
+              </div>
+            )}
+          </div>
+          {badgePosition === 'top_right' && showBadge && hasComparison && (
+            <div style={{ marginLeft: '6px', flexShrink: 0 }}>
+              <KPIComparisonBadge
+                deltaPercentStr={formattedDeltaPercent}
+                deltaAbsoluteStr={formattedDeltaAbsolute}
+                trendDirection={trendDirection}
+                badgeStyle={badgeStyle}
+                badgeBackgroundColor={finalBadgeBg}
+                badgeTextColor={finalBadgeText}
+                showAbsoluteDelta={showAbsoluteDelta}
+                isCompact={isVerticalCompact}
+                isUltraCompact={isVerticalUltraCompact}
+                hideAbsoluteDelta={hideBadgeAbsolute}
+              />
             </div>
           )}
         </div>
@@ -440,6 +469,22 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
             {suffixValue}
           </span>
         )}
+        {badgePosition === 'inline_right' && showBadge && hasComparison && (
+          <div style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+            <KPIComparisonBadge
+              deltaPercentStr={formattedDeltaPercent}
+              deltaAbsoluteStr={formattedDeltaAbsolute}
+              trendDirection={trendDirection}
+              badgeStyle={badgeStyle}
+              badgeBackgroundColor={finalBadgeBg}
+              badgeTextColor={finalBadgeText}
+              showAbsoluteDelta={showAbsoluteDelta}
+              isCompact={isVerticalCompact}
+              isUltraCompact={isVerticalUltraCompact}
+              hideAbsoluteDelta={hideBadgeAbsolute}
+            />
+          </div>
+        )}
       </div>
 
       {/* Bottom Section: Comparison Badge if hasComparison, or dynamic Month/Subtitle */}
@@ -470,7 +515,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         >
           {hasComparison ? (
             <>
-              {showBadge && (
+              {showBadge && badgePosition === 'bottom_left' && (
                 <KPIComparisonBadge
                   deltaPercentStr={formattedDeltaPercent}
                   deltaAbsoluteStr={formattedDeltaAbsolute}

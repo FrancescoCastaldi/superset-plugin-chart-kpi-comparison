@@ -88,6 +88,8 @@ describe('KPI Comparison transformProps', () => {
         comparisonFontWeight: '500',
         comparisonColor: '',
         badgeStyle: 'pill',
+        badgePosition: 'bottom_left',
+        cleanCardMode: false,
         cardAlignment: 'left',
         showTitle: true,
         showBadge: true,
@@ -624,6 +626,24 @@ describe('KPI Comparison transformProps', () => {
     ])('resolves card background %p to %p', (cfg, expected) => {
       const props = run({ ...dualMetric, card_bg_color: cfg }, [{ sum_richieste: 1 }]);
       expect(props.cardBgColor).toBe(expected);
+    });
+
+    it('resolves badgePosition and cleanCardMode from formData', () => {
+      const props = run(
+        { ...dualMetric, badge_position: 'inline_right', clean_card_mode: true },
+        [{ sum_richieste: 100, sum_richieste_conf: 80 }],
+      );
+      expect(props.badgePosition).toBe('inline_right');
+      expect(props.cleanCardMode).toBe(true);
+    });
+
+    it('supports lower_is_better as an alias for invert_polarity', () => {
+      const props = run(
+        { ...dualMetric, lower_is_better: true },
+        [{ sum_richieste: 80, sum_richieste_conf: 100 }], // drop of 20%
+      );
+      // When drop happens and lower_is_better is true, trend is considered positive (green)
+      expect(props.trendColor).toBe('#10b981');
     });
   });
 });

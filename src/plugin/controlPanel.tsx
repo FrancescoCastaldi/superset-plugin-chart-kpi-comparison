@@ -349,6 +349,20 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
+            name: 'clean_card_mode',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Modalità Clean Card (Zero Box-in-Box)'),
+              default: false,
+              description: t(
+                'Azzera padding interno, bordi e ombre ridondanti per integrarsi perfettamente nei box standard di Superset.',
+              ),
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
             name: 'card_bg_color',
             config: {
               type: 'ColorPickerControl',
@@ -633,6 +647,26 @@ const config: ControlPanelConfig = {
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) ||
                 controls?.badge_content?.value === 'percent_of_total',
+            },
+          },
+        ],
+        [
+          {
+            name: 'badge_position',
+            config: {
+              type: 'SelectControl',
+              label: t('Posizione del Badge Delta'),
+              default: 'bottom_left',
+              choices: [
+                ['bottom_left', t('In basso con confronto (Default)')],
+                ['inline_right', t('A fianco del Valore Principale')],
+                ['top_right', t('In alto a destra')],
+              ],
+              clearable: false,
+              renderTrigger: true,
+              visibility: ({ controls }) =>
+                Boolean(controls?.enable_comparison?.value) &&
+                controls?.show_badge?.value !== false,
             },
           },
         ],

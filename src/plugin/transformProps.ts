@@ -1,5 +1,6 @@
 import { ChartProps } from '@superset-ui/core';
 import {
+  BadgePosition,
   BadgeStyle,
   CalculationMode,
   CardAlignment,
@@ -211,7 +212,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   let trendDirection: TrendDirection = delta.trendDirection;
 
   // Semantic color coding and polarity
-  const invertPolarity = Boolean(getProp('invertPolarity', 'invert_polarity', false));
+  const invertPolarity =
+    Boolean(getProp('invertPolarity', 'invert_polarity', false)) ||
+    Boolean(getProp('lowerIsBetter', 'lower_is_better', false));
   const badgeStyle: BadgeStyle = getProp<BadgeStyle>('badgeStyle', 'badge_style', 'pill');
   const trendColors = getTrendColors(getTrendPolarity(trendDirection, invertPolarity), badgeStyle);
   const { trendColor } = trendColors;
@@ -631,6 +634,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   const showBadge = getProp<boolean>('showBadge', 'show_badge', true);
   const showAbsoluteDelta = getProp<boolean>('showAbsoluteDelta', 'show_absolute_delta', true);
   const sparklineFill = getProp<boolean>('sparklineFill', 'sparkline_fill', true);
+  const badgePosition = getProp<BadgePosition>('badgePosition', 'badge_position', 'bottom_left');
+  const cleanCardMode = getProp<boolean>('cleanCardMode', 'clean_card_mode', false);
 
   return {
     width,
@@ -676,6 +681,8 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     comparisonFontWeight,
     comparisonColor,
     badgeStyle,
+    badgePosition,
+    cleanCardMode,
     cardAlignment,
     showTitle: showTitle !== false,
     showBadge: showBadge !== false,

@@ -1,6 +1,7 @@
 import { QueryFormData } from '@superset-ui/core';
 export type CalculationMode = 'none' | 'dual_metric' | 'static_target' | 'time_shift';
 export type BadgeStyle = 'pill' | 'subtle' | 'full';
+export type BadgePosition = 'bottom_left' | 'inline_right' | 'top_right';
 export type CardAlignment = 'left' | 'center' | 'right';
 export type TrendDirection = 'up' | 'down' | 'flat' | 'none';
 export type CardBorderRadius = 'square' | 'subtle' | 'rounded' | 'pill';
@@ -44,7 +45,10 @@ export interface KPIComparisonFormData extends QueryFormData {
     comparison_font_weight?: string | number;
     comparison_color?: string;
     invert_polarity?: boolean;
+    lower_is_better?: boolean;
     badge_style?: BadgeStyle;
+    badge_position?: BadgePosition;
+    clean_card_mode?: boolean;
     card_alignment?: CardAlignment;
     show_badge?: boolean;
     show_comparison_value?: boolean;
@@ -112,6 +116,8 @@ export interface KPIComparisonProps {
     showBadge?: boolean;
     showComparisonLabel?: boolean;
     badgeStyle: BadgeStyle;
+    badgePosition?: BadgePosition;
+    cleanCardMode?: boolean;
     cardAlignment: CardAlignment;
     showComparisonValue: boolean;
     showAbsoluteDelta: boolean;

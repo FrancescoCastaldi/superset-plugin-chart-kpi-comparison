@@ -5,6 +5,16 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-10-25
+### Added
+- **Supporto Nativo per Dataset Virtuali Jinja & Dual-Metric Single-Row**: Ottimizzata l'estrazione dati per query parametriche Jinja a riga singola. Quando il dataset restituisce un unico record con metrica corrente e confronto calcolate al volo da Jinja, il plugin estrae direttamente i valori primari e di benchmark senza pretendere serie temporali multiple o fallire sulla sparkline.
+- **Posizionamento Configurabile del Badge Delta (`badge_position`)**: Introdotto il controllo interattivo per posizionare il badge di confronto:
+  - `bottom_left`: in calce a sinistra accanto all'etichetta del periodo (default).
+  - `inline_right`: affiancato orizzontalmente alla cifra principale del KPI per evitare collisioni verticali.
+  - `top_right`: in alto a destra nell'intestazione della card.
+- **Modalità Clean Card (Zero Box-in-Box)**: Nuovo toggle `clean_card_mode` che disabilita padding interno, ombre e bordi ridondanti, integrandosi perfettamente nei contenitori nativi delle dashboard Apache Superset.
+- **Supporto Trasparente per `lower_is_better`**: Aggiunto alias dichiarativo per `invert_polarity`, garantendo che per indicatori come tempi di attesa o costi un calo percentuale risulti automaticamente verde e una crescita rossa.
+
 ## [0.2.3] - 2026-10-24
 ### Added
 - **Supporto Nativo per Filtro Dashboard PeriodCompare**: Integrato l'aggancio a `extra_form_data.time_compare`. Quando sulla dashboard e attivo un filtro di confronto temporale nativo, la card KPI imposta automaticamente i `time_offsets` nella query ed estrae il valore del periodo precedente dalla colonna di offset, calcolando delta, percentuale e polarita del trend in tempo reale senza necessita di configurazioni manuali in Explore o di viste cartesiane SQL.
