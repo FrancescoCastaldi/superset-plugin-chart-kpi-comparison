@@ -159,6 +159,16 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       }
     }
 
+    // 2.1 Fallback: if comparisonValue is still null and comparison is enabled, check for offset column from dashboard PeriodCompare
+    if (comparisonValue === null && enableComparison) {
+      const offsetKey = Object.keys(firstRow).find(
+        k => k !== primaryKeyUsed && (k.includes('__') || k.toLowerCase().includes('ago')),
+      );
+      if (offsetKey) {
+        comparisonValue = parseNumericValue(firstRow[offsetKey]);
+      }
+    }
+
     // 3. Sparkline data extraction if multiple rows present
     if (showSparkline && data.length > 1) {
       sparklineData = extractSparklineData(data, primaryMetricKey);

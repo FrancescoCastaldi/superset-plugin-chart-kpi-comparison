@@ -210,6 +210,29 @@ describe('KPI Comparison buildQuery', () => {
     expect(queries[0].columns).toContain('sottotitolo');
   });
 
+  describe('dashboard period comparison (PeriodCompare filter)', () => {
+    it('sets time_offsets when extra_form_data.time_compare is provided', () => {
+      const { queries } = build({
+        metric: 'sum_x',
+        extra_form_data: {
+          time_compare: ['2026-08-01 : 2026-08-31'],
+        },
+      });
+      expect(queries[0].time_offsets).toEqual(['2026-08-01 : 2026-08-31']);
+    });
+
+    it('suppresses dashboard time_offsets when enable_comparison is false', () => {
+      const { queries } = build({
+        metric: 'sum_x',
+        enable_comparison: false,
+        extra_form_data: {
+          time_compare: ['2026-08-01 : 2026-08-31'],
+        },
+      });
+      expect(queries[0].time_offsets).toBeUndefined();
+    });
+  });
+
   it('builds an empty metrics list when no metric is configured', () => {
     const { queries } = build({ calculation_mode: 'dual_metric' });
     expect(queries[0].metrics).toEqual([]);

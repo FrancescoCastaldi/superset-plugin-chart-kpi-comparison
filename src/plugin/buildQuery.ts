@@ -148,12 +148,21 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       query.orderby = [[validTimeCol, true]];
     }
 
-    // In time shift mode, apply Superset's native time offset query
+    // In time shift mode, or when a dashboard PeriodCompare filter is active, apply Superset's native time offset query
+    const dashboardTimeCompare = ensureIsArray(
+      fd.extra_form_data?.time_compare ||
+      baseQueryObject.extra_form_data?.time_compare,
+    ).filter(Boolean);
+    const hasDashboardCompare = dashboardTimeCompare.length > 0;
+    const isComparisonAllowed = enable_comparison !== false && calculation_mode !== 'none';
+
     // Superset requires an enclosed time_range for time_offsets. If missing or 'No filter', suppress time_offsets to prevent the 'Data error'.
     const timeRangeValue = formData.time_range || baseQueryObject.time_range;
     const isTimeRangeEnclosed = typeof timeRangeValue === 'string' && timeRangeValue !== 'No filter' && timeRangeValue.trim() !== '';
 
-    if (isTimeShift && time_compare && isTimeRangeEnclosed) {
+    if (hasDashboardCompare && isComparisonAllowed) {
+      query.time_offsets = dashboardTimeCompare;
+    } else if (isTimeShift && time_compare && isTimeRangeEnclosed) {
       query.time_offsets = ensureIsArray(time_compare);
     } else {
       delete query.time_offsets;
