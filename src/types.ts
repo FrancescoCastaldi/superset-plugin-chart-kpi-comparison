@@ -1,6 +1,6 @@
 import { QueryFormData } from '@superset-ui/core';
 
-export type CalculationMode = 'none' | 'dual_metric' | 'static_target' | 'time_shift';
+export type CalculationMode = 'none' | 'dual_metric' | 'static_target' | 'time_shift' | 'anti_cartesian';
 export type BadgeStyle = 'pill' | 'subtle' | 'full';
 export type BadgePosition = 'bottom_left' | 'inline_right' | 'top_right';
 export type CardAlignment = 'left' | 'center' | 'right';

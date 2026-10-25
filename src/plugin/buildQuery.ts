@@ -25,8 +25,9 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
   const fdGroupby = getFd('groupby', 'groupby');
 
   const isComparisonActive = enable_comparison !== false && calculation_mode !== 'none';
-  const isDual = isComparisonActive && calculation_mode === 'dual_metric';
+  const isDual = isComparisonActive && (calculation_mode === 'dual_metric' || calculation_mode === 'anti_cartesian');
   const isTimeShift = isComparisonActive && calculation_mode === 'time_shift';
+  const isAntiCartesian = isComparisonActive && calculation_mode === 'anti_cartesian';
 
   return buildQueryContext(formData as any, (baseQueryObject: any) => {
     // In dual metric mode, request primary, comparison and any configured extra metrics
@@ -105,7 +106,7 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
       .map(sanitizeColumn)
       .filter((c: any) => c !== null);
 
-    const isMultiRow = isSparklineActive || isPeakOrMin;
+    const isMultiRow = isSparklineActive || isPeakOrMin || isAntiCartesian;
 
     // Ensure metrics are non-empty and sanitized
     const sanitizeMetric = (m: any): any => {
@@ -160,7 +161,7 @@ export default function buildQuery(formData: KPIComparisonFormData): QueryContex
     const timeRangeValue = formData.time_range || baseQueryObject.time_range;
     const isTimeRangeEnclosed = typeof timeRangeValue === 'string' && timeRangeValue !== 'No filter' && timeRangeValue.trim() !== '';
 
-    if (hasDashboardCompare && isComparisonAllowed) {
+    if (hasDashboardCompare && isComparisonAllowed && !isAntiCartesian) {
       query.time_offsets = dashboardTimeCompare;
     } else if (isTimeShift && time_compare && isTimeRangeEnclosed) {
       query.time_offsets = ensureIsArray(time_compare);

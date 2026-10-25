@@ -9,14 +9,18 @@ export interface DeltaResult {
   deltaAbsolute: number | null;
   deltaPercent: number | null;
   trendDirection: TrendDirection;
+  isZeroBaseline?: boolean;
 }
 
 /**
- * Percentage change of `primaryValue` against `comparisonValue`, relative to
+ * Percentage change of primaryValue against comparisonValue, relative to
  * the absolute baseline. A zero baseline yields 0% when both values are zero
- * and +100% otherwise.
+ * and null (Nuovo indicator) when primaryValue is non-zero.
  */
-export function computeDeltaPercent(primaryValue: number, comparisonValue: number): number {
+export function computeDeltaPercent(
+  primaryValue: number,
+  comparisonValue: number,
+): number | null {
   const deltaAbsolute = primaryValue - comparisonValue;
   if (comparisonValue !== 0) {
     return (deltaAbsolute / Math.abs(comparisonValue)) * 100;
@@ -24,7 +28,7 @@ export function computeDeltaPercent(primaryValue: number, comparisonValue: numbe
   if (primaryValue === 0) {
     return 0;
   }
-  return 100;
+  return null;
 }
 
 export function getTrendDirection(deltaPercent: number): TrendDirection {
@@ -37,19 +41,32 @@ export function getTrendDirection(deltaPercent: number): TrendDirection {
   return 'flat';
 }
 
-/** Absolute delta, delta % and trend direction; all empty when a value is missing. */
+/** Absolute delta, delta % and trend direction; handles zero baseline. */
 export function computeDelta(
   primaryValue: number | null,
   comparisonValue: number | null,
 ): DeltaResult {
   if (primaryValue === null || comparisonValue === null) {
-    return { deltaAbsolute: null, deltaPercent: null, trendDirection: 'flat' };
+    return { deltaAbsolute: null, deltaPercent: null, trendDirection: 'flat', isZeroBaseline: false };
   }
+  const deltaAbsolute = primaryValue - comparisonValue;
+  const isZeroBaseline = comparisonValue === 0 && primaryValue !== 0;
+
+  if (isZeroBaseline) {
+    return {
+      deltaAbsolute,
+      deltaPercent: null,
+      trendDirection: 'none',
+      isZeroBaseline: true,
+    };
+  }
+
   const deltaPercent = computeDeltaPercent(primaryValue, comparisonValue);
   return {
-    deltaAbsolute: primaryValue - comparisonValue,
+    deltaAbsolute,
     deltaPercent,
-    trendDirection: getTrendDirection(deltaPercent),
+    trendDirection: deltaPercent !== null ? getTrendDirection(deltaPercent) : 'flat',
+    isZeroBaseline: false,
   };
 }
 

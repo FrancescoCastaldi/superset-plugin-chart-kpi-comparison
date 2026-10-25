@@ -22,9 +22,9 @@ describe('KPI Comparison trend utils', () => {
       expect(computeDeltaPercent(0, 0)).toBe(0);
     });
 
-    it('returns +100 for any non-zero value against a zero baseline', () => {
-      expect(computeDeltaPercent(5, 0)).toBe(100);
-      expect(computeDeltaPercent(-5, 0)).toBe(100);
+    it('returns null for any non-zero value against a zero baseline to signal special Nuovo indicator', () => {
+      expect(computeDeltaPercent(5, 0)).toBeNull();
+      expect(computeDeltaPercent(-5, 0)).toBeNull();
     });
   });
 
@@ -52,24 +52,26 @@ describe('KPI Comparison trend utils', () => {
         deltaAbsolute: 200,
         deltaPercent: 20,
         trendDirection: 'up',
+        isZeroBaseline: false,
       });
       expect(computeDelta(900, 1000)).toEqual({
         deltaAbsolute: -100,
         deltaPercent: -10,
         trendDirection: 'down',
+        isZeroBaseline: false,
       });
     });
 
     it('returns empty values when either side is missing', () => {
-      const empty = { deltaAbsolute: null, deltaPercent: null, trendDirection: 'flat' };
+      const empty = { deltaAbsolute: null, deltaPercent: null, trendDirection: 'flat', isZeroBaseline: false };
       expect(computeDelta(null, 1000)).toEqual(empty);
       expect(computeDelta(1000, null)).toEqual(empty);
       expect(computeDelta(null, null)).toEqual(empty);
     });
 
-    it('treats a zero comparison as a valid baseline', () => {
-      expect(computeDelta(0, 0)).toEqual({ deltaAbsolute: 0, deltaPercent: 0, trendDirection: 'flat' });
-      expect(computeDelta(3, 0)).toEqual({ deltaAbsolute: 3, deltaPercent: 100, trendDirection: 'up' });
+    it('treats a zero comparison as a zero baseline with isZeroBaseline flag', () => {
+      expect(computeDelta(0, 0)).toEqual({ deltaAbsolute: 0, deltaPercent: 0, trendDirection: 'flat', isZeroBaseline: false });
+      expect(computeDelta(3, 0)).toEqual({ deltaAbsolute: 3, deltaPercent: null, trendDirection: 'none', isZeroBaseline: true });
     });
   });
 

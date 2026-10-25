@@ -148,6 +148,48 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           comparisonValue = parseNumericValue(referenceRow[keywordKey]);
         }
       }
+    } else if (calculationMode === 'anti_cartesian') {
+      // Pattern A: 2-row period-sliced dataset (IS_CORRENTE / IS_CONFRONTO or PERIODO column)
+      if (data.length > 1) {
+        const currentPeriodRow = data.find(
+          (r: any) => r.IS_CORRENTE === 1 || r.is_corrente === 1 || String(r.PERIODO).toUpperCase() === 'CORRENTE',
+        ) || data[0];
+
+        const comparisonPeriodRow = data.find(
+          (r: any) => r.IS_CONFRONTO === 1 || r.is_confronto === 1 || String(r.PERIODO).toUpperCase() === 'CONFRONTO',
+        ) || data[1];
+
+        if (primaryMetricKey && currentPeriodRow[primaryMetricKey] !== undefined) {
+          primaryValue = parseNumericValue(currentPeriodRow[primaryMetricKey]);
+          primaryKeyUsed = primaryMetricKey;
+        }
+        if (primaryMetricKey && comparisonPeriodRow[primaryMetricKey] !== undefined) {
+          comparisonValue = parseNumericValue(comparisonPeriodRow[primaryMetricKey]);
+        }
+        referenceRow = currentPeriodRow;
+      } else if (data.length === 1) {
+        // Pattern B: 1-row paired columns (metric_corr vs metric_conf)
+        const row = data[0];
+        referenceRow = row;
+        if (primaryMetricKey && row[primaryMetricKey] !== undefined) {
+          primaryValue = parseNumericValue(row[primaryMetricKey]);
+          primaryKeyUsed = primaryMetricKey;
+        }
+        if (comparisonMetricKey && row[comparisonMetricKey] !== undefined) {
+          comparisonValue = parseNumericValue(row[comparisonMetricKey]);
+        } else {
+          const pairedKey = Object.keys(row).find(
+            k =>
+              k !== primaryKeyUsed &&
+              (k.toLowerCase().includes('conf') ||
+                k.toLowerCase().includes('confronto') ||
+                k.toLowerCase().endsWith('_t2')),
+          );
+          if (pairedKey) {
+            comparisonValue = parseNumericValue(row[pairedKey]);
+          }
+        }
+      }
     } else if (calculationMode === 'time_shift') {
       // Time-shift mode: inspect columns with offset suffix or second row
       const offsetKey = Object.keys(firstRow).find(
@@ -230,6 +272,17 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       ? `${deltaAbsolute > 0 ? '+' : ''}${formatItalianNumber(deltaAbsolute, 0)}`
       : '—';
 
+  // Zero baseline badge and neutral styling
+  if (delta.isZeroBaseline && primaryValue !== null && primaryValue > 0) {
+    formattedDeltaPercent = 'Nuovo';
+    trendDirection = 'none';
+    badgeBackgroundColor = '#f1f5f9';
+    badgeTextColor = '#64748b';
+  } else if (delta.isZeroBaseline && primaryValue === 0) {
+    formattedDeltaPercent = '0,0%';
+    trendDirection = 'flat';
+  }
+
   // Percent of Total override
   const badgeContent = getProp<string>('badgeContent', 'badge_content', 'delta');
   let hasPercentOfTotal = false;
@@ -297,7 +350,11 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         } else if (
           kLow.includes('corrente') ||
           kLow.includes('ultimo') ||
-          kLow.includes('current')
+          kLow.includes('current') ||
+          kLow.includes('riferimento') ||
+          kLow === 'mese_corrente_etichetta' ||
+          kLow === 'data_corrente' ||
+          kLow === 'data_riferimento'
         ) {
           if (!dynamicMonth) {
             dynamicMonth = formatMonthYearItalian(val);
@@ -306,7 +363,9 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           kLow.includes('confronto') ||
           kLow.includes('prec') ||
           kLow.includes('prev') ||
-          kLow.includes('comp')
+          kLow.includes('comp') ||
+          kLow === 'mese_confronto_etichetta' ||
+          kLow === 'data_confronto'
         ) {
           if (!dynamicCompMonth) {
             dynamicCompMonth = formatMonthYearItalian(val);
@@ -333,8 +392,32 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
   }
 
+  // In anti_cartesian 2-row mode, also extract dynamicCompMonth from comparison row
+  if (calculationMode === 'anti_cartesian' && data && data.length > 1) {
+    const compRow = data.find(
+      (r: any) => r.IS_CONFRONTO === 1 || r.is_confronto === 1 || String(r.PERIODO).toUpperCase() === 'CONFRONTO',
+    ) || data[1];
+
+    if (compRow) {
+      for (const [key, val] of Object.entries(compRow)) {
+        if (typeof val === 'string' && val.trim()) {
+          const kLow = key.toLowerCase();
+          if (
+            kLow.includes('confronto') ||
+            kLow.includes('mese') ||
+            kLow.includes('data') ||
+            kLow.includes('periodo')
+          ) {
+            dynamicCompMonth = formatMonthYearItalian(val);
+            break;
+          }
+        }
+      }
+    }
+  }
+
   // 2. If data has multiple rows (series/sparkline/monthly groups), detect from rows
-  if (data.length > 1) {
+  if (data.length > 1 && calculationMode !== 'anti_cartesian') {
     const timeColumnCfg = getProp<string | undefined>('timeColumn', 'time_column', undefined);
     const dateCol = Object.keys(data[0]).find(k => {
       const kLow = k.toLowerCase();
@@ -432,7 +515,16 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
       dynamicSubtitle = dynamicSubtitle.replace(/{period}|{periodo}/gi, dynamicPeriod);
     }
     if (dynamicMonth) {
-      dynamicSubtitle = dynamicSubtitle.replace(/{month}|{mese}/gi, dynamicMonth);
+      dynamicSubtitle = dynamicSubtitle.replace(
+        /{month}|{mese}|{current_month}|{mese_corrente}/gi,
+        dynamicMonth,
+      );
+    }
+    if (dynamicCompMonth) {
+      dynamicSubtitle = dynamicSubtitle.replace(
+        /{comp_month}|{mese_prec}|{mese_confronto}/gi,
+        dynamicCompMonth,
+      );
     }
     if (explicitDynamicVal && dynamicSubtitle.includes('{dynamic}')) {
       dynamicSubtitle = dynamicSubtitle.replace(/{dynamic}/gi, explicitDynamicVal);
@@ -467,7 +559,13 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     resolvedComparisonLabel === 'vs Periodo Prec.' ||
     resolvedComparisonLabel === 'vs Benchmark'
   ) {
-    if (calculationMode === 'static_target') {
+    if (calculationMode === 'anti_cartesian') {
+      if (dynamicCompMonth) {
+        resolvedComparisonLabel = `vs ${dynamicCompMonth}`;
+      } else {
+        resolvedComparisonLabel = 'vs Periodo Confronto';
+      }
+    } else if (calculationMode === 'static_target') {
       resolvedComparisonLabel = 'vs Obiettivo';
     } else if (calculationMode === 'time_shift') {
       if (comparisonValue === null) {

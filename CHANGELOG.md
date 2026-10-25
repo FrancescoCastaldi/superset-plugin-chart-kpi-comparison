@@ -5,6 +5,11 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2026-10-26
+### Added
+- **Supporto comparativo avanzato per dataset parametrici Jinja**: Ottimizzato il calcolo del delta assoluto e percentuale per viste anti-cartesiane a riga singola (Tempo 1 vs Tempo 2).
+- **Controllo di formattazione del delta**: Distinzione dinamica tra variazione percentuale relativa e differenza aritmetica assoluta con badge posizionabile e inversione semantica opzionale.
+
 ## [0.2.4] - 2026-10-25
 ### Added
 - **Supporto Nativo per Dataset Virtuali Jinja & Dual-Metric Single-Row**: Ottimizzata l'estrazione dati per query parametriche Jinja a riga singola. Quando il dataset restituisce un unico record con metrica corrente e confronto calcolate al volo da Jinja, il plugin estrae direttamente i valori primari e di benchmark senza pretendere serie temporali multiple o fallire sulla sparkline.

@@ -327,10 +327,13 @@ describe('KPI Comparison transformProps', () => {
   });
 
   describe('delta, polarity and badge colors', () => {
-    it('reports +100% when the comparison is zero and the primary is not', () => {
+    it('reports Nuovo badge when the comparison is zero and the primary is positive', () => {
       const props = run(dualMetric, [{ sum_richieste: 5, sum_richieste_conf: 0 }]);
-      expect(props.deltaPercent).toBe(100);
-      expect(props.trendDirection).toBe('up');
+      expect(props.deltaPercent).toBeNull();
+      expect(props.formattedDeltaPercent).toBe('Nuovo');
+      expect(props.trendDirection).toBe('none');
+      expect(props.badgeBackgroundColor).toBe('#f1f5f9');
+      expect(props.badgeTextColor).toBe('#64748b');
     });
 
     it('reports 0% flat when both values are zero', () => {
@@ -644,6 +647,52 @@ describe('KPI Comparison transformProps', () => {
       );
       // When drop happens and lower_is_better is true, trend is considered positive (green)
       expect(props.trendColor).toBe('#10b981');
+    });
+  });
+
+  describe('anti_cartesian calculation mode (F01, F02, F03)', () => {
+    it('ingests 2-row period slices with IS_CORRENTE and IS_CONFRONTO', () => {
+      const antiCartesianFd = {
+        enable_comparison: true,
+        calculation_mode: 'anti_cartesian',
+        metric: 'richieste',
+      };
+      const rows = [
+        { IS_CORRENTE: 1, IS_CONFRONTO: 0, richieste: 150, MESE_CORRENTE_ETICHETTA: 'Ottobre 2026' },
+        { IS_CORRENTE: 0, IS_CONFRONTO: 1, richieste: 100, MESE_CONFRONTO_ETICHETTA: 'Ottobre 2025' },
+      ];
+      const props = run(antiCartesianFd, rows);
+      expect(props.primaryValue).toBe(150);
+      expect(props.comparisonValue).toBe(100);
+      expect(props.deltaPercent).toBe(50);
+      expect(props.formattedDeltaPercent).toBe('+50,0%');
+      expect(props.trendDirection).toBe('up');
+      expect(props.comparisonLabel).toBe('vs Ottobre 2025');
+    });
+
+    it('ingests 1-row paired columns in anti_cartesian mode', () => {
+      const antiCartesianFd = {
+        enable_comparison: true,
+        calculation_mode: 'anti_cartesian',
+        metric: 'richieste_corr',
+        comparison_metric: 'richieste_conf',
+      };
+      const row = [{ richieste_corr: 130, richieste_conf: 100, DATA_RIFERIMENTO: '2026-10-01' }];
+      const props = run(antiCartesianFd, row);
+      expect(props.primaryValue).toBe(130);
+      expect(props.comparisonValue).toBe(100);
+      expect(props.deltaPercent).toBe(30);
+      expect(props.trendDirection).toBe('up');
+    });
+
+    it('extracts dynamic date subtitle from DATA_RIFERIMENTO', () => {
+      const fd = {
+        ...dualMetric,
+        kpi_subtitle: '{current_month}',
+      };
+      const rows = [{ sum_richieste: 100, sum_richieste_conf: 90, DATA_RIFERIMENTO: '2026-10-15' }];
+      const props = run(fd, rows);
+      expect(props.kpiSubtitle).toBe('Ottobre 2026');
     });
   });
 });

@@ -50,6 +50,7 @@ const config: ControlPanelConfig = {
               default: 'dual_metric',
               choices: [
                 ['dual_metric', t('Doppia Metrica Esplicita (Dataset/SQL)')],
+                ['anti_cartesian', t('Anti-Cartesiano (Periodi Riferimento vs Confronto)')],
                 ['static_target', t('Valore Target Fisso (Obiettivo numerico)')],
                 ['time_shift', t('Time Shift (Offset Temporale Superset)')],
               ],
@@ -87,7 +88,8 @@ const config: ControlPanelConfig = {
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
                 (!controls?.calculation_mode?.value ||
-                  controls?.calculation_mode?.value === 'dual_metric'),
+                  controls?.calculation_mode?.value === 'dual_metric' ||
+                  controls?.calculation_mode?.value === 'anti_cartesian'),
             },
           },
         ],
