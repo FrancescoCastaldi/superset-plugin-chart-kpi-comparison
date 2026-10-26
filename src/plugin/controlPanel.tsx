@@ -17,7 +17,9 @@ const config: ControlPanelConfig = {
             config: {
               ...sharedControls.time_range,
               label: t('Filtro Temporale (Range)'),
-              description: t('Obbligatorio per far funzionare il Time Shift. Specifica il periodo di indagine chiuso (inizio e fine).'),
+              description: t('Specifica il periodo di indagine chiuso (inizio e fine).'),
+              clearable: true,
+              validators: [],
             },
           },
         ],
@@ -68,8 +70,10 @@ const config: ControlPanelConfig = {
             name: 'metric',
             config: {
               ...sharedControls.metric,
-              label: t('Metrica Principale (Obbligatoria)'),
+              label: t('Metrica Principale'),
               description: t('La metrica primaria visualizzata a caratteri grandi nella card.'),
+              clearable: true,
+              validators: [],
             },
           },
         ],

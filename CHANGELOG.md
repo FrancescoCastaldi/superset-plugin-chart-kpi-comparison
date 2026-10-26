@@ -5,56 +5,13 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.5] - 2026-10-26
-### Added
-- **Supporto comparativo avanzato per dataset parametrici Jinja**: Ottimizzato il calcolo del delta assoluto e percentuale per viste anti-cartesiane a riga singola (Tempo 1 vs Tempo 2).
-- **Controllo di formattazione del delta**: Distinzione dinamica tra variazione percentuale relativa e differenza aritmetica assoluta con badge posizionabile e inversione semantica opzionale.
+## [0.2.6] - 2026-10-26
 
-## [0.2.4] - 2026-10-25
-### Added
-- **Supporto Nativo per Dataset Virtuali Jinja & Dual-Metric Single-Row**: Ottimizzata l'estrazione dati per query parametriche Jinja a riga singola. Quando il dataset restituisce un unico record con metrica corrente e confronto calcolate al volo da Jinja, il plugin estrae direttamente i valori primari e di benchmark senza pretendere serie temporali multiple o fallire sulla sparkline.
-- **Posizionamento Configurabile del Badge Delta (`badge_position`)**: Introdotto il controllo interattivo per posizionare il badge di confronto:
-  - `bottom_left`: in calce a sinistra accanto all'etichetta del periodo (default).
-  - `inline_right`: affiancato orizzontalmente alla cifra principale del KPI per evitare collisioni verticali.
-  - `top_right`: in alto a destra nell'intestazione della card.
-- **Modalità Clean Card (Zero Box-in-Box)**: Nuovo toggle `clean_card_mode` che disabilita padding interno, ombre e bordi ridondanti, integrandosi perfettamente nei contenitori nativi delle dashboard Apache Superset.
-- **Supporto Trasparente per `lower_is_better`**: Aggiunto alias dichiarativo per `invert_polarity`, garantendo che per indicatori come tempi di attesa o costi un calo percentuale risulti automaticamente verde e una crescita rossa.
+### Changed
+- **Controlli Non Bloccanti (Zero Parametri Obbligatori)**: Rimossi tutti i vincoli `validateNonEmpty` e impostato `clearable: true` e `validators: []` per garantire piena flessibilita operativa senza blocchi nell'Explore di Superset.
 
-## [0.2.3] - 2026-10-24
-### Added
-- **Supporto Nativo per Filtro Dashboard PeriodCompare**: Integrato l'aggancio a `extra_form_data.time_compare`. Quando sulla dashboard e attivo un filtro di confronto temporale nativo, la card KPI imposta automaticamente i `time_offsets` nella query ed estrae il valore del periodo precedente dalla colonna di offset, calcolando delta, percentuale e polarita del trend in tempo reale senza necessita di configurazioni manuali in Explore o di viste cartesiane SQL.
+## [Unreleased]
 
-## [0.2.2] - 2026-10-19
-### Security
-- **Privacy e Bonifica Riferimenti Aziendali**: Rimossi tutti i riferimenti a denominazioni aziendali interne e codici cliente dai dataset dimostrativi, dalle didascalie del README, dal Dev Studio e dalle immagini di anteprima (screenshot e GIF animata).
-
-## [0.2.1] - 2026-10-19
-### Fixed
-- **Iniezione Dinamica Web Fonts (Google Fonts)**: Risolto il mancato rendering visivo della famiglia di font in Superset e nei browser privi dei font locali (Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code). Introdotto caricatore dinamico `useEffect` che inietta il tag `<link>` ufficiale dei Google Fonts in `document.head`.
-- **Ereditarieta CSS ed Evitamento Sintassi Invalida**: Corretta la sintassi CSS per `inherit` ed elementi con spazi (es. `"JetBrains Mono"`), garantendo applicazione diretta dello stile `fontFamily`, `fontSize` e `fontWeight` su tutti gli elementi testuali della card (valore principale, titolo, sottotitolo e confronto).
-
-### Added
-- **Preset Dimensioni Testo e Slider Rapido**: Aggiunti pulsanti preset diretti (Auto-Fit, Small 24px, Medium 36px, Large 48px, XLarge 64px, Custom) con regolazione rapida a slider per un controllo immediato della dimensione numerica del KPI.
-- **Suite di Test Live Headless**: Aggiunto script di test Playwright headless `scripts/verify_typography_live.py` per validazione continua dei computed styles dei font nel Dev Studio su Chromium.
-
-## [0.2.0] - 2026-10-19
-### Added
-- **Dev Studio Interattivo Locale**: Ambiente autonomo Vite + React HMR in `dev-studio/` per anteprima in tempo reale e test visivo rapido delle configurazioni del chart con launcher `dev.bat` e comando `npm run studio` su `http://localhost:5175/`. Include selettore scenari realistici (visite ambulatoriali, tempi di attesa pronto soccorso, budget ricavi con progress bar, glassmorphism dark executive), controlli interattivi completi e switch tema canvas.
-- **Controlli Tipografici Completi in Explore**: Nuova sezione espandibile "Tipografia & Personalizzazione Testo" nel control panel di Superset con personalizzazione granulare:
-  - Scelta della famiglia di font (Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code, System Default).
-  - Modalita di dimensionamento del valore numerico principale: auto-fit scalato reattivo oppure dimensione fissa manuale in pixel (da 12px a 120px).
-  - Peso del font (Light 300, Regular 400, Medium 500, Semi-Bold 600, Bold 700, Extra-Bold 800, Black 900).
-  - Spaziatura caratteri (stretta, normale, larga).
-  - Allineamento numerico tabulare (`tabular-nums`) per prevenire jitter orizzontale durante gli aggiornamenti live.
-  - Personalizzazione del titolo superiore (dimensione testo, peso font, trasformazione maiuscolo, colore dedicato).
-  - Personalizzazione del sottotitolo (dimensione, peso font, colore).
-  - Personalizzazione della riga di confronto inferiore (dimensione, peso font, colore etichetta).
-- **Opzioni Estetiche Avanzate**:
-  - Configurazione esplicita di bordi per la card (spessore da 1px a 3px e colore personalizzato), oltre a ombreggiature e raggio di curvatura.
-  - Sparkline vettoriale SVG con supporto per curve morbide (spline cubiche di Bezier) o lineari standard, con rendering facoltativo del marker di picco e del marker sul valore corrente.
-- **Suite di Test Unitari**: Aggiunti test per la tipografia (`test/typographyProps.test.ts`), per la logica vettoriale e curve della sparkline (`test/sparklineCurve.test.ts`) e per i controlli del pannello di Explore (`test/controlPanel.test.ts`), portando la copertura a 173 test unitari tutti superati con successo.
-
-## [0.1.26] - 2026-10-18
 ### Changed
 - **Bundle ESM minificato con esbuild**: Il nuovo `scripts/build.mjs` (esbuild `^0.25`) genera un singolo `dist/index.esm.js` minificato (target `es2020`/`chrome110`/`firefox110`/`safari16`, sourcemap linked senza `sourcesContent`) con React e `@superset-ui/*` esterni. `npm run build` esegue ora `tsc --emitDeclarationOnly` (solo tipi `.d.ts`) seguito da `build:esm`: la cartella `dist/` scende da 177.909 B a circa 95 KB ed elimina i file JS per-modulo. `main` e `module` puntano entrambi a `dist/index.esm.js` (prima `main` puntava a `dist/index.js` e `module` a un file inesistente). Le immagini della gallery (~700 KB ciascuna) non vengono inlinate: il bundle le importa da `src/images`, gia' incluso nel pacchetto. Superset continua a compilare il plugin da `src/` tramite `install.bat`, nessun impatto a runtime.
 - **`sideEffects: false`** in `package.json`: il plugin non importa CSS ne' esegue codice al caricamento dei moduli, quindi il bundler host puo' rimuovere gli export non usati (tree-shaking).
