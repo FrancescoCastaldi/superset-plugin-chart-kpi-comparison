@@ -738,6 +738,21 @@ const config: ControlPanelConfig = {
         ],
         [
           {
+            name: 'wrap_bottom_content',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Testo di Confronto a Capo'),
+              default: true,
+              description: t(
+                'Permette al testo del confronto (mese precedente con anno e valore) di andare a capo in modo armonico se lo spazio orizzontale non basta, evitando troncamenti.',
+              ),
+              renderTrigger: true,
+              visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
+            },
+          },
+        ],
+        [
+          {
             name: 'apply_trend_color_to',
             config: {
               type: 'SelectControl',

@@ -93,7 +93,21 @@ export function getMetricLabel(metric: any): string {
 }
 
 export function formatMonthYearItalian(val: any): string {
-  if (!val || typeof val !== 'string') return '';
+  if (!val) return '';
+  if (val instanceof Date) {
+    if (isNaN(val.getTime())) return '';
+    return `${ITALIAN_MONTHS[val.getMonth()]} ${val.getFullYear()}`;
+  }
+  if (typeof val === 'number') {
+    if (val > 100000000) {
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        return `${ITALIAN_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+      }
+    }
+    return '';
+  }
+  if (typeof val !== 'string') return '';
   const trimmed = val.trim();
   if (!trimmed) return '';
 

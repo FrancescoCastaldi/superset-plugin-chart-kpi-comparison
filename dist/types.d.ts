@@ -54,6 +54,7 @@ export interface KPIComparisonFormData extends QueryFormData {
     show_comparison_value?: boolean;
     show_comparison_label?: boolean;
     show_absolute_delta?: boolean;
+    wrap_bottom_content?: boolean;
     show_sparkline?: boolean;
     sparkline_color?: string;
     sparkline_fill?: boolean;
@@ -121,6 +122,7 @@ export interface KPIComparisonProps {
     cardAlignment: CardAlignment;
     showComparisonValue: boolean;
     showAbsoluteDelta: boolean;
+    wrapBottomContent?: boolean;
     showSparkline: boolean;
     sparklineData: number[];
     sparklineColor: string;

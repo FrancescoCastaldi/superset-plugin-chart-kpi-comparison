@@ -5,6 +5,12 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2026-10-29
+
+### Added
+- **Mese Precedente Dinamico con Anno**: Quando l'etichetta di confronto fa riferimento al mese precedente (default `vs Mese precedente`, varianti o con placeholder `{comp_month}`/`{mese_prec}`), viene iniettato dinamicamente il mese precedente con il relativo anno (es. `vs Mese precedente (Settembre 2026)`). Risoluzione automatica di `dynamicCompMonth` da colonna nei dati di query (`MESE_PRECEDENTE`, `MESE_PENULTIMO`, ecc.) con fallback euristico calcolato sull'asse temporale o data corrente (`now - 1 mese`).
+- **Supporto Wrap su Righe Inferiori (`wrap_bottom_content`)**: Introdotto controllo in control panel e prop `wrapBottomContent` (default: `true`) con `flexWrap: 'wrap'`, `rowGap: '2px'` e `overflow: 'visible'` per evitare che in colonne strette di dashboard (es. 3 colonne) il testo di confronto e il badge vengano troncati con puntini di sospensione (`...`).
+
 ## [0.2.6] - 2026-10-26
 
 ### Changed

@@ -17,6 +17,7 @@ import {
   formatMonthYearItalian,
   getMetricLabel,
   parseNumericValue,
+  ITALIAN_MONTHS,
 } from '../utils/formatters';
 import {
   getContrastTextColor,
@@ -349,7 +350,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           dynamicMonth = formatMonthYearItalian(val);
         } else if (
           kLow.includes('corrente') ||
-          kLow.includes('ultimo') ||
+          (kLow.includes('ultimo') && !kLow.includes('penultimo')) ||
           kLow.includes('current') ||
           kLow.includes('riferimento') ||
           kLow === 'mese_corrente_etichetta' ||
@@ -362,6 +363,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         } else if (
           kLow.includes('confronto') ||
           kLow.includes('prec') ||
+          kLow.includes('penultimo') ||
           kLow.includes('prev') ||
           kLow.includes('comp') ||
           kLow === 'mese_confronto_etichetta' ||
@@ -497,6 +499,37 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     }
   }
 
+  // 4. Heuristic fallback for dynamicCompMonth when comparing to previous month
+  if (!dynamicCompMonth) {
+    const rawCompLabel = (getProp<string | undefined>('comparisonLabel', 'comparison_label', '') || '').toLowerCase();
+    const isMesePrecTarget =
+      rawCompLabel.includes('mese prec') ||
+      rawCompLabel.includes('precedente') ||
+      rawCompLabel.includes('{comp_month}') ||
+      rawCompLabel.includes('{mese_prec}') ||
+      (comparisonMetricKey && (
+        comparisonMetricKey.toLowerCase().includes('penultimo') ||
+        comparisonMetricKey.toLowerCase().includes('prec') ||
+        comparisonMetricKey.toLowerCase().includes('prev')
+      ));
+
+    if (isMesePrecTarget) {
+      let anchorDate = new Date();
+      if (dynamicMonth) {
+        const parts = dynamicMonth.split(' ');
+        if (parts.length >= 2) {
+          const mIdx = ITALIAN_MONTHS.findIndex(m => m.toLowerCase() === parts[0].toLowerCase());
+          const y = parseInt(parts[1], 10);
+          if (mIdx !== -1 && !isNaN(y)) {
+            anchorDate = new Date(y, mIdx, 1);
+          }
+        }
+      }
+      const prevDate = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - 1, 1);
+      dynamicCompMonth = `${ITALIAN_MONTHS[prevDate.getMonth()]} ${prevDate.getFullYear()}`;
+    }
+  }
+
   // Dynamic subtitle resolution
   let dynamicSubtitle = getProp<string>('kpiSubtitle', 'kpi_subtitle', '');
   
@@ -535,24 +568,34 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   let resolvedComparisonLabel = getProp<string | undefined>('comparisonLabel', 'comparison_label', undefined);
   if (dynamicCompMonth) {
     if (
+      resolvedComparisonLabel &&
+      (resolvedComparisonLabel.includes('{comp_month}') ||
+        resolvedComparisonLabel.includes('{mese_prec}') ||
+        resolvedComparisonLabel.includes('{month}') ||
+        resolvedComparisonLabel.includes('{mese}'))
+    ) {
+      resolvedComparisonLabel = resolvedComparisonLabel
+        .replace(/{comp_month}|{mese_prec}/gi, dynamicCompMonth)
+        .replace(/{month}|{mese}/gi, dynamicCompMonth);
+    } else if (
+      resolvedComparisonLabel && (
+        resolvedComparisonLabel === 'vs Mese precedente' ||
+        resolvedComparisonLabel === 'vs Mese Prec.' ||
+        resolvedComparisonLabel === 'vs Mese Prec' ||
+        resolvedComparisonLabel === 'vs mese precedente' ||
+        resolvedComparisonLabel.startsWith('vs Mese precedente') ||
+        resolvedComparisonLabel.startsWith('vs Mese Prec')
+      )
+    ) {
+      resolvedComparisonLabel = `vs Mese precedente (${dynamicCompMonth})`;
+    } else if (
       !resolvedComparisonLabel ||
-      resolvedComparisonLabel === 'vs Mese precedente' ||
-      resolvedComparisonLabel === 'vs Mese Prec.' ||
       resolvedComparisonLabel === 'vs Periodo Prec.' ||
       resolvedComparisonLabel === 'vs Confronto' ||
-      resolvedComparisonLabel.startsWith('vs Mese') ||
       resolvedComparisonLabel.startsWith('vs Agosto') ||
       resolvedComparisonLabel.startsWith('vs Settembre')
     ) {
       resolvedComparisonLabel = `vs ${dynamicCompMonth}`;
-    } else if (
-      resolvedComparisonLabel.includes('{comp_month}') ||
-      resolvedComparisonLabel.includes('{mese_prec}')
-    ) {
-      resolvedComparisonLabel = resolvedComparisonLabel.replace(
-        /{comp_month}|{mese_prec}/gi,
-        dynamicCompMonth,
-      );
     }
   } else if (
     !resolvedComparisonLabel ||
@@ -787,6 +830,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     showComparisonValue: showComparisonValue !== false,
     showComparisonLabel: showComparisonLabel !== false,
     showAbsoluteDelta: showAbsoluteDelta !== false,
+    wrapBottomContent: getProp<boolean>('wrapBottomContent', 'wrap_bottom_content', true),
     showSparkline,
     sparklineData,
     sparklineColor,

@@ -40,6 +40,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   showComparisonValue = true,
   showComparisonLabel = true,
   showAbsoluteDelta = true,
+  wrapBottomContent = true,
   showSparkline = false,
   sparklineData = [],
   sparklineColor = '#2563eb',
@@ -493,9 +494,10 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
           style={{
             fontFamily: resolvedFontFamily,
             display: 'flex',
-            flexWrap: 'nowrap',
+            flexWrap: wrapBottomContent !== false ? 'wrap' : 'nowrap',
             alignItems: 'center',
-            gap: isHorizontalUltraCompact ? '3px' : '5px',
+            rowGap: '2px',
+            columnGap: isHorizontalUltraCompact ? '3px' : '5px',
             width: '100%',
             justifyContent:
               cardAlignment === 'center'
@@ -508,9 +510,9 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
               : isVerticalCompact
               ? '0.78rem'
               : '0.84rem',
-            lineHeight: 1.2,
+            lineHeight: 1.25,
             flexShrink: 0,
-            overflow: 'hidden',
+            overflow: wrapBottomContent !== false ? 'visible' : 'hidden',
           }}
         >
           {hasComparison ? (
@@ -536,6 +538,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                   style={{
                     fontFamily: resolvedFontFamily,
                     display: 'inline-flex',
+                    flexWrap: wrapBottomContent !== false ? 'wrap' : 'nowrap',
                     alignItems: 'center',
                     gap: '3px',
                     color: comparisonColor || '#64748b',
@@ -550,9 +553,9 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                         ? '0.74rem'
                         : '0.80rem',
                     fontWeight: (comparisonFontWeight as any) || 500,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
+                    whiteSpace: wrapBottomContent !== false ? 'normal' : 'nowrap',
+                    overflow: wrapBottomContent !== false ? 'visible' : 'hidden',
+                    textOverflow: wrapBottomContent !== false ? 'clip' : 'ellipsis',
                     flexShrink: 1,
                     minWidth: 0,
                   }}
@@ -566,9 +569,10 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
                   {showComparisonLabel && comparisonLabel && (
                     <span
                       style={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        overflow: wrapBottomContent !== false ? 'visible' : 'hidden',
+                        textOverflow: wrapBottomContent !== false ? 'clip' : 'ellipsis',
+                        whiteSpace: wrapBottomContent !== false ? 'normal' : 'nowrap',
+                        wordBreak: 'break-word',
                       }}
                     >
                       {comparisonLabel}

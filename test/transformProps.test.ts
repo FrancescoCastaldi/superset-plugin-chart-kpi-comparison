@@ -96,6 +96,7 @@ describe('KPI Comparison transformProps', () => {
         showComparisonValue: true,
         showComparisonLabel: true,
         showAbsoluteDelta: true,
+        wrapBottomContent: true,
         showSparkline: false,
         sparklineData: [],
         sparklineColor: '#2563eb',
@@ -693,6 +694,46 @@ describe('KPI Comparison transformProps', () => {
       const rows = [{ sum_richieste: 100, sum_richieste_conf: 90, DATA_RIFERIMENTO: '2026-10-15' }];
       const props = run(fd, rows);
       expect(props.kpiSubtitle).toBe('Ottobre 2026');
+    });
+  });
+
+  describe('dynamic previous month reference and wrapping (0.2.7)', () => {
+    it('appends dynamic previous month with year when comparison_label is "vs Mese precedente"', () => {
+      const fd = {
+        ...dualMetric,
+        comparison_label: 'vs Mese precedente',
+      };
+      const rows = [{ sum_richieste: 55000, sum_richieste_conf: 59000, MESE_PRECEDENTE: '2026-09' }];
+      const props = run(fd, rows);
+      expect(props.comparisonLabel).toBe('vs Mese precedente (Settembre 2026)');
+    });
+
+    it('substitutes {comp_month} in custom comparison label', () => {
+      const fd = {
+        ...dualMetric,
+        comparison_label: 'vs Mese prec. {comp_month}',
+      };
+      const rows = [{ sum_richieste: 55000, sum_richieste_conf: 59000, MESE_PENULTIMO: '2026-09' }];
+      const props = run(fd, rows);
+      expect(props.comparisonLabel).toBe('vs Mese prec. Settembre 2026');
+    });
+
+    it('heuristically derives previous month when no date column is present in single-row dual metric', () => {
+      const fd = {
+        ...dualMetric,
+        comparison_label: 'vs Mese precedente',
+      };
+      const rows = [{ sum_richieste: 55000, sum_richieste_conf: 59000 }];
+      const props = run(fd, rows);
+      expect(props.comparisonLabel).toContain('vs Mese precedente (');
+    });
+
+    it('honors wrap_bottom_content prop', () => {
+      const propsWrap = run({ ...dualMetric, wrap_bottom_content: true }, [{ sum_richieste: 100, sum_richieste_conf: 90 }]);
+      expect(propsWrap.wrapBottomContent).toBe(true);
+
+      const propsNoWrap = run({ ...dualMetric, wrap_bottom_content: false }, [{ sum_richieste: 100, sum_richieste_conf: 90 }]);
+      expect(propsNoWrap.wrapBottomContent).toBe(false);
     });
   });
 });
