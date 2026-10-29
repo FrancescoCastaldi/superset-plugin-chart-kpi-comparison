@@ -5,6 +5,11 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-10-29
+
+### Fixed
+- **Titolo nel titolo del chart su una riga**: con `title_in_chart_header` il titolo, in card strette, andava a capo su piu righe e copriva il valore. Ora resta su una riga e finisce con i puntini, con il testo completo nel suggerimento al passaggio del mouse; alla chiusura della card stile e suggerimento tornano come prima.
+
 ## [0.3.0] - 2026-10-29
 
 ### Added

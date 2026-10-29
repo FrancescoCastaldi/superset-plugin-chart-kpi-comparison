@@ -48,6 +48,17 @@ describe('chart header title', () => {
     expect(link.textContent).toBe('Prenotazioni Totali');
   });
 
+  it('keeps a long title on one line with the full text as tooltip, and removes both on restore', () => {
+    const { root, link } = makeDashboard();
+    const restore = syncChartHeaderTitle(root, 'Prenotazioni SSR · Ottobre 2026');
+    expect(link.getAttribute('style')).toContain('text-overflow:ellipsis');
+    expect(link.getAttribute('style')).toContain('white-space:nowrap');
+    expect(link.getAttribute('title')).toBe('Prenotazioni SSR · Ottobre 2026');
+    restore();
+    expect(link.getAttribute('style')).toBe('');
+    expect(link.getAttribute('title')).toBeNull();
+  });
+
   it('does nothing for an empty title or outside a dashboard', () => {
     const { root, link } = makeDashboard();
     syncChartHeaderTitle(root, '   ')();

@@ -5,6 +5,7 @@
  */
 const TITLE_SELECTOR = '[data-test="editable-title"]';
 const ORIGINAL_ATTR = 'data-kpi-original-title';
+const STYLE_ATTR = 'data-kpi-original-style';
 
 interface HeaderRoot {
   closest(selector: string): HeaderRoot | null;
@@ -19,19 +20,28 @@ export function findChartHeaderTitle(root: HeaderRoot | null | undefined): any {
   return holder.querySelector('a') ?? holder;
 }
 
-/** Writes `title` in the title bar; returns the function that restores the original text. */
+// A long title stays on one line and ends in dots, so in a narrow card it never covers the value below.
+const ONE_LINE = 'display:block;min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;';
+
+/** Writes `title` in the title bar; returns the function that restores the original text and style. */
 export function syncChartHeaderTitle(root: HeaderRoot | null | undefined, title: string): () => void {
   const text = title.trim();
   const target = text ? findChartHeaderTitle(root) : null;
   if (!target) return () => undefined;
   if (target.getAttribute(ORIGINAL_ATTR) === null) {
     target.setAttribute(ORIGINAL_ATTR, target.textContent ?? '');
+    target.setAttribute(STYLE_ATTR, target.getAttribute('style') ?? '');
   }
   if (target.textContent !== text) target.textContent = text;
+  target.setAttribute('style', `${target.getAttribute(STYLE_ATTR)};${ONE_LINE}`);
+  target.setAttribute('title', text);
   return () => {
     const original = target.getAttribute(ORIGINAL_ATTR);
     if (original === null) return;
     target.textContent = original;
+    target.setAttribute('style', target.getAttribute(STYLE_ATTR) ?? '');
     target.removeAttribute(ORIGINAL_ATTR);
+    target.removeAttribute(STYLE_ATTR);
+    target.removeAttribute('title');
   };
 }
