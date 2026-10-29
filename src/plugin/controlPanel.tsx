@@ -273,6 +273,21 @@ const config: ControlPanelConfig = {
         ],
         [
           {
+            name: 'title_in_chart_header',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Titolo nel titolo del chart'),
+              default: false,
+              description: t(
+                'In dashboard scrive il titolo KPI, con il mese dinamico, nel titolo del chart al posto del nome fisso e toglie il titolo dentro la card, per non ripeterlo due volte.',
+              ),
+              renderTrigger: true,
+              visibility: ({ controls }) => controls?.show_title?.value !== false,
+            },
+          },
+        ],
+        [
+          {
             name: 'kpi_subtitle',
             config: {
               type: 'TextControl',

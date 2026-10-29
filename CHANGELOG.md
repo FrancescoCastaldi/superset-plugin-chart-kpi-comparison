@@ -5,6 +5,11 @@ Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-10-29
+
+### Added
+- **Titolo nel titolo del chart (`title_in_chart_header`, default disattivato)**: in dashboard il titolo KPI risolto, con il mese dinamico (per esempio `Prenotazioni Totali · Settembre 2026`), viene scritto nel titolo del chart al posto del nome fisso e il titolo dentro la card non viene piu disegnato, cosi il testo non compare due volte e il valore numerico guadagna spazio. Alla chiusura della card il nome originale viene ripristinato. Fuori dalla dashboard (Explore) non cambia nulla. Con l'opzione spenta il comportamento e identico a prima.
+
 ## [0.2.7] - 2026-10-29
 
 ### Added

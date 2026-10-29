@@ -20,6 +20,7 @@ export interface KPIComparisonFormData extends QueryFormData {
 
   // Header & Display
   show_title?: boolean;
+  title_in_chart_header?: boolean;
   kpi_title?: string;
   kpi_subtitle?: string;
   dynamic_subtitle_column?: string;
@@ -146,6 +147,8 @@ export interface KPIComparisonProps {
 
   // Config Flags
   showTitle?: boolean;
+  /** The title goes in the title bar of the dashboard chart instead of inside the card. */
+  titleInChartHeader?: boolean;
   hasComparison?: boolean;
   showBadge?: boolean;
   showComparisonLabel?: boolean;

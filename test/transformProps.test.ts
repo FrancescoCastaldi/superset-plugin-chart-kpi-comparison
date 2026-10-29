@@ -92,6 +92,7 @@ describe('KPI Comparison transformProps', () => {
         cleanCardMode: false,
         cardAlignment: 'left',
         showTitle: true,
+        titleInChartHeader: false,
         showBadge: true,
         showComparisonValue: true,
         showComparisonLabel: true,
@@ -194,6 +195,7 @@ describe('KPI Comparison transformProps', () => {
         cardAlignment: 'center',
         suffixValue: ' pz',
         showTitle: false,
+        titleInChartHeader: false,
         showBadge: false,
         showComparisonValue: false,
         showComparisonLabel: false,
@@ -594,6 +596,15 @@ describe('KPI Comparison transformProps', () => {
     it('keeps a custom comparison label without placeholders', () => {
       const props = run({ ...dualMetric, comparison_label: 'Benchmark regionale' }, monthlyRows);
       expect(props.comparisonLabel).toBe('Benchmark regionale');
+    });
+
+    it('passes the title in chart header flag, off by default', () => {
+      const on = run({ ...dualMetric, kpi_title: 'Richieste · {mese}', title_in_chart_header: true }, [
+        { sum_richieste: 10, sum_richieste_conf: 8 },
+      ]);
+      const off = run({ ...dualMetric, kpi_title: 'Richieste' }, [{ sum_richieste: 10, sum_richieste_conf: 8 }]);
+      expect(on.titleInChartHeader).toBe(true);
+      expect(off.titleInChartHeader).toBe(false);
     });
 
     it('clears the title when show_title is disabled', () => {

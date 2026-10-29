@@ -2,6 +2,7 @@ import React from 'react';
 import { KPIComparisonProps } from '../types';
 import { KPIComparisonBadge } from './KPIComparisonBadge';
 import { KPISparkline } from './KPISparkline';
+import { syncChartHeaderTitle } from '../utils/chartHeaderTitle';
 
 const GOOGLE_FONTS_MAP: Record<string, string> = {
   Inter: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap',
@@ -36,6 +37,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   hasComparison = true,
   cardAlignment = 'left',
   showTitle = true,
+  titleInChartHeader = false,
   showBadge = true,
   showComparisonValue = true,
   showComparisonLabel = true,
@@ -75,6 +77,15 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   clickUrl = '',
   clickTarget = '_self',
 }) => {
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const headerTitle = showTitle && titleInChartHeader && Boolean(kpiTitle && kpiTitle.trim());
+
+  // The title lives in the title bar of the dashboard chart, not inside the card
+  React.useEffect(
+    () => (headerTitle ? syncChartHeaderTitle(rootRef.current, kpiTitle ?? '') : undefined),
+    [headerTitle, kpiTitle],
+  );
+
   // Dynamically load Google Fonts if a web font is requested
   React.useEffect(() => {
     if (!kpiFontFamily || kpiFontFamily === 'inherit') return;
@@ -101,6 +112,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
   // for the primary KPI value and comparison delta badge. Title is preserved in container tooltip.
   const canRenderTitle =
     showTitle &&
+    !headerTitle &&
     !isVerticalUltraCompact &&
     Boolean(kpiTitle && kpiTitle.trim().length > 0);
   const isTitleMini = isHorizontalUltraCompact;
@@ -277,6 +289,7 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
 
   return (
     <div
+      ref={rootRef}
       onClick={clickUrl ? () => window.open(clickUrl, clickTarget) : undefined}
       style={{
         width,
@@ -285,8 +298,8 @@ export const KPIComparisonChart: React.FC<KPIComparisonProps> = ({
         padding: cleanCardMode ? '4px 6px' : `${padV}px ${padH}px`,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: !showTitle ? 'center' : 'space-between',
-        gap: !showTitle ? (height < 70 ? '2px' : '4px') : '0px',
+        justifyContent: !showTitle || headerTitle ? 'center' : 'space-between',
+        gap: !showTitle || headerTitle ? (height < 70 ? '2px' : '4px') : '0px',
         backgroundColor: finalCardBg,
         borderRadius: cleanCardMode ? '0px' : borderRadius,
         boxShadow: cleanCardMode ? 'none' : boxShadow,

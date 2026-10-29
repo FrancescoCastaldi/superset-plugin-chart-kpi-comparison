@@ -826,6 +826,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     cleanCardMode,
     cardAlignment,
     showTitle: showTitle !== false,
+    titleInChartHeader: getProp<boolean>('titleInChartHeader', 'title_in_chart_header', false) === true,
     showBadge: showBadge !== false,
     showComparisonValue: showComparisonValue !== false,
     showComparisonLabel: showComparisonLabel !== false,
