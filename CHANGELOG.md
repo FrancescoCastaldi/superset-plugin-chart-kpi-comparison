@@ -1,73 +1,73 @@
 # Changelog
 
-Tutte le modifiche rilevanti a questo progetto sono documentate in questo file.
+All notable changes to this project are documented in this file.
 
-Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
-e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.1] - 2026-10-29
 
 ### Fixed
-- **Titolo nel titolo del chart su una riga**: con `title_in_chart_header` il titolo, in card strette, andava a capo su piu righe e copriva il valore. Ora resta su una riga e finisce con i puntini, con il testo completo nel suggerimento al passaggio del mouse; alla chiusura della card stile e suggerimento tornano come prima.
+- **Chart title on a single line**: with `title_in_chart_header` the title, in narrow cards, wrapped onto several lines and covered the value. It now stays on one line and ends with an ellipsis, with the full text in the tooltip on hover. When the card is closed, the style and the tooltip go back to how they were before.
 
 ## [0.3.0] - 2026-10-29
 
 ### Added
-- **Titolo nel titolo del chart (`title_in_chart_header`, default disattivato)**: in dashboard il titolo KPI risolto, con il mese dinamico (per esempio `Prenotazioni Totali · Settembre 2026`), viene scritto nel titolo del chart al posto del nome fisso e il titolo dentro la card non viene piu disegnato, cosi il testo non compare due volte e il valore numerico guadagna spazio. Alla chiusura della card il nome originale viene ripristinato. Fuori dalla dashboard (Explore) non cambia nulla. Con l'opzione spenta il comportamento e identico a prima.
+- **Title in the chart header (`title_in_chart_header`, default off)**: in dashboards, the resolved KPI title, with the dynamic month (for example `Prenotazioni Totali · Settembre 2026`), is written into the chart title in place of the fixed name, and the title inside the card is no longer drawn, so the text does not appear twice and the numeric value gains space. When the card is closed, the original name is restored. Outside the dashboard (Explore) nothing changes. With the option off, the behavior is identical to before.
 
 ## [0.2.7] - 2026-10-29
 
 ### Added
-- **Mese Precedente Dinamico con Anno**: Quando l'etichetta di confronto fa riferimento al mese precedente (default `vs Mese precedente`, varianti o con placeholder `{comp_month}`/`{mese_prec}`), viene iniettato dinamicamente il mese precedente con il relativo anno (es. `vs Mese precedente (Settembre 2026)`). Risoluzione automatica di `dynamicCompMonth` da colonna nei dati di query (`MESE_PRECEDENTE`, `MESE_PENULTIMO`, ecc.) con fallback euristico calcolato sull'asse temporale o data corrente (`now - 1 mese`).
-- **Supporto Wrap su Righe Inferiori (`wrap_bottom_content`)**: Introdotto controllo in control panel e prop `wrapBottomContent` (default: `true`) con `flexWrap: 'wrap'`, `rowGap: '2px'` e `overflow: 'visible'` per evitare che in colonne strette di dashboard (es. 3 colonne) il testo di confronto e il badge vengano troncati con puntini di sospensione (`...`).
+- **Dynamic previous month with year**: When the comparison label refers to the previous month (default `vs Mese precedente`, variants or with the placeholders `{comp_month}`/`{mese_prec}`), the previous month is injected dynamically with its year (e.g. `vs Mese precedente (Settembre 2026)`). `dynamicCompMonth` is resolved automatically from a column in the query data (`MESE_PRECEDENTE`, `MESE_PENULTIMO`, etc.), with a heuristic fallback computed from the time axis or the current date (`now - 1 month`).
+- **Wrap support for the bottom row (`wrap_bottom_content`)**: Added a control in the control panel and the prop `wrapBottomContent` (default: `true`) with `flexWrap: 'wrap'`, `rowGap: '2px'` and `overflow: 'visible'`, so that in narrow dashboard columns (e.g. 3 columns) the comparison text and the badge are not truncated with ellipses (`...`).
 
 ## [0.2.6] - 2026-10-26
 
 ### Changed
-- **Controlli Non Bloccanti (Zero Parametri Obbligatori)**: Rimossi tutti i vincoli `validateNonEmpty` e impostato `clearable: true` e `validators: []` per garantire piena flessibilita operativa senza blocchi nell'Explore di Superset.
+- **Non-Blocking Controls (Zero Required Parameters)**: Removed all `validateNonEmpty` constraints and set `clearable: true` and `validators: []` to guarantee full operational flexibility without blocks in the Superset Explore.
 
 ## [Unreleased]
 
 ### Changed
-- **Bundle ESM minificato con esbuild**: Il nuovo `scripts/build.mjs` (esbuild `^0.25`) genera un singolo `dist/index.esm.js` minificato (target `es2020`/`chrome110`/`firefox110`/`safari16`, sourcemap linked senza `sourcesContent`) con React e `@superset-ui/*` esterni. `npm run build` esegue ora `tsc --emitDeclarationOnly` (solo tipi `.d.ts`) seguito da `build:esm`: la cartella `dist/` scende da 177.909 B a circa 95 KB ed elimina i file JS per-modulo. `main` e `module` puntano entrambi a `dist/index.esm.js` (prima `main` puntava a `dist/index.js` e `module` a un file inesistente). Le immagini della gallery (~700 KB ciascuna) non vengono inlinate: il bundle le importa da `src/images`, gia' incluso nel pacchetto. Superset continua a compilare il plugin da `src/` tramite `install.bat`, nessun impatto a runtime.
-- **`sideEffects: false`** in `package.json`: il plugin non importa CSS ne' esegue codice al caricamento dei moduli, quindi il bundler host puo' rimuovere gli export non usati (tree-shaking).
-- **TypeScript strict**: `tsconfig.json` abilita `strict`, `noUnusedLocals`, `noUnusedParameters` e `noImplicitReturns`. Correzioni minime senza modifiche di comportamento: rimossi l'import inutilizzato `NumberFormatter` in `utils/formatters.ts`, il prop destrutturato ma non usato `primaryValue` e la costante `isHorizontalCompact` in `KPIComparisonChart.tsx`; in `transformProps.ts` la riga di riferimento ricade esplicitamente sulla prima riga (garantita da `data.length > 0`).
-- **React 18 nelle devDependencies**: `react`, `react-dom`, `@types/react` e `@types/react-dom` passano a `^18.2.0`, allineati alle `peerDependencies` (prima `^17`).
+- **ESM bundle minified with esbuild**: The new `scripts/build.mjs` (esbuild `^0.25`) generates a single minified `dist/index.esm.js` (targets `es2020`/`chrome110`/`firefox110`/`safari16`, sourcemap linked without `sourcesContent`) with React and `@superset-ui/*` external. `npm run build` now runs `tsc --emitDeclarationOnly` (type `.d.ts` files only) followed by `build:esm`: the `dist/` folder drops from 177.909 B to about 95 KB and the per-module JS files are removed. `main` and `module` both point to `dist/index.esm.js` (before, `main` pointed to `dist/index.js` and `module` to a nonexistent file). The gallery images (~700 KB each) are not inlined: the bundle imports them from `src/images`, already included in the package. Superset keeps compiling the plugin from `src/` via `install.bat`, with no runtime impact.
+- **`sideEffects: false`** in `package.json`: the plugin does not import CSS nor run code when modules load, so the host bundler can remove unused exports (tree-shaking).
+- **TypeScript strict**: `tsconfig.json` enables `strict`, `noUnusedLocals`, `noUnusedParameters` and `noImplicitReturns`. Minimal fixes with no behavior change: removed the unused `NumberFormatter` import in `utils/formatters.ts`, the destructured but unused `primaryValue` prop and the constant `isHorizontalCompact` in `KPIComparisonChart.tsx`; in `transformProps.ts` the reference row now explicitly falls back to the first row (guaranteed by `data.length > 0`).
+- **React 18 in devDependencies**: `react`, `react-dom`, `@types/react` and `@types/react-dom` move to `^18.2.0`, aligned with the `peerDependencies` (previously `^17`).
 ### Removed
-- **Dipendenze runtime inutilizzate**: rimosse `classnames`, `lodash` e `d3-format`, mai importate da `src/`. Il mock di test `supersetCoreMock.js` continua a usare la copia di `d3-format` v1 annidata in `@superset-ui/core`, quindi non serve spostarla nelle devDependencies.
+- **Unused runtime dependencies**: removed `classnames`, `lodash` and `d3-format`, never imported from `src/`. The test mock `supersetCoreMock.js` keeps using the nested `d3-format` v1 copy inside `@superset-ui/core`, so there is no need to move it to devDependencies.
 
 ## [0.1.25] - 2026-10-08
 ### Changed
-- **Refactor conservativo di `transformProps.ts`**: La logica pura e' stata estratta in moduli dedicati senza alcuna modifica a formule, colori, output props o `controlPanel.tsx`:
-  - `utils/trend.ts`: `computeDeltaPercent`, `getTrendDirection` (soglia flat `0.001`), `computeDelta` e `getTrendPolarity` (inversione di polarita').
-  - `utils/colors.ts`: `getPerceivedBrightness` (formula di luminosita' W3C `(R*299 + G*587 + B*114) / 1000`, prima inline nel badge percentuale sul totale), `getContrastTextColor` (soglia 125), `toRgbaString`, `getTrendColors` (palette badge verde/rosso/neutra e stile `subtle`), `resolveSparklineColor`, `resolveCardBgColor`.
-  - `utils/series.ts`: `classifyExtremeTitle` (card picco/minimo), `selectReferenceRow` (riga di riferimento per picco/minimo/sparkline) ed `extractSparklineData`.
+- **Conservative refactor of `transformProps.ts`**: The pure logic was extracted into dedicated modules without any change to formulas, colors, output props or `controlPanel.tsx`:
+  - `utils/trend.ts`: `computeDeltaPercent`, `getTrendDirection` (flat threshold `0.001`), `computeDelta` and `getTrendPolarity` (polarity inversion).
+  - `utils/colors.ts`: `getPerceivedBrightness` (W3C brightness formula `(R*299 + G*587 + B*114) / 1000`, previously inline in the percentage badge of the total), `getContrastTextColor` (threshold 125), `toRgbaString`, `getTrendColors` (green/red/neutral badge palette and `subtle` style), `resolveSparklineColor`, `resolveCardBgColor`.
+  - `utils/series.ts`: `classifyExtremeTitle` (peak/minimum card), `selectReferenceRow` (reference row for peak/minimum/sparkline) and `extractSparklineData`.
 ### Added
-- **Test**: Suite di caratterizzazione di `transformProps` (scritta e verificata verde prima del refactor) e unit test diretti per ogni funzione estratta e per `formatMetricValue`: 165 test verdi (47 preesistenti invariati + 118 nuovi).
-- **Mock `@superset-ui/core`**: `test/__mocks__/supersetCoreMock.js` replica ora fedelmente `getNumberFormatter` di @superset-ui/core 0.20.4 (registry con default `SMART_NUMBER`, formatter adattivo, formati d3-format v1 con locale di default, gestione dei formati non validi e dei valori null/NaN/infiniti).
+- **Tests**: Characterization suite for `transformProps` (written and verified green before the refactor) and direct unit tests for each extracted function and for `formatMetricValue`: 165 tests passing (47 pre-existing unchanged + 118 new).
+- **`@superset-ui/core` mock**: `test/__mocks__/supersetCoreMock.js` now faithfully replicates `getNumberFormatter` from @superset-ui/core 0.20.4 (registry with `SMART_NUMBER` default, adaptive formatter, d3-format v1 formats with the default locale, handling of invalid formats and of null/NaN/infinite values).
 
 ## [0.1.24] - 2026-10-07
 ### Added
-- **Build Standalone**: Aggiunte le devDependencies `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@superset-ui/core` e `@superset-ui/chart-controls` con versioni allineate a `superset-frontend` 6.1.0 (React 17, @superset-ui 0.20.x): `npm run build` ora termina con exit 0 anche fuori dall'albero Superset, senza gli errori TS2307/TS2875. Aggiunto `.npmrc` con `legacy-peer-deps` per un'installazione zero-friction delle dipendenze e `package-lock.json` rigenerato con l'albero completo.
-- **Suite di Unit Test Jest**: Setup jest + ts-jest (stesso pattern di superset-plugin-chart-hierarchical-table) con script `test` e `test:watch` basati sulla catena di fallback resiliente. Prima suite di 47 test verdi che copre `utils/formatters.ts` (`formatItalianNumber`, `formatDeltaPercent`, `parseNumericValue`, `getMetricLabel`, `formatMonthYearItalian`) e i rami di `plugin/buildQuery.ts` (dual-metric vs time-shift, soppressione dei time offsets senza range chiuso, metriche peak/min, sparkline e limiti di riga).
+- **Standalone build**: Added the devDependencies `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@superset-ui/core` and `@superset-ui/chart-controls`, with versions aligned to `superset-frontend` 6.1.0 (React 17, @superset-ui 0.20.x): `npm run build` now exits with 0 even outside the Superset tree, without the TS2307/TS2875 errors. Added `.npmrc` with `legacy-peer-deps` for zero-friction dependency installation, and `package-lock.json` regenerated with the full tree.
+- **Jest unit test suite**: jest + ts-jest setup (same pattern as superset-plugin-chart-hierarchical-table) with `test` and `test:watch` scripts based on the resilient fallback chain. First suite of 47 passing tests covering `utils/formatters.ts` (`formatItalianNumber`, `formatDeltaPercent`, `parseNumericValue`, `getMetricLabel`, `formatMonthYearItalian`) and the branches of `plugin/buildQuery.ts` (dual-metric vs time-shift, suppression of time offsets without a closed range, peak/min metrics, sparkline and row limits).
 ### Fixed
-- **Tipizzazione `time_range`**: Il campo `time_range` e' ora dichiarato esplicitamente come opzionale nell'interfaccia `KPIComparisonFormData`, risolvendo l'errore TS2339 in `buildQuery.ts` senza alcuna modifica alla logica della query.
+- **`time_range` typing**: The `time_range` field is now explicitly declared as optional in the `KPIComparisonFormData` interface, resolving the TS2339 error in `buildQuery.ts` without any change to the query logic.
 
 ## [0.1.23] - 2026-10-07
 ### Fixed
-- **Idempotenza Rigida della Registrazione in `MainPreset.ts`**: La verifica di configurazione esistente in `install-plugin.ps1` e' ora riga-esatta sulla forma canonica `new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),`, con controllo duplicati su import e registrazioni: le varianti legacy con `.register()` e le indentazioni anomale vengono normalizzate alla forma canonica invece di essere considerate gia' configurate.
+- **Rigid idempotence of the registration in `MainPreset.ts`**: The check for an existing configuration in `install-plugin.ps1` now matches the canonical form line by line: `new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),`, with duplicate checks on imports and registrations. Legacy variants with `.register()` and anomalous indentation are normalized to the canonical form instead of being considered already configured.
 
 ## [0.1.22] - 2026-10-05
 ### Added
-- **Controlli Nativi di Visibilita in Explore**: Aggiunte caselle di controllo (checkbox) indipendenti per mostrare o nascondere con un click gli elementi visivi della card direttamente da Explore:
-  - `show_title` ("Mostra Titolo Superiore"): attiva o disattiva l'etichetta del titolo sopra il valore numerico principale.
-  - `show_badge` ("Mostra Badge Delta % / Percentuale"): attiva o disattiva il badge percentuale in alto a destra.
-  - `show_comparison_label` ("Mostra Etichetta Testo Confronto"): attiva o disattiva la dicitura descrittiva del confronto (es. "vs Mese precedente").
-- **Collasso Spazi Vuoti**: Ottimizzato il calcolo delle altezze dinamiche in `KPIComparisonChart.tsx` per azzerare margini e padding orfani quando il titolo superiore o la riga inferiore di confronto sono deselezionati.
+- **Native visibility controls in Explore**: Added independent checkboxes to show or hide the visual elements of the card with one click, directly from Explore:
+  - `show_title` ("Show top title"): turns the title label above the main numeric value on or off.
+  - `show_badge` ("Show delta % / percentage badge"): turns the percentage badge in the top right on or off.
+  - `show_comparison_label` ("Show comparison text label"): turns the descriptive wording of the comparison on or off (e.g. "vs Mese precedente").
+- **Empty space collapse**: Optimized the calculation of dynamic heights in `KPIComparisonChart.tsx` to zero out orphan margins and padding when the top title or the bottom comparison row is deselected.
 ### Fixed
-- **Inibizione Residui Query**: Garantita la totale soppressione di time offsets e metriche fantasma quando il confronto e disabilitato (`enable_comparison === false`).
+- **Query leftover suppression**: Guaranteed the complete suppression of time offsets and ghost metrics when the comparison is disabled (`enable_comparison === false`).
 ### Fixed
-- **Install Script Syntax Error**: Risolto errore di sintassi PowerShell in `install-plugin.ps1` alla riga 365 (`\[regex\]::Escape` non valido in PowerShell) sostituendolo con metodi stringa nativi `.Contains()` e `.Replace()` per la patch Geostyler di Webpack.
+- **Install Script Syntax Error**: Fixed a PowerShell syntax error in `install-plugin.ps1` at line 365 (`\[regex\]::Escape` is not valid in PowerShell), replacing it with the native string methods `.Contains()` and `.Replace()` for the Webpack Geostyler patch.
 
 ## [0.1.20] - 2026-10-02
 ### Fixed
@@ -83,32 +83,32 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.1.18] - 2026-10-02
 
-### Risolto (Fixed)
-- **Risolto bug di mappatura CamelCase nelle proprietà**: Superset moderno passa la `formData` come React props formattate in CamelCase all'interno del frontend, ma il codice nativo di questo plugin andava a cercare direttamente proprietà con notazione snake_case (es. `fd.target_static_value` o `fd.target_metric`). Questo causava il fallimento silenzioso di funzionalità importanti come il **Valore Target Fisso**, la **Target Progress Bar**, il contenuto dinamico dei **Badge Percentuali** (sul totale) e la **Sparkline**, che seppur configurate non venivano renderizzate sul grafico.
-- Inserita e applicata uniformemente in tutto `transformProps.ts` e `buildQuery.ts` la funzione sicura `getProp` (e `getFd`) che valuta sempre entrambe le chiavi (`camelCase` e `snake_case`) per garantire la corretta estrapolazione da `rawFormData` e `formData`.
-- **Pulizia Validatori Nascosti**: Inseriti `clear_on_hide: true` e rimozione dell'obbligo di inserimento `validators: []` per i campi a tendina nascosti dalla UI, in modo che l'interfaccia di Superset non blocchi il grafico "Run Query" durante il cambio di modalità.
+### Fixed
+- **Fixed CamelCase property mapping bug**: Modern Superset passes `formData` to the frontend as React props formatted in CamelCase, but this plugin's native code looked up properties directly with snake_case notation (e.g. `fd.target_static_value` or `fd.target_metric`). This caused the silent failure of important features such as the **Fixed Target Value**, the **Target Progress Bar**, the dynamic content of the **Percentage Badges** (of the total) and the **Sparkline**, which, although configured, were not rendered on the chart.
+- The safe `getProp` function (and `getFd`) was added and applied uniformly across `transformProps.ts` and `buildQuery.ts`; it always evaluates both keys (`camelCase` and `snake_case`) to guarantee correct extraction from `rawFormData` and `formData`.
+- **Hidden validators cleanup**: Added `clear_on_hide: true` and removed the mandatory `validators: []` on dropdown fields hidden by the UI, so that the Superset interface does not block the chart's "Run Query" when the mode changes.
 
 ## [0.1.17] - 2026-10-02
 
 ### Added
-- **Opzione Disattivazione Confronto (`enable_comparison`)**: Introdotto un nuovo toggle esplicito `Abilita Confronto / Delta %` nel pannello di controllo. Se disattivato, la card opera in modalità KPI singolo puro, nascondendo tutti i controlli e le etichette relative al delta.
-- **Supporto Target Fisso Diretto (`static_target`)**: Aggiunta la modalità `Valore Target Fisso (Obiettivo numerico)` tra le scelte principali di calcolo, consentendo di confrontare la metrica primaria direttamente contro un valore target inserito manualmente (con label automatica `vs Obiettivo`).
-- **Scelta `Nessun Badge` (`badge_content: 'none'`)**: Aggiunta la possibilità di disabilitare esplicitamente il badge in alto a destra per una card minimale.
+- **Option to disable the comparison (`enable_comparison`)**: Introduced a new explicit toggle `Enable comparison / Delta %` in the control panel. When it is off, the card works in pure single-KPI mode, hiding all the controls and labels related to the delta.
+- **Direct fixed target support (`static_target`)**: Added the mode `Fixed target value (numeric goal)` among the main calculation choices, allowing the primary metric to be compared directly against a manually entered target value (with the automatic label `vs Obiettivo`).
+- **`No Badge` option (`badge_content: 'none'`)**: Added the ability to explicitly disable the top-right badge for a minimal card.
 
 ### Changed
-- **Controlli Condizionali Dinamici**: I controlli secondari (`comparison_metric`, `time_compare`, `comparison_label`, `target_metric`, `target_static_value`, `show_progress_bar`, `Delta % & Polarità Semantica`) ora compaiono solo se il confronto è effettivamente abilitato (`enable_comparison === true`).
-- **Rimozione Vincolo di Obbligatorietà su Metrica di Confronto**: Rimosso il validatore `validateNonEmpty` da `comparison_metric` e abilitato `clearable: true`. Non appare più il punto esclamativo rosso di errore quando la seconda metrica non è valorizzata.
+- **Dynamic conditional controls**: The secondary controls (`comparison_metric`, `time_compare`, `comparison_label`, `target_metric`, `target_static_value`, `show_progress_bar`, `Delta % & semantic polarity`) now appear only when the comparison is actually enabled (`enable_comparison === true`).
+- **Removed mandatory constraint on the comparison metric**: Removed the `validateNonEmpty` validator from `comparison_metric` and enabled `clearable: true`. The red exclamation error mark no longer appears when the second metric is not set.
 
 ### Fixed
-- **Eliminazione Fallback Hardcoded SQL**: Rimossi i fallback storici `richieste_conf` e `richieste_corr` da `buildQuery.ts` che causavano errori di query SQL su dataset privi di tali colonne quando la metrica di confronto veniva omessa.
-- **Risoluzione Sicura del Confronto**: Se `enable_comparison` è falso o non è configurata una metrica di confronto, `comparisonValue` rimane rigorosamente `null` ed evita fallback non deterministici su altre colonne numeriche del dataset.
+- **Removed hardcoded SQL fallbacks**: Removed the historical fallbacks `richieste_conf` and `richieste_corr` from `buildQuery.ts`, which caused SQL query errors on datasets lacking those columns when the comparison metric was omitted.
+- **Safe comparison resolution**: If `enable_comparison` is false or no comparison metric is configured, `comparisonValue` strictly stays `null` and avoids non-deterministic fallbacks to other numeric columns of the dataset.
 
 ## [0.1.16] - 2026-10-02
 
 ### Added
 - **Global Theme Support**: The plugin now utilizes Superset's global semantic JSON theme tokens (`theme.colors.success`, `theme.colors.error`) instead of hardcoded hex values, ensuring perfect visual sync with custom dashboard themes.
 - **Advanced Conditional Formatting**: Added a new configuration `applyTrendColorTo` which allows users to decide if the semantic trend color should be applied exclusively to the Badge, applied to the Main Number text, or painted over the entire Card Background using subtle variants.
-- **Interactive Drill-through**: The card can now be turned into a clickable hyperlink. Added a dedicated "Interattività" tab to configure a URL and a navigation target (`_self` or `_blank`).
+- **Interactive Drill-through**: The card can now be turned into a clickable hyperlink. Added a dedicated "Interactivity" tab to configure a URL and a navigation target (`_self` or `_blank`).
 
 ## [0.1.15] - 2026-10-02
 
@@ -123,8 +123,8 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 ## [0.1.13] - 2026-10-02
 
 ### Changed
-- **Data Panel UI Optimization**: Cleaned up the chart configuration panel to reduce cognitive load on initial setup. Renamed `Metrica Principale` to explicitly say `(Obbligatoria)` and `Metrica di Confronto` to `(Opzionale)`.
-- **Collapsed Advanced Panels**: The highly detailed configuration panels (`Aspetto & Visualizzazione Card`, `Personalizzazione Estetica Card`, `Delta % & Polarità Semantica`) are now collapsed by default (`expanded: false`). This provides a much cleaner, streamlined UI for users configuring the basics, while keeping advanced visual options available on click.
+- **Data Panel UI Optimization**: Cleaned up the chart configuration panel to reduce cognitive load on initial setup. Renamed the main metric label to `Main metric (required)` and the comparison metric label to `Comparison metric (optional)`.
+- **Collapsed Advanced Panels**: The highly detailed configuration panels (`Card appearance & display`, `Card aesthetics`, `Delta % & semantic polarity`) are now collapsed by default (`expanded: false`). This provides a much cleaner, streamlined UI for users configuring the basics, while keeping advanced visual options available on click.
 
 ### Fixed
 - Fixed TypeScript compile error related to `useId` by replacing it with a generated UUID via `useMemo` for broader React legacy compatibility.
@@ -132,150 +132,150 @@ e questo progetto aderisce al [Semantic Versioning](https://semver.org/spec/v2.0
 ## [0.1.12] - 2026-10-01
 
 ### Fixed
-- **Sanitizzazione Rigorosa Colonne & Risoluzione Errore "Missing label (Issue 1011)"**: Risolto bug critico per cui l'apertura in modalità Explore o il rendering della card scatenava l'eccezione backend `ValueError("Missing label")` (`get_column_name` in `superset/utils/core.py`).
-- **Normalizzazione `time_column`**: Gestito il caso in cui `time_column` viene salvato o passato come array vuoto `[]` dal controllo di frontend, evitando che un tipo non stringa venga propagato nell'array `columns` della query.
-- **Filtro `sanitizeColumn` e `sanitizeMetric` in `buildQuery.ts`**: Implementata validazione e pulizia a monte sia su `columns` che su `baseQueryObject.columns` per garantire che vengano passati esclusivamente nomi di colonna/metriche stringa validi o oggetti ad-hoc completi di `label`/`sqlExpression`.
+- **Strict column sanitization and fix for the "Missing label (Issue 1011)" error**: Fixed a critical bug where opening in Explore mode or rendering the card triggered the backend exception `ValueError("Missing label")` (`get_column_name` in `superset/utils/core.py`).
+- **`time_column` normalization**: Handled the case where `time_column` is saved or passed as an empty array `[]` by the frontend control, preventing a non-string type from being propagated into the `columns` array of the query.
+- **`sanitizeColumn` and `sanitizeMetric` filters in `buildQuery.ts`**: Implemented upstream validation and cleanup on both `columns` and `baseQueryObject.columns`, ensuring that only valid string column/metric names or complete ad-hoc objects with `label`/`sqlExpression` are passed.
 
 ## [0.1.11] - 2026-09-30
 
 ### Added
-- **Mese e Anno Dinamici per KPI Picco e Minimo**: Introdotto il calcolo automatico su serie multi-riga del valore di picco (massimo) e valore più basso (minimo) con determinazione automatica del mese/anno di riferimento (`dynamicMonth`).
-- **Render Condizionale Bottom Section**: Quando un KPI è utilizzato in modalità a metrica singola o per picco/minimo senza confronto (`hasComparison = false`), il badge delta (`■ --%`) e la dicitura `vs Confronto:` vengono automaticamente soppressi, visualizzando sotto il numero grande un'etichetta pulita ed elegante contenente il mese e l'anno di riferimento (es. "Settembre 2026").
+- **Dynamic month and year for peak and minimum KPIs**: Introduced the automatic calculation, on multi-row series, of the peak (maximum) and lowest (minimum) value, with automatic detection of the reference month and year (`dynamicMonth`).
+- **Conditional rendering of the bottom section**: When a KPI is used in single-metric mode or for peak/minimum without comparison (`hasComparison = false`), the delta badge (`■ --%`) and the `vs Confronto:` label are automatically suppressed, and a clean label with the reference month and year (e.g. "Settembre 2026") is shown below the large number.
 
 ## [0.1.10] - 2026-09-30
 
 ### Added
-- **Sottotitolo e Titolo Dinamici (Data-Driven KPI)**: Introdotta la nuova configurazione `dynamic_subtitle_column` ("Colonna Sottotitolo Dinamico") nel pannello "Aspetto & Visualizzazione Card". Permette di estrarre e renderizzare come sottotitolo (o all'interno di `kpi_title` e `kpi_subtitle` tramite il segnaposto `{dynamic}`) il valore effettivo testuale o numerico ritornato dalla query SQL al variare dei filtri, superando i limiti delle descrizioni hardcoded (es. "Mese di picco: Settembre 2026").
+- **Dynamic subtitle and title (data-driven KPI)**: Introduced the new `dynamic_subtitle_column` setting ("Dynamic subtitle column") in the "Card appearance & display" panel. It extracts the actual text or numeric value returned by the SQL query as the filters change and renders it as the subtitle (or inside `kpi_title` and `kpi_subtitle` via the `{dynamic}` placeholder), overcoming the limits of hardcoded descriptions (e.g. "Mese di picco: Settembre 2026").
 
 ## [0.1.9] - 2026-09-29
 
 ### Fixed
-- **Supporto Dual-Casing (`camelCase` & `snake_case`) per Controlli e Form Data**: Risolto bug critico per cui in Apache Superset 4.x (`ChartRenderer` / `SuperChart`) i parametri di configurazione della card (`suffix_value`, `number_format`, `prefix_value`, `kpi_title`, `card_alignment`, ecc.) venivano convertiti in camelCase (`suffixValue`, `numberFormat`), risultando `null`/`undefined` all'interno di `transformProps.ts`. Introdotto resolver trasparente `getProp` che ispeziona sia `formData` che `rawFormData` in entrambi i formati di naming.
-- **Visualizzazione Simbolo Percentuale (`%`) e Unità di Misura**: Ripristinata la corretta renderizzazione di `suffixValue` sia accanto al valore primario che nella riga del valore di confronto (`vs Confronto: X%`).
-- **Formattazione Decimale Precisa (`number_format`)**: Ripristinata l'applicazione della stringa di formato configurata (es. `.1f` -> `90,0%`, `99,4%`), prevenendo il fallback errato all'euristica interi/float non formattati.
-- **Selezionabilità e Copia del Testo con Unità**: Rimosso `userSelect: 'none'` dagli `span` del prefisso e del suffisso, permettendo la selezione con mouse e la copia negli appunti dell'intero valore corredato della relativa unità di misura (es. `90%`).
+- **Dual-casing support (`camelCase` & `snake_case`) for controls and form data**: Fixed a critical bug where in Apache Superset 4.x (`ChartRenderer` / `SuperChart`) the card configuration parameters (`suffix_value`, `number_format`, `prefix_value`, `kpi_title`, `card_alignment`, etc.) were converted to camelCase (`suffixValue`, `numberFormat`), resulting in `null`/`undefined` inside `transformProps.ts`. Introduced a transparent `getProp` resolver that inspects both `formData` and `rawFormData` in both naming formats.
+- **Display of the percent symbol (`%`) and units**: Restored the correct rendering of `suffixValue` both next to the primary value and in the comparison value row (`vs Confronto: X%`).
+- **Precise decimal formatting (`number_format`)**: Restored the application of the configured format string (e.g. `.1f` -> `90,0%`, `99,4%`), preventing the wrong fallback to the integer/float heuristic for unformatted values.
+- **Text selection and copy with units**: Removed `userSelect: 'none'` from the prefix and suffix `span` elements, allowing mouse selection and copying of the whole value together with its unit (e.g. `90%`) to the clipboard.
 
 ---
 
 ## [0.1.8] - 2026-09-28
 
 ### Fixed
-- **Eliminazione Titoli Interni Indesiderati ("RICHIESTE_CORR" / "Richieste ecc")**: Rimosso il fallback automatico che generava titoli interni derivati dal nome della metrica quando `kpi_title` non è valorizzato. Quando nessun titolo è specificato, la card non mostra alcun testo ridondante all'interno, lasciando pieno risalto al numero primario e al delta.
-- **Risoluzione Effetto "Box nel Box"**: Impostato `cardBorderRadius` di default a `square` (0px), `cardBgColor` a `transparent` e `cardBoxShadow` a `none` per un'integrazione fluida e nativa all'interno dei contenitori di dashboard Superset senza doppi bordi o cornici interne.
+- **Removed unwanted internal titles ("RICHIESTE_CORR" / "Richieste ecc")**: Removed the automatic fallback that generated internal titles derived from the metric name when `kpi_title` was not set. When no title is specified, the card shows no redundant text inside, leaving full emphasis on the primary number and the delta.
+- **Fixed the "Box in a Box" effect**: Set the default `cardBorderRadius` to `square` (0px), `cardBgColor` to `transparent` and `cardBoxShadow` to `none`, for a smooth, native integration inside Superset dashboard containers, without double borders or inner frames.
 
 ---
 
 ## [0.1.7] - 2026-09-22
 
 ### Added
-- **Risoluzione Dinamica del Mese e Periodo nei Titoli Card**: Introdotto supporto per segnaposto dinamici nei campi `kpi_title`, `kpi_subtitle` e `comparison_label`:
-  - `{month}` / `{mese}`: sostituito con il mese effettivo del dato (es. "Settembre 2026", "Ottobre 2025").
-  - `{period}` / `{periodo}`: sostituito con l'estensione temporale effettiva (es. "12 mesi", "6 mesi", "Ottobre 2025 - Settembre 2026").
-  - `{comp_month}` / `{mese_prec}`: sostituito con il mese di confronto effettivo (es. "Agosto 2026").
-- **Auto-Discovery Intelligente del Mese**: Se il titolo è configurato con diciture standard ("Mese di picco", "Mese più basso", "Richieste ultimo mese", "Media mensile"), il plugin estrae automaticamente il mese/periodo reale dalle metriche descrittive della riga (es. `mese_picco`, `mese_minimo`, `mese_corrente`, `mese_confronto`, `periodo_mesi`), dalle serie multi-riga o dal filtro temporale attivo, formattandolo in italiano con iniziale maiuscola.
+- **Dynamic resolution of month and period in card titles**: Introduced support for dynamic placeholders in the `kpi_title`, `kpi_subtitle` and `comparison_label` fields:
+  - `{month}` / `{mese}`: replaced with the actual month of the data (e.g. "Settembre 2026", "Ottobre 2025").
+  - `{period}` / `{periodo}`: replaced with the actual time span (e.g. "12 mesi", "6 mesi", "Ottobre 2025 - Settembre 2026").
+  - `{comp_month}` / `{mese_prec}`: replaced with the actual comparison month (e.g. "Agosto 2026").
+- **Intelligent month auto-discovery**: If the title is configured with standard wording ("Mese di picco", "Mese più basso", "Richieste ultimo mese", "Media mensile"), the plugin automatically extracts the actual month/period from the descriptive metrics of the row (e.g. `mese_picco`, `mese_minimo`, `mese_corrente`, `mese_confronto`, `periodo_mesi`), from multi-row series or from the active time filter, formatting it in Italian with a capitalized initial.
 
 ### Changed
-- **Preservazione Metriche Extra e Colonne in `buildQuery`**: `buildQuery` non sovrascrive più arbitrariamente la lista delle metriche con la sola coppia `[metric, comparison_metric]`, consentendo l'inclusione di metriche descrittive (stringhe/date) nel QueryContext senza generare duplicati di label.
+- **Preservation of extra metrics and columns in `buildQuery`**: `buildQuery` no longer arbitrarily overwrites the metrics list with only the `[metric, comparison_metric]` pair, allowing descriptive metrics (strings/dates) to be included in the QueryContext without generating duplicate labels.
 
 ---
 
 ## [0.1.6] - 2026-09-21
 
-### Risolto (Fixed)
-- **Installer allineato allo stratum-bar per l'installazione dipendenze**:
-  `npm install` ora viene eseguito con `--legacy-peer-deps` (il client falliva
-  con ERESOLVE sul conflitto di peer `@testing-library/dom` tra
-  `@superset-ui/chart-controls` e `@testing-library/jest-dom`). L'installazione
-  parte quando manca `node_modules/typescript/lib/tsc.js` (non solo quando
-  manca l'intera cartella `node_modules`, evitando ripartenze parziali).
-- **TypeScript locale pinnato `~5.9.2` in devDependencies**: sul client non
-  esiste `tsc` globale e la catena di fallback del build terminava con
-  MODULE_NOT_FOUND. Con typescript locale il build usa il compilatore 5.9
-  (compatibile col tsconfig, senza gli errori TS5107/TS5101 della v6).
+### Fixed
+- **Installer aligned with the stratum-bar for dependency installation**:
+  `npm install` now runs with `--legacy-peer-deps` (the client was failing
+  with ERESOLVE on the `@testing-library/dom` peer conflict between
+  `@superset-ui/chart-controls` and `@testing-library/jest-dom`). The installation
+  starts when `node_modules/typescript/lib/tsc.js` is missing (not only when
+  the whole `node_modules` folder is missing), avoiding partial restarts.
+- **Local TypeScript pinned to `~5.9.2` in devDependencies**: on the client there is no
+  global `tsc`, and the build fallback chain ended with
+  MODULE_NOT_FOUND. With a local TypeScript the build uses the 5.9 compiler
+  (compatible with the tsconfig, without the TS5107/TS5101 errors of v6).
 
 ---
 
 ## [0.1.5] - 2026-09-21
 
-### Modificato (Changed)
-- **`install.bat` allineato a quello del plugin StratumBar**: rimosso il menù
-  interattivo (opzioni 1-5, GUI, clean reinstall, docker) e sostituito con il
-  runner diretto che esegue `install-plugin.ps1` passando gli eventuali
-  argomenti (`%*`) e attende Invio. Comportamento identico al `install.bat`
-  dello stratum-bar, evitando errori/blocchi sul client in esecuzione
-  non interattiva.
+### Changed
+- **`install.bat` aligned with the StratumBar plugin one**: removed the interactive menu
+  (options 1-5, GUI, clean reinstall, docker) and replaced with the direct
+  runner that executes `install-plugin.ps1` passing any extra arguments
+  (`%*`) and waits for Enter. Behavior identical to the `install.bat`
+  of stratum-bar, avoiding errors and blocks on the client when running in a
+  non-interactive mode.
 
 ---
 
 ## [0.1.4] - 2026-09-21
 
-### Risolto (Fixed)
-- **Valore Primario con Sparkline letta dall'Ultima Riga**: In modalita'
-  `dual_metric` con sparkline attiva, la query viene ordinata in ordine
-  crescente sulla colonna temporale (`time_column`) con `row_limit` 50; il
-  valore primario e il confronto erano letti dalla PRIMA riga (periodo piu'
-  remoto), sbagliando numero grande e delta percentuale. Ora, con sparkline
-  attiva, sono letti dall'ULTIMA riga (periodo piu' recente); senza sparkline
-  (row_limit 1) il comportamento resta identico (prima riga). Il ramo
-  `time_shift` non viene toccato.
-- Serve al KPI "Richieste · mese corrente" (numero grande = mese corrente, confronto = mese precedente, sparkline = serie mensile 12 mesi sulla coppia lag-1 della vista).
+### Fixed
+- **Primary value with sparkline read from the last row**: in
+  `dual_metric` mode with an active sparkline, the query is sorted in ascending order
+  on the time column (`time_column`) with `row_limit` 50; the
+  primary value and the comparison were read from the FIRST row (the most distant period),
+  getting the big number and the percentage delta wrong. Now, with sparkline
+  active, they are read from the LAST row (the most recent period); without sparkline
+  (`row_limit` 1) the behavior stays identical (first row). The
+  `time_shift` branch is not touched.
+- It serves the KPI "Richieste · mese corrente" (big number = current month, comparison = previous month, sparkline = 12-month series on the lag-1 pair of the view).
 
 ---
 
 ## [0.1.3] - 2026-09-08
 
-### Risolto (Fixed)
-- **Auto-Fit Fluido Dinamico & Prevenzione Collasso a 0px**: Risolto bug critico di overflow in cui, al ridursi dell'altezza (es. titolo slice Superset su 2 righe) o larghezza della card, la sezione inferiore andava a capo occupando tutto lo spazio verticale e facendo collassare a 0px il contenitore del numero principale. Applicato `flexShrink: 0`, `minHeight: 0` e `minWidth: 0` per garantire il funzionamento reale di `text-overflow: ellipsis` nel layout flexbox.
-- **Calcolo Dinamico dei Font Continuo (Clamped [13px, 64px])**: Eliminato il tetto rigido a scaglioni prefissati (`targetBaseFont`) che bloccava il font a 18px anche con 400px di larghezza disponibile; introdotto calcolo matematico continuo basato sull'effettivo ingombro orizzontale e verticale con scaling fluido in base ai caratteri effettivi.
-- **Disaccoppiamento Vincoli Dimensionali & Gestione Titolo**: Disaccoppiati i vincoli di altezza (`isVerticalCompact`, `isVerticalUltraCompact`) da quelli di larghezza (`isHorizontalCompact`, `isHorizontalUltraCompact`). Se l'altezza scende sotto i 90px, il titolo interno viene omesso per dare priorità assoluta al Numero Principale e al Delta %, mantenendo il titolo completo nel tooltip nativo (`title`); con altezze >= 90px e larghezze strette (< 180px) il titolo viene scalato in formato compatto maiuscolo con ellissi senza scomparire arbitrariamente.
-- **Prevenzione Wrapping Bottom & Delta Assoluto Intelligente**: Riga inferiore bloccata a riga singola permanente (`flexWrap: 'nowrap'`) con `text-overflow: ellipsis` sulla metrica di confronto secondaria per eliminare ogni rischio di salto verticale di layout. L'indicatore delta assoluto secondario `(+123)` viene omesso dal badge solo quando la larghezza orizzontale è inferiore a 220px (e preservato nel tooltip del badge), permettendo la piena visualizzazione in card larghe anche se basse.
-- **Resilienza Sparkline**: La sparkline si adatta ad altezze >= 125px indipendentemente dalla larghezza della card.
+### Fixed
+- **Fluid dynamic auto-fit and prevention of collapse to 0px**: Fixed a critical overflow bug where, when the height (e.g. the Superset slice title on 2 rows) or the width of the card shrank, the bottom section wrapped onto several lines, took all the vertical space and collapsed the main number container to 0px. Applied `flexShrink: 0`, `minHeight: 0` and `minWidth: 0` so that `text-overflow: ellipsis` really works in the flexbox layout.
+- **Continuous dynamic font calculation (clamped [13px, 64px])**: Removed the rigid cap of preset steps (`targetBaseFont`) that locked the font at 18px even with 400px of available width. Introduced a continuous math calculation based on the actual horizontal and vertical footprint, with fluid scaling according to the actual characters.
+- **Decoupled size constraints and title handling**: Decoupled the height constraints (`isVerticalCompact`, `isVerticalUltraCompact`) from the width constraints (`isHorizontalCompact`, `isHorizontalUltraCompact`). If the height drops below 90px, the inner title is omitted to give absolute priority to the Main Number and the Delta %, keeping the full title in the native tooltip (`title`). With heights >= 90px and narrow widths (< 180px) the title is scaled to a compact uppercase format with an ellipsis instead of disappearing arbitrarily.
+- **Bottom wrapping prevention and smart absolute delta**: The bottom row is permanently locked to a single line (`flexWrap: 'nowrap'`) with `text-overflow: ellipsis` on the secondary comparison metric, to eliminate any risk of vertical layout jumps. The secondary absolute delta indicator `(+123)` is omitted from the badge only when the horizontal width is below 220px (and kept in the badge tooltip), allowing full display in wide cards even when they are short.
+- **Sparkline resilience**: The sparkline adapts to heights >= 125px regardless of the card width.
 
-### Aggiunto (Added)
-- **Sezione Personalizzazione Estetica Card**: Aggiunta la sezione dedicata nel Control Panel di Superset:
-  - `card_bg_color`: Colore di sfondo personalizzabile tramite ColorPicker (incluso supporto trasparente con alpha = 0).
-  - `card_border_radius`: Raggio di curvatura angoli con opzioni squadrato (0px), morbido (8px), arrotondato (14px) o pillola.
-  - `card_box_shadow`: Ombra / bordo con opzioni nessuna, leggera, pronunciata o bordo sottile.
+### Added
+- **Card aesthetics section**: Added the dedicated section in the Superset Control Panel:
+  - `card_bg_color`: Background color customizable via ColorPicker (including transparent support with alpha = 0).
+  - `card_border_radius`: Corner radius with options square (0px), soft (8px), rounded (14px) or pill.
+  - `card_box_shadow`: Shadow / border with options none, light, pronounced or thin border.
 
 ---
 
 ## [0.1.2] - 2026-09-08
 
-### Risolto (Fixed)
-- **Estrazione Metrica di Confronto da Dataset Superset**: Risolto bug critico in `transformProps.ts` dove `getMetricLabel` estraeva solo `metric.label` invece di `metric_name` / `verbose_name`. Ciò causava la mancata estrazione del benchmark (`comparisonMetricKey = ""`), facendo ricadere la card sul fallback statico `vs Benchmark: —` con delta `—%`.
-- **Doppio Fallback Difensivo per `comparisonValue`**: Aggiunta la ricerca euristica per keyword (`conf`, `prev`, `comp`, `prec`, `bench`) e il fallback automatico su qualsiasi colonna numerica secondaria presente in riga, garantendo al 100% l'estrazione del valore di confronto in modalità `dual_metric`.
-- **Visibilità Controllo in Explore**: Risolto bug in `controlPanel.tsx` dove `comparison_metric` risultava nascosto di default all'apertura in Explore prima della selezione esplicita di `calculation_mode`.
-- **Robustezza Query Builder**: In `buildQuery.ts`, garantita la corretta inclusione di entrambe le metriche nella query sia da `metric`/`comparison_metric` sia da array `metrics`.
-- **Etichetta Dinamica Intelligente**: Sostituito il fallback di default `'vs Benchmark'` con `'vs Confronto'` e impostato il titolo di default su `'Richieste in attesa'` in luogo della stringa grezza `richieste_corr`.
+### Fixed
+- **Comparison metric extraction from the Superset dataset**: Fixed a critical bug in `transformProps.ts` where `getMetricLabel` extracted only `metric.label` instead of `metric_name` / `verbose_name`. This prevented the benchmark from being extracted (`comparisonMetricKey = ""`), causing the card to fall back to the static `vs Benchmark: —` with delta `—%`.
+- **Defensive double fallback for `comparisonValue`**: Added heuristic keyword search (`conf`, `prev`, `comp`, `prec`, `bench`) and automatic fallback to any secondary numeric column present in the row, guaranteeing 100% extraction of the comparison value in `dual_metric` mode.
+- **Control visibility in Explore**: Fixed a bug in `controlPanel.tsx` where `comparison_metric` was hidden by default when opening Explore, before `calculation_mode` was explicitly selected.
+- **Query Builder robustness**: In `buildQuery.ts`, ensured the correct inclusion of both metrics in the query, both from `metric`/`comparison_metric` and from the `metrics` array.
+- **Smart dynamic label**: Replaced the default fallback `'vs Benchmark'` with `'vs Confronto'` and set the default title to `'Richieste in attesa'` in place of the raw string `richieste_corr`.
 
 ---
 
 ## [0.1.1] - 2026-09-08
 
-### Modificato (Changed)
-- **Risoluzione Bug Layout GUI**: Corretto l'ordine di docking WinForms (`headerPanel.SendToBack()`) in `KPIComparisonInstallerGUI.cs` che causava la sovrapposizione dell'header e il taglio della sezione 1 (Path Superset).
-- **Allineamento e Margini**: Applicato padding orizzontale coerente (`padX = 24`) a tutti i controlli, etichette e log box.
-- **Supporto Nativo Docker Non-Dev**: Integrata l'opzione dedicata per `docker compose -f docker-compose-non-dev.yml up -d --build superset` sia nell'eseguibile GUI che in `install.bat`.
-- **Visibilità Repository**: Repository GitHub impostato su **Pubblico**: `https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison`.
+### Changed
+- **GUI layout bug fix**: Corrected the WinForms docking order (`headerPanel.SendToBack()`) in `KPIComparisonInstallerGUI.cs`, which caused the header to overlap and section 1 (Superset path) to be cut off.
+- **Alignment and margins**: Applied consistent horizontal padding (`padX = 24`) to all controls, labels and log boxes.
+- **Native non-dev Docker support**: Added the dedicated option for `docker compose -f docker-compose-non-dev.yml up -d --build superset` both in the GUI executable and in `install.bat`.
+- **Repository visibility**: GitHub repository set to **Public**: `https://github.com/FrancescoCastaldi/superset-plugin-chart-kpi-comparison`.
 
 ---
 
 ## [0.1.0] - 2026-09-08
 
-### Aggiunto (Added)
-- **Architettura Plugin Ufficiale**: Inizializzazione del plugin `superset-plugin-chart-kpi-comparison` per Apache Superset conforme allo standard `@superset-ui/core`.
-- **Card KPI All-in-One**: Visualizzazione compatta con metrica primaria in risalto, valore di confronto, delta assoluto e delta percentuale integrato ($\Delta\%$).
-- **Modalità di Calcolo Ibrida**:
-  - `Doppia Metrica Esplicita`: Calcolo diretto $\Delta\% = \frac{\text{Rif} - \text{Conf}}{\text{Conf}} \times 100$ per dataset già aggregati (es. due metriche nella stessa riga).
-  - `Time Shift`: Supporto per offset temporale nativo Superset (`1 year ago`, `1 month ago`, `1 week ago`, ecc.).
-- **Semantica dei Colori e Polarità Invertita**:
-  - Polarità standard: incremento in Verde (`#10b981`), decremento in Rosso (`#ef4444`).
-  - Polarità invertita (`invert_polarity`): decremento in Verde e incremento in Rosso (fondamentale in ambito sanitario per tempi di attesa, tasso di disdetta, no-show e costi).
-- **Stili Badge Delta**: Selezione tra badge a pillola arrotondata (`pill`), riquadro compatto (`full`) o testo sobrio minimale (`subtle`).
-- **Formattazione Italiana dei Numeri**: Utility dedicata per separatore delle migliaia (punto) e decimali (virgola), con supporto prefissi (es. `€`) e suffissi (es. `%`, `pz`).
-- **Sparkline Temporale Integrata**: Componente pure-SVG ad alta efficienza per tracciare la linea di tendenza con riempimento sfumato opzionale alla base della card.
-- **Control Panel Superset**: Sezioni Explore per configurazione query, tipografia, allineamento (sinistra, centro, destra), polarità e opzioni grafiche.
-- **Automazione e Deploy**:
-  - Script PowerShell `install-plugin.ps1` con rilevamento automatico directory Superset, copia sincronizzata, backup di sicurezza ed aggiornamento idempotente di `MainPreset.ts`.
-  - Launcher interattivo Windows con doppio clic `install.bat`.
-  - Documentazione `README.md` e tracking direttive in `AGENTS.md`.
+### Added
+- **Official plugin architecture**: Initialization of the `superset-plugin-chart-kpi-comparison` plugin for Apache Superset, compliant with the `@superset-ui/core` standard.
+- **All-in-one KPI card**: Compact view with the primary metric highlighted, comparison value, absolute delta and integrated percentage delta ($\Delta\%$).
+- **Hybrid calculation modes**:
+  - `Explicit dual metric`: direct calculation $\Delta\% = \frac{\text{Rif} - \text{Conf}}{\text{Conf}} \times 100$ for already aggregated datasets (e.g. two metrics in the same row).
+  - `Time Shift`: support for native Superset time offsets (`1 year ago`, `1 month ago`, `1 week ago`, etc.).
+- **Color semantics and inverted polarity**:
+  - Standard polarity: increase in green (`#10b981`), decrease in red (`#ef4444`).
+  - Inverted polarity (`invert_polarity`): decrease in green and increase in red (essential in healthcare for waiting times, cancellation rate, no-shows and costs).
+- **Delta badge styles**: Choice between rounded pill badge (`pill`), compact box (`full`) or minimal understated text (`subtle`).
+- **Italian number formatting**: Dedicated utility for thousands separator (dot) and decimals (comma), with support for prefixes (e.g. `€`) and suffixes (e.g. `%`, `pz`).
+- **Built-in time sparkline**: High-efficiency pure-SVG component to trace the trend line, with an optional gradient fill at the base of the card.
+- **Superset Control Panel**: Explore sections for query configuration, typography, alignment (left, center, right), polarity and graphic options.
+- **Automation and deploy**:
+  - PowerShell script `install-plugin.ps1` with automatic detection of the Superset directory, synchronized copy, safety backup and idempotent update of `MainPreset.ts`.
+  - Interactive Windows launcher with double-click `install.bat`.
+  - `README.md` documentation and directive tracking in `AGENTS.md`.
