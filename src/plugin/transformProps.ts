@@ -343,6 +343,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           dynamicMonth = formatMonthYearItalian(val);
         } else if (
           kLow.includes('minimo') ||
+          kLow.includes('minimum') ||
           kLow.includes('lowest') ||
           kLow.includes('più basso') ||
           kLow.includes('piu basso')
@@ -353,6 +354,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           (kLow.includes('ultimo') && !kLow.includes('penultimo')) ||
           kLow.includes('current') ||
           kLow.includes('riferimento') ||
+          kLow.includes('reference') ||
           kLow === 'mese_corrente_etichetta' ||
           kLow === 'data_corrente' ||
           kLow === 'data_riferimento'
@@ -362,6 +364,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           }
         } else if (
           kLow.includes('confronto') ||
+          kLow.includes('comparison') ||
           kLow.includes('prec') ||
           kLow.includes('penultimo') ||
           kLow.includes('prev') ||
@@ -374,6 +377,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           }
         } else if (
           kLow.includes('periodo') ||
+          kLow.includes('period') ||
           kLow.includes('mesi') ||
           kLow.includes('finestra')
         ) {
@@ -406,6 +410,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
           const kLow = key.toLowerCase();
           if (
             kLow.includes('confronto') ||
+            kLow.includes('comparison') ||
             kLow.includes('mese') ||
             kLow.includes('data') ||
             kLow.includes('periodo')
@@ -504,6 +509,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     const rawCompLabel = (getProp<string | undefined>('comparisonLabel', 'comparison_label', '') || '').toLowerCase();
     const isMesePrecTarget =
       rawCompLabel.includes('mese prec') ||
+      rawCompLabel.includes('previous month') ||
       rawCompLabel.includes('precedente') ||
       rawCompLabel.includes('{comp_month}') ||
       rawCompLabel.includes('{mese_prec}') ||
@@ -580,6 +586,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     } else if (
       resolvedComparisonLabel && (
         resolvedComparisonLabel === 'vs Mese precedente' ||
+        resolvedComparisonLabel === 'vs previous month' ||
         resolvedComparisonLabel === 'vs Mese Prec.' ||
         resolvedComparisonLabel === 'vs Mese Prec' ||
         resolvedComparisonLabel === 'vs mese precedente' ||
@@ -591,6 +598,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     } else if (
       !resolvedComparisonLabel ||
       resolvedComparisonLabel === 'vs Periodo Prec.' ||
+      resolvedComparisonLabel === 'vs previous period' ||
       resolvedComparisonLabel === 'vs Confronto' ||
       resolvedComparisonLabel.startsWith('vs Agosto') ||
       resolvedComparisonLabel.startsWith('vs Settembre')
@@ -600,6 +608,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
   } else if (
     !resolvedComparisonLabel ||
     resolvedComparisonLabel === 'vs Periodo Prec.' ||
+    resolvedComparisonLabel === 'vs previous period' ||
     resolvedComparisonLabel === 'vs Benchmark'
   ) {
     if (calculationMode === 'anti_cartesian') {
@@ -666,7 +675,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
     // 2. Automatic smart append/update if title is standard pattern without template token
     const tLow = resolvedTitle.toLowerCase().trim();
     if (dynamicMonth) {
-      if (tLow === 'mese di picco' || tLow === 'picco') {
+      if (tLow === 'mese di picco' || tLow === 'picco' || tLow === 'peak month' || tLow === 'peak') {
         resolvedTitle = `Picco · ${dynamicMonth}`;
       } else if (
         tLow.startsWith('picco:') ||
@@ -676,6 +685,7 @@ export default function transformProps(chartProps: ChartProps): KPIComparisonPro
         resolvedTitle = `Picco · ${dynamicMonth}`;
       } else if (
         tLow === 'mese più basso' ||
+        tLow === 'lowest month' ||
         tLow === 'mese piu basso' ||
         tLow === 'minimo'
       ) {

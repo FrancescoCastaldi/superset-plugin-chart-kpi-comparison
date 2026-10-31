@@ -8,7 +8,7 @@ const t = (str: string) => str;
 const config: ControlPanelConfig = {
   controlPanelSections: [
     {
-      label: t('Filtri Temporali'),
+      label: t('Time filters'),
       expanded: true,
       controlSetRows: [
         [
@@ -17,7 +17,7 @@ const config: ControlPanelConfig = {
             config: {
               ...sharedControls.time_range,
               label: t('Filtro Temporale (Range)'),
-              description: t('Specifica il periodo di indagine chiuso (inizio e fine).'),
+              description: t('Closed analysis period (start and end).'),
               clearable: true,
               validators: [],
             },
@@ -26,7 +26,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Configurazione Metriche & Confronto'),
+      label: t('Metrics & comparison'),
       expanded: true,
       controlSetRows: [
         [
@@ -34,10 +34,10 @@ const config: ControlPanelConfig = {
             name: 'enable_comparison',
             config: {
               type: 'CheckboxControl',
-              label: t('Abilita Confronto / Delta %'),
+              label: t('Enable comparison / Delta %'),
               default: true,
               description: t(
-                'Attiva il confronto con una seconda metrica, un target fisso o un periodo temporale. Se disattivato, la card visualizza solo il KPI principale in modalità singola pulita.',
+                'Enable the comparison with a second metric, a fixed target or a time period. When disabled, the card shows only the main KPI in a clean single mode.',
               ),
               renderTrigger: true,
             },
@@ -48,16 +48,16 @@ const config: ControlPanelConfig = {
             name: 'calculation_mode',
             config: {
               type: 'SelectControl',
-              label: t('Modalità di Calcolo del Confronto'),
+              label: t('Comparison calculation mode'),
               default: 'dual_metric',
               choices: [
-                ['dual_metric', t('Doppia Metrica Esplicita (Dataset/SQL)')],
-                ['anti_cartesian', t('Anti-Cartesiano (Periodi Riferimento vs Confronto)')],
-                ['static_target', t('Valore Target Fisso (Obiettivo numerico)')],
-                ['time_shift', t('Time Shift (Offset Temporale Superset)')],
+                ['dual_metric', t('Explicit dual metric (dataset/SQL)')],
+                ['anti_cartesian', t('Anti-Cartesian (reference vs comparison periods)')],
+                ['static_target', t('Fixed target value (numeric goal)')],
+                ['time_shift', t('Time shift (Superset time offset)')],
               ],
               description: t(
-                'Scegli se confrontare due colonne/metriche esplicite già aggregate nel dataset, impostare un target fisso, o calcolare l’offset temporale automatico.',
+                'Choose whether to compare two explicit columns or metrics already aggregated in the dataset, set a fixed target, or compute an automatic time offset.',
               ),
               clearable: false,
               renderTrigger: true,
@@ -70,8 +70,8 @@ const config: ControlPanelConfig = {
             name: 'metric',
             config: {
               ...sharedControls.metric,
-              label: t('Metrica Principale'),
-              description: t('La metrica primaria visualizzata a caratteri grandi nella card.'),
+              label: t('Main metric'),
+              description: t('The primary metric shown in large text on the card.'),
               clearable: true,
               validators: [],
             },
@@ -85,9 +85,9 @@ const config: ControlPanelConfig = {
               validators: [],
               clearable: true,
               clear_on_hide: true,
-              label: t('Metrica di Confronto (Opzionale)'),
+              label: t('Comparison metric (optional)'),
               description: t(
-                'La metrica di benchmark da confrontare (es. Mese Prec, Anno Prec, Budget). Lasciare vuoto se non necessaria.',
+                'The benchmark metric to compare with (e.g. previous month, previous year, budget). Leave empty if not needed.',
               ),
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
@@ -102,15 +102,15 @@ const config: ControlPanelConfig = {
             name: 'time_compare',
             config: {
               type: 'SelectControl',
-              label: t('Offset Temporale (Time Shift)'),
+              label: t('Time offset (time shift)'),
               default: '1 year ago',
               choices: [
-                ['1 year ago', t('1 anno fa (Stesso periodo anno prec.)')],
-                ['1 month ago', t('1 mese fa (Stesso periodo mese prec.)')],
-                ['1 week ago', t('1 settimana fa')],
-                ['28 days ago', t('28 giorni fa (4 settimane fa)')],
+                ['1 year ago', t('1 year ago (same period, previous year)')],
+                ['1 month ago', t('1 month ago (same period, previous month)')],
+                ['1 week ago', t('1 week ago')],
+                ['28 days ago', t('28 days ago (4 weeks ago)')],
               ],
-              description: t('Periodo temporale passato con cui confrontare il valore corrente.'),
+              description: t('Past time period to compare the current value with.'),
               clearable: true,
               clear_on_hide: true,
               visibility: ({ controls }) =>
@@ -124,10 +124,10 @@ const config: ControlPanelConfig = {
             name: 'comparison_label',
             config: {
               type: 'TextControl',
-              label: t('Etichetta Periodo di Confronto'),
-              default: 'vs Periodo Prec.',
+              label: t('Comparison period label'),
+              default: 'vs previous period',
               description: t(
-                'Testo descrittivo visualizzato accanto al valore di confronto (es. "vs Mese precedente"). Supporta segnaposto {comp_month} / {mese_prec} o risoluzione automatica.',
+                'Descriptive text shown next to the comparison value (e.g. "vs previous month"). Supports the placeholders {comp_month} or {mese_prec}, or automatic resolution.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
@@ -139,8 +139,8 @@ const config: ControlPanelConfig = {
             name: 'time_column',
             config: {
               ...sharedControls.groupby,
-              label: t('Colonna Temporale (Opzionale per Sparkline)'),
-              description: t('Colonna temporale usata per ordinare e tracciare la sparkline.'),
+              label: t('Time column (optional, for the sparkline)'),
+              description: t('Time column used to sort and plot the sparkline.'),
               multi: false,
             },
           },
@@ -153,8 +153,8 @@ const config: ControlPanelConfig = {
               validators: [],
               clearable: true,
               clear_on_hide: true,
-              label: t('Metrica Target / Obiettivo (Dinamica)'),
-              description: t('Seleziona una metrica per calcolare il target in modo dinamico. Se impostata, ignora il valore fisso.'),
+              label: t('Target metric (dynamic)'),
+              description: t('Select a metric to compute the target dynamically. When set, it overrides the fixed value.'),
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
                 (controls?.calculation_mode?.value === 'static_target' || Boolean(controls?.show_progress_bar?.value)),
@@ -166,10 +166,10 @@ const config: ControlPanelConfig = {
             name: 'target_static_value',
             config: {
               type: 'TextControl',
-              label: t('Valore Target Fisso (Opzionale)'),
+              label: t('Fixed target value (optional)'),
               default: '',
               clear_on_hide: true,
-              description: t('Inserisci un numero fisso come obiettivo (es. 150000). Verrà usato se non imposti la Metrica Target.'),
+              description: t('Enter a fixed number as the goal (e.g. 150000). It is used when no target metric is set.'),
               renderTrigger: true,
               visibility: ({ controls }) =>
                 Boolean(controls?.enable_comparison?.value) &&
@@ -182,9 +182,9 @@ const config: ControlPanelConfig = {
             name: 'show_progress_bar',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Barra di Progresso Obiettivo'),
+              label: t('Show goal progress bar'),
               default: false,
-              description: t('Mostra una linea sottile in basso che indica la percentuale di raggiungimento del target.'),
+              description: t('Shows a thin line at the bottom indicating the percentage of the target reached.'),
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
             },
@@ -198,9 +198,9 @@ const config: ControlPanelConfig = {
               label: t('Contenuto del Badge (In alto a destra)'),
               default: 'delta',
               choices: [
-                ['delta', t('Delta vs Periodo Precedente')],
-                ['percent_of_total', t('% sul Totale')],
-                ['none', t('Nessun Badge')],
+                ['delta', t('Delta vs previous period')],
+                ['percent_of_total', t('% of total')],
+                ['none', t('No badge')],
               ],
               description: t('Cosa mostrare nel badge colorato in alto a destra.'),
               renderTrigger: true,
@@ -216,8 +216,8 @@ const config: ControlPanelConfig = {
               validators: [],
               clearable: true,
               clear_on_hide: true,
-              label: t('Metrica per il Totale'),
-              description: t('Metrica da usare come denominatore per calcolare la percentuale (es. SUM(valore) OVER() o metrica custom).'),
+              label: t('Total metric'),
+              description: t('Metric used as the denominator for the percentage (e.g. SUM(value) OVER() or a custom metric).'),
               visibility: ({ controls }) => controls?.badge_content?.value === 'percent_of_total',
             },
           },
@@ -227,9 +227,9 @@ const config: ControlPanelConfig = {
             name: 'total_badge_color',
             config: {
               type: 'ColorPickerControl',
-              label: t('Colore Sfondo Badge Totale'),
+              label: t('Total badge background color'),
               default: { r: 99, g: 102, b: 241, a: 1 }, // Indigo 500
-              description: t('Colore da usare per il badge della percentuale sul totale.'),
+              description: t('Color for the percentage-of-total badge.'),
               renderTrigger: true,
               visibility: ({ controls }) => controls?.badge_content?.value === 'percent_of_total',
             },
@@ -239,7 +239,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Aspetto & Visualizzazione Card'),
+      label: t('Card appearance & display'),
       expanded: false,
       controlSetRows: [
         [
@@ -247,10 +247,10 @@ const config: ControlPanelConfig = {
             name: 'show_title',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Titolo Superiore'),
+              label: t('Show top title'),
               default: true,
               description: t(
-                'Mostra o nasconde l’etichetta testuale del titolo sopra il valore numerico principale.',
+                'Shows or hides the text label above the main numeric value.',
               ),
               renderTrigger: true,
             },
@@ -261,10 +261,10 @@ const config: ControlPanelConfig = {
             name: 'kpi_title',
             config: {
               type: 'TextControl',
-              label: t('Titolo KPI'),
+              label: t('KPI title'),
               default: '',
               description: t(
-                'Titolo in evidenza sopra il valore numerico. Supporta segnaposto dinamici: {month} / {mese} e {period} / {periodo}, o risoluzione automatica da dati e filtri.',
+                'Highlighted title above the numeric value. Supports dynamic placeholders: {month} / {mese} and {period} / {periodo}, or automatic resolution from data and filters.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => controls?.show_title?.value !== false,
@@ -276,10 +276,10 @@ const config: ControlPanelConfig = {
             name: 'title_in_chart_header',
             config: {
               type: 'CheckboxControl',
-              label: t('Titolo nel titolo del chart'),
+              label: t('Title in the chart header'),
               default: false,
               description: t(
-                'In dashboard scrive il titolo KPI, con il mese dinamico, nel titolo del chart al posto del nome fisso e toglie il titolo dentro la card, per non ripeterlo due volte.',
+                'On dashboards, writes the KPI title (with the dynamic month) in the chart header instead of the fixed name, and removes the title inside the card so it is not repeated twice.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => controls?.show_title?.value !== false,
@@ -291,10 +291,10 @@ const config: ControlPanelConfig = {
             name: 'kpi_subtitle',
             config: {
               type: 'TextControl',
-              label: t('Sottotitolo / Dettaglio'),
+              label: t('Subtitle / detail'),
               default: '',
               description: t(
-                'Didascalia opzionale sotto il titolo. Supporta segnaposto dinamici {month}, {period} e {dynamic}.',
+                'Optional caption under the title. Supports the dynamic placeholders {month}, {period} and {dynamic}.',
               ),
               renderTrigger: true,
             },
@@ -305,9 +305,9 @@ const config: ControlPanelConfig = {
             name: 'dynamic_subtitle_column',
             config: {
               ...sharedControls.groupby,
-              label: t('Colonna Sottotitolo Dinamico'),
+              label: t('Dynamic subtitle column'),
               description: t(
-                'Scegli una colonna del dataset per estrarre il valore del sottotitolo (es. "Settembre 2026"). Usa {dynamic} in Titolo/Sottotitolo per posizionarlo.',
+                'Choose a dataset column to extract the subtitle value (e.g. "September 2026"). Use {dynamic} in the title or subtitle to place it.',
               ),
               multi: false,
             },
@@ -319,7 +319,7 @@ const config: ControlPanelConfig = {
             name: 'card_alignment',
             config: {
               type: 'SelectControl',
-              label: t('Allineamento Contenuto'),
+              label: t('Content alignment'),
               default: 'left',
               choices: [
                 ['left', t('Allinea a Sinistra')],
@@ -336,7 +336,7 @@ const config: ControlPanelConfig = {
             name: 'prefix_value',
             config: {
               type: 'TextControl',
-              label: t('Prefisso Valore (es. €)'),
+              label: t('Value prefix (e.g. €)'),
               default: '',
               renderTrigger: true,
             },
@@ -345,7 +345,7 @@ const config: ControlPanelConfig = {
             name: 'suffix_value',
             config: {
               type: 'TextControl',
-              label: t('Suffisso Valore (es. %, gg)'),
+              label: t('Value suffix (e.g. %, days)'),
               default: '',
               renderTrigger: true,
             },
@@ -365,7 +365,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Personalizzazione Estetica Card'),
+      label: t('Card aesthetics'),
       expanded: false,
       controlSetRows: [
         [
@@ -373,7 +373,7 @@ const config: ControlPanelConfig = {
             name: 'clean_card_mode',
             config: {
               type: 'CheckboxControl',
-              label: t('Modalità Clean Card (Zero Box-in-Box)'),
+              label: t('Clean card mode (no box-in-box)'),
               default: false,
               description: t(
                 'Azzera padding interno, bordi e ombre ridondanti per integrarsi perfettamente nei box standard di Superset.',
@@ -387,10 +387,10 @@ const config: ControlPanelConfig = {
             name: 'card_bg_color',
             config: {
               type: 'ColorPickerControl',
-              label: t('Colore Sfondo Card'),
+              label: t('Card background color'),
               default: { r: 255, g: 255, b: 255, a: 1 },
               description: t(
-                'Colore di sfondo della card KPI. Riduci alpha a 0 per sfondo trasparente.',
+                'Background color of the KPI card. Lower the alpha to 0 for a transparent background.',
               ),
               renderTrigger: true,
             },
@@ -401,15 +401,15 @@ const config: ControlPanelConfig = {
             name: 'card_border_radius',
             config: {
               type: 'SelectControl',
-              label: t('Stile Bordo / Raggio Card'),
+              label: t('Card border and radius style'),
               default: 'square',
               choices: [
                 ['square', t('Squadrato (0px)')],
                 ['subtle', t('Morbido (8px)')],
                 ['rounded', t('Arrotondato (14px)')],
-                ['pill', t('Pillola')],
+                ['pill', t('Pill')],
               ],
-              description: t('Raggio di curvatura degli angoli della card.'),
+              description: t('Corner radius of the card.'),
               clearable: false,
               renderTrigger: true,
             },
@@ -420,15 +420,15 @@ const config: ControlPanelConfig = {
             name: 'card_box_shadow',
             config: {
               type: 'SelectControl',
-              label: t('Ombra / Bordo Card'),
+              label: t('Card shadow / border'),
               default: 'none',
               choices: [
-                ['none', t('Nessuna')],
-                ['subtle', t('Ombra Leggera')],
-                ['elevated', t('Ombra Pronunciata')],
-                ['bordered', t('Bordo Sottile')],
+                ['none', t('None')],
+                ['subtle', t('Light shadow')],
+                ['elevated', t('Strong shadow')],
+                ['bordered', t('Thin border')],
               ],
-              description: t('Stile dell’elevazione e dell’ombreggiatura della card.'),
+              description: t('Elevation and shadow style of the card.'),
               clearable: false,
               renderTrigger: true,
             },
@@ -439,7 +439,7 @@ const config: ControlPanelConfig = {
             name: 'card_border_color',
             config: {
               type: 'TextControl',
-              label: t('Colore Bordo Personalizzato (es. #e2e8f0)'),
+              label: t('Custom border color (e.g. #e2e8f0)'),
               default: '',
               renderTrigger: true,
             },
@@ -448,11 +448,11 @@ const config: ControlPanelConfig = {
             name: 'card_border_width',
             config: {
               type: 'SelectControl',
-              label: t('Spessore Bordo'),
+              label: t('Border width'),
               default: 1,
               choices: [
                 [1, t('1 pixel (Fine)')],
-                [2, t('2 pixel (Medio)')],
+                [2, t('2 pixels (medium)')],
                 [3, t('3 pixel (Evidente)')],
               ],
               clearable: false,
@@ -463,7 +463,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Tipografia & Personalizzazione Testo'),
+      label: t('Typography & text styling'),
       expanded: false,
       controlSetRows: [
         [
@@ -471,7 +471,7 @@ const config: ControlPanelConfig = {
             name: 'kpi_font_family',
             config: {
               type: 'SelectControl',
-              label: t('Famiglia Font (Font Family)'),
+              label: t('Font family'),
               default: '',
               choices: [
                 ['', t('Predefinito di Sistema (UI Nativo)')],
@@ -493,14 +493,14 @@ const config: ControlPanelConfig = {
             name: 'kpi_font_size_mode',
             config: {
               type: 'SelectControl',
-              label: t('Modalità Dimensione Valore Principale'),
+              label: t('Main value size mode'),
               default: 'auto',
               choices: [
-                ['auto', t('Auto-Fit Dinamico (Consigliato, scala con la card)')],
-                ['small', t('Piccolo (24px)')],
-                ['medium', t('Medio (36px)')],
-                ['large', t('Grande (48px)')],
-                ['xlarge', t('Molto Grande (64px)')],
+                ['auto', t('Dynamic auto-fit (recommended, scales with the card)')],
+                ['small', t('Small (24px)')],
+                ['medium', t('Medium (36px)')],
+                ['large', t('Large (48px)')],
+                ['xlarge', t('Extra large (64px)')],
                 ['manual', t('Personalizzato in Pixel (px)')],
               ],
               clearable: false,
@@ -511,9 +511,9 @@ const config: ControlPanelConfig = {
             name: 'kpi_font_size_manual',
             config: {
               type: 'TextControl',
-              label: t('Dimensione Manuale (px)'),
+              label: t('Manual size (px)'),
               default: '36',
-              description: t('Dimensione del font in pixel (es. 24, 36, 48, 64).'),
+              description: t('Font size in pixels (e.g. 24, 36, 48, 64).'),
               renderTrigger: true,
               visibility: ({ controls }) => controls?.kpi_font_size_mode?.value === 'manual',
             },
@@ -524,16 +524,16 @@ const config: ControlPanelConfig = {
             name: 'kpi_font_weight',
             config: {
               type: 'SelectControl',
-              label: t('Peso Font Valore Principale (Grassetto)'),
+              label: t('Main value font weight (bold)'),
               default: '800',
               choices: [
                 ['300', t('Light (300)')],
-                ['400', t('Normale / Regular (400)')],
-                ['500', t('Medio / Medium (500)')],
+                ['400', t('Regular (400)')],
+                ['500', t('Medium (500)')],
                 ['600', t('Semigrassetto / Semi-Bold (600)')],
-                ['700', t('Grassetto / Bold (700)')],
+                ['700', t('Bold (700)')],
                 ['800', t('Extra-Bold (800 - Default)')],
-                ['900', t('Black Massimo (900)')],
+                ['900', t('Black (900)')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -543,11 +543,11 @@ const config: ControlPanelConfig = {
             name: 'kpi_letter_spacing',
             config: {
               type: 'SelectControl',
-              label: t('Spaziatura Caratteri Valore'),
+              label: t('Value letter spacing'),
               default: 'tight',
               choices: [
                 ['tight', t('Stretta (-0.025em)')],
-                ['normal', t('Normale (0em)')],
+                ['normal', t('Normal (0em)')],
                 ['wide', t('Larga (+0.04em)')],
               ],
               clearable: false,
@@ -560,9 +560,9 @@ const config: ControlPanelConfig = {
             name: 'kpi_tabular_nums',
             config: {
               type: 'CheckboxControl',
-              label: t('Allineamento Numerico Tabulare (tabular-nums)'),
+              label: t('Tabular numeric alignment (tabular-nums)'),
               default: true,
-              description: t('Garantisce larghezza uniforme a tutte le cifre per prevenire jittering.'),
+              description: t('Gives all digits the same width to prevent jitter.'),
               renderTrigger: true,
             },
           },
@@ -572,13 +572,13 @@ const config: ControlPanelConfig = {
             name: 'title_font_size',
             config: {
               type: 'SelectControl',
-              label: t('Dimensione Titolo'),
+              label: t('Title size'),
               default: 'auto',
               choices: [
                 ['auto', t('Scalato Dinamico')],
                 ['small', t('Compatto (11px)')],
-                ['medium', t('Medio (13px)')],
-                ['large', t('Grande (15px)')],
+                ['medium', t('Medium (13px)')],
+                ['large', t('Large (15px)')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -588,13 +588,13 @@ const config: ControlPanelConfig = {
             name: 'title_font_weight',
             config: {
               type: 'SelectControl',
-              label: t('Peso Font Titolo'),
+              label: t('Title font weight'),
               default: '600',
               choices: [
-                ['400', t('Normale (400)')],
-                ['500', t('Medio (500)')],
+                ['400', t('Regular (400)')],
+                ['500', t('Medium (500)')],
                 ['600', t('Semigrassetto (600)')],
-                ['700', t('Grassetto (700)')],
+                ['700', t('Bold (700)')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -606,12 +606,12 @@ const config: ControlPanelConfig = {
             name: 'title_text_transform',
             config: {
               type: 'SelectControl',
-              label: t('Trasformazione Lettere Titolo'),
+              label: t('Title text transform'),
               default: 'uppercase',
               choices: [
                 ['uppercase', t('Tutto Maiuscolo (UPPERCASE)')],
                 ['capitalize', t('Iniziali Maiuscole (Capitalize)')],
-                ['none', t('Come Inserito (Nessuna)')],
+                ['none', t('As entered (none)')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -621,12 +621,12 @@ const config: ControlPanelConfig = {
             name: 'comparison_font_size',
             config: {
               type: 'SelectControl',
-              label: t('Dimensione Riga Confronto'),
+              label: t('Comparison row size'),
               default: 'small',
               choices: [
                 ['small', t('Compatto')],
-                ['medium', t('Medio')],
-                ['large', t('Grande')],
+                ['medium', t('Medium')],
+                ['large', t('Large')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -636,7 +636,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Delta % & Polarità Semantica'),
+      label: t('Delta % & semantic polarity'),
       expanded: false,
       controlSetRows: [
         [
@@ -644,10 +644,10 @@ const config: ControlPanelConfig = {
             name: 'invert_polarity',
             config: {
               type: 'CheckboxControl',
-              label: t('Inverti Polarità Colore (Minore è Meglio)'),
+              label: t('Invert color polarity (lower is better)'),
               default: false,
               description: t(
-                'Se attivo, una diminuzione percentuale risulterà VERDE (positiva) e un incremento ROSSO (negativo). Ideale per tempi di attesa, tasso di disdetta e costi.',
+                'When on, a percentage decrease shows GREEN (positive) and an increase shows RED (negative). Ideal for waiting times, cancellation rates and costs.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
@@ -659,10 +659,10 @@ const config: ControlPanelConfig = {
             name: 'show_badge',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Badge Delta % / Percentuale'),
+              label: t('Show delta % / percentage badge'),
               default: true,
               description: t(
-                'Mostra o nasconde il badge colorato con la percentuale del confronto o sul totale.',
+                'Shows or hides the colored badge with the comparison percentage or the percentage of total.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) =>
@@ -679,8 +679,8 @@ const config: ControlPanelConfig = {
               label: t('Posizione del Badge Delta'),
               default: 'bottom_left',
               choices: [
-                ['bottom_left', t('In basso con confronto (Default)')],
-                ['inline_right', t('A fianco del Valore Principale')],
+                ['bottom_left', t('Bottom, with comparison (default)')],
+                ['inline_right', t('Beside the main value')],
                 ['top_right', t('In alto a destra')],
               ],
               clearable: false,
@@ -699,9 +699,9 @@ const config: ControlPanelConfig = {
               label: t('Stile Grafico Badge Delta'),
               default: 'pill',
               choices: [
-                ['pill', t('Pillola Arrotondata (Evidente)')],
+                ['pill', t('Rounded pill (prominent)')],
                 ['full', t('Riquadro Morbido')],
-                ['subtle', t('Testo Minimale')],
+                ['subtle', t('Minimal text')],
               ],
               clearable: false,
               renderTrigger: true,
@@ -717,7 +717,7 @@ const config: ControlPanelConfig = {
             name: 'show_comparison_value',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Valore Numerico di Confronto'),
+              label: t('Show comparison numeric value'),
               default: true,
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
@@ -727,10 +727,10 @@ const config: ControlPanelConfig = {
             name: 'show_comparison_label',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Etichetta Testo Confronto'),
+              label: t('Show comparison text label'),
               default: true,
               description: t(
-                'Mostra o nasconde la dicitura descrittiva del confronto (es. "vs Mese precedente").',
+                'Shows or hides the descriptive comparison text (e.g. "vs previous month").',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
@@ -742,7 +742,7 @@ const config: ControlPanelConfig = {
             name: 'show_absolute_delta',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Delta Assoluto tra Parentesi'),
+              label: t('Show absolute delta in brackets'),
               default: true,
               renderTrigger: true,
               visibility: ({ controls }) =>
@@ -756,10 +756,10 @@ const config: ControlPanelConfig = {
             name: 'wrap_bottom_content',
             config: {
               type: 'CheckboxControl',
-              label: t('Testo di Confronto a Capo'),
+              label: t('Wrap comparison text'),
               default: true,
               description: t(
-                'Permette al testo del confronto (mese precedente con anno e valore) di andare a capo in modo armonico se lo spazio orizzontale non basta, evitando troncamenti.',
+                'Lets the comparison text (previous month with year and value) wrap neatly when there is not enough horizontal space, instead of being cut off.',
               ),
               renderTrigger: true,
               visibility: ({ controls }) => Boolean(controls?.enable_comparison?.value),
@@ -771,12 +771,12 @@ const config: ControlPanelConfig = {
             name: 'apply_trend_color_to',
             config: {
               type: 'SelectControl',
-              label: t('Applica Colore del Trend a:'),
+              label: t('Apply trend color to:'),
               default: 'badge',
               choices: [
                 ['badge', t('Solo Badge (In alto a dx)')],
-                ['text', t('Testo del Valore Principale')],
-                ['background', t('Sfondo intera Card (Sfumato)')],
+                ['text', t('Main value text')],
+                ['background', t('Whole card background (gradient)')],
               ],
               description: t("Determina dove applicare l'evidenziazione visiva semantica (Verde/Rosso)."),
               clearable: false,
@@ -788,7 +788,7 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Interattività & Drill-through'),
+      label: t('Interactivity & drill-through'),
       expanded: false,
       controlSetRows: [
         [
@@ -798,7 +798,7 @@ const config: ControlPanelConfig = {
               type: 'TextControl',
               label: t('URL di Navigazione (Drill-through)'),
               default: '',
-              description: t('Inserisci un link (es. /superset/dashboard/123). Rende l\'intera card cliccabile.'),
+              description: t('Enter a link (e.g. /superset/dashboard/123). Makes the whole card clickable.'),
               renderTrigger: true,
             },
           },
@@ -808,7 +808,7 @@ const config: ControlPanelConfig = {
             name: 'click_target',
             config: {
               type: 'SelectControl',
-              label: t('Comportamento del Link'),
+              label: t('Link behaviour'),
               default: '_self',
               choices: [
                 ['_self', t('Apri nella stessa finestra')],
@@ -830,9 +830,9 @@ const config: ControlPanelConfig = {
             name: 'show_sparkline',
             config: {
               type: 'CheckboxControl',
-              label: t('Mostra Micro Sparkline in Basso'),
+              label: t('Show micro sparkline at the bottom'),
               default: false,
-              description: t('Visualizza una linea di andamento cronologico alla base della card.'),
+              description: t('Shows a trend line over time at the base of the card.'),
               renderTrigger: true,
             },
           },
@@ -842,7 +842,7 @@ const config: ControlPanelConfig = {
             name: 'sparkline_color',
             config: {
               type: 'ColorPickerControl',
-              label: t('Colore Sparkline'),
+              label: t('Sparkline color'),
               default: { r: 37, g: 99, b: 235, a: 1 },
               renderTrigger: true,
             },
@@ -862,7 +862,7 @@ const config: ControlPanelConfig = {
             name: 'sparkline_curve',
             config: {
               type: 'SelectControl',
-              label: t('Stile Curva Sparkline'),
+              label: t('Sparkline curve style'),
               default: 'smooth',
               choices: [
                 ['smooth', t('Curva Morbida Spline (Bezier)')],
@@ -876,7 +876,7 @@ const config: ControlPanelConfig = {
             name: 'sparkline_show_points',
             config: {
               type: 'CheckboxControl',
-              label: t('Evidenzia Punto di Picco e Valore Corrente'),
+              label: t('Highlight peak and current value'),
               default: false,
               renderTrigger: true,
             },

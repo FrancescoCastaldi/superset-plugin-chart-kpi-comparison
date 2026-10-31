@@ -222,7 +222,7 @@ export default function App() {
             {activeTab === 'typography' && (
               <>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Famiglia Font (Font Family)</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Font family</label>
                   <select
                     value={formData.kpi_font_family || 'Inter'}
                     onChange={(e) => updateFormData('kpi_font_family', e.target.value)}
@@ -293,19 +293,19 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Peso Font / Grassetto (Font Weight)</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Font weight (bold)</label>
                   <select
                     value={formData.kpi_font_weight || '800'}
                     onChange={(e) => updateFormData('kpi_font_weight', e.target.value)}
                     style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid #334155', borderRadius: '6px', padding: '8px', fontSize: '13px' }}
                   >
                     <option value="300">Light (300)</option>
-                    <option value="400">Regular Normale (400)</option>
+                    <option value="400">Regular Regular (400)</option>
                     <option value="500">Medium (500)</option>
                     <option value="600">Semi-Bold (600)</option>
-                    <option value="700">Bold Grassetto (700)</option>
+                    <option value="700">Bold Bold (700)</option>
                     <option value="800">Extra-Bold (800 - Default)</option>
-                    <option value="900">Black Massimo (900)</option>
+                    <option value="900">Black (900)</option>
                   </select>
                 </div>
 
@@ -317,7 +317,7 @@ export default function App() {
                     style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid #334155', borderRadius: '6px', padding: '8px', fontSize: '13px' }}
                   >
                     <option value="tight">Stretta (-0.025em per grandi numeri)</option>
-                    <option value="normal">Normale (0em)</option>
+                    <option value="normal">Normal (0em)</option>
                     <option value="wide">Larga (+0.04em)</option>
                   </select>
                 </div>
@@ -331,14 +331,14 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="tabularNums" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer' }}>
-                    Allineamento Numerico Tabulare (tabular-nums)
+                    Tabular numeric alignment (tabular-nums)
                   </label>
                 </div>
 
                 <hr style={{ borderColor: '#1e293b', margin: '4px 0' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Titolo Superiore (KPI Title)</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Top title (KPI title)</label>
                   <input
                     type="text"
                     value={formData.kpi_title || ''}
@@ -349,7 +349,7 @@ export default function App() {
 
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Dimensione Titolo</label>
+                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Title size</label>
                     <select
                       value={formData.title_font_size || 'auto'}
                       onChange={(e) => updateFormData('title_font_size', e.target.value)}
@@ -357,12 +357,12 @@ export default function App() {
                     >
                       <option value="auto">Scalato Dinamico</option>
                       <option value="small">Piccolo (11px)</option>
-                      <option value="medium">Medio (13px)</option>
-                      <option value="large">Grande (15px)</option>
+                      <option value="medium">Medium (13px)</option>
+                      <option value="large">Large (15px)</option>
                     </select>
                   </div>
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Peso Titolo</label>
+                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Title weight</label>
                     <select
                       value={formData.title_font_weight || '600'}
                       onChange={(e) => updateFormData('title_font_weight', e.target.value)}
@@ -377,7 +377,7 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Trasformazione Testo Titolo</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Title text transform</label>
                   <select
                     value={formData.title_text_transform || 'uppercase'}
                     onChange={(e) => updateFormData('title_text_transform', e.target.value)}
@@ -385,12 +385,12 @@ export default function App() {
                   >
                     <option value="uppercase">Tutto Maiuscolo (UPPERCASE)</option>
                     <option value="capitalize">Iniziali Maiuscole (Capitalize)</option>
-                    <option value="none">Come Inserito (Nessuna)</option>
+                    <option value="none">As entered (none)</option>
                   </select>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Sottotitolo Dettaglio</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Subtitle detail</label>
                   <input
                     type="text"
                     value={formData.kpi_subtitle || ''}
@@ -400,15 +400,15 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Dimensione Riga Confronto</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Comparison row size</label>
                   <select
                     value={formData.comparison_font_size || 'small'}
                     onChange={(e) => updateFormData('comparison_font_size', e.target.value)}
                     style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid #334155', borderRadius: '6px', padding: '8px', fontSize: '13px' }}
                   >
                     <option value="small">Compatto</option>
-                    <option value="medium">Medio Leggibile</option>
-                    <option value="large">Grande Evidente</option>
+                    <option value="medium">Medium Leggibile</option>
+                    <option value="large">Large Evidente</option>
                   </select>
                 </div>
               </>
@@ -418,7 +418,7 @@ export default function App() {
             {activeTab === 'aesthetic' && (
               <>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Stile & Bordo Card</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Card style & border</label>
                   <select
                     value={formData.card_border_radius || 'rounded'}
                     onChange={(e) => updateFormData('card_border_radius', e.target.value)}
@@ -427,27 +427,27 @@ export default function App() {
                     <option value="square">Squadrato (0px)</option>
                     <option value="subtle">Morbido (8px)</option>
                     <option value="rounded">Arrotondato Moderno (14px)</option>
-                    <option value="pill">Pillola Morbida (24px)</option>
+                    <option value="pill">Pill Morbida (24px)</option>
                   </select>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Elevazione / Ombra Card</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Card elevation / shadow</label>
                   <select
                     value={formData.card_box_shadow || 'subtle'}
                     onChange={(e) => updateFormData('card_box_shadow', e.target.value)}
                     style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid #334155', borderRadius: '6px', padding: '8px', fontSize: '13px' }}
                   >
-                    <option value="none">Piatta (Nessuna ombra)</option>
-                    <option value="subtle">Ombra Leggera Soffusa</option>
-                    <option value="elevated">Ombra Pronunciata Executive</option>
-                    <option value="bordered">Bordo Pulito (Clean Border)</option>
+                    <option value="none">Flat (no shadow)</option>
+                    <option value="subtle">Light shadow Soffusa</option>
+                    <option value="elevated">Strong shadow Executive</option>
+                    <option value="bordered">Clean border</option>
                   </select>
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Colore Bordo Custom</label>
+                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>Custom border color</label>
                     <input
                       type="text"
                       placeholder="es. #e2e8f0 o #334155"
@@ -471,7 +471,7 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Allineamento Contenuto</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Content alignment</label>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     {(['left', 'center', 'right'] as const).map((align) => (
                       <button
@@ -497,7 +497,7 @@ export default function App() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Colore Sfondo Card</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Card background color</label>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <input
                       type="color"
@@ -512,7 +512,7 @@ export default function App() {
                       style={{ cursor: 'pointer', width: '36px', height: '36px', borderRadius: '4px', border: 'none' }}
                     />
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>Opacità Alpha</span>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>Alpha opacity</span>
                       <input
                         type="range"
                         min="0"
@@ -544,12 +544,12 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="showSparkline" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer', fontWeight: 600 }}>
-                    Mostra Sparkline Vettoriale SVG
+                    Show SVG sparkline
                   </label>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Stile Curva Sparkline</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Sparkline curve style</label>
                   <select
                     value={formData.sparkline_curve || 'smooth'}
                     onChange={(e) => updateFormData('sparkline_curve', e.target.value)}
@@ -569,7 +569,7 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="showPoints" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer' }}>
-                    Evidenzia Punto di Picco e Valore Corrente
+                    Highlight peak and current value
                   </label>
                 </div>
 
@@ -582,7 +582,7 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="showProgressBar" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer', fontWeight: 600 }}>
-                    Mostra Barra Avanzamento Target / Goal
+                    Show target / goal progress bar
                   </label>
                 </div>
               </>
@@ -600,7 +600,7 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="enableComp" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer', fontWeight: 600 }}>
-                    Abilita Confronto / Delta %
+                    Enable comparison / Delta %
                   </label>
                 </div>
 
@@ -613,7 +613,7 @@ export default function App() {
                     style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                   />
                   <label htmlFor="invertPolarity" style={{ fontSize: '13px', color: '#cbd5e1', cursor: 'pointer' }}>
-                    Inverti Polarità (Minore è Meglio)
+                    Invert polarity (lower is better)
                   </label>
                 </div>
 
@@ -624,14 +624,14 @@ export default function App() {
                     onChange={(e) => updateFormData('badge_style', e.target.value)}
                     style={{ background: '#1e293b', color: '#f8fafc', border: '1px solid #334155', borderRadius: '6px', padding: '8px', fontSize: '13px' }}
                   >
-                    <option value="pill">Pillola Evidente (Default)</option>
+                    <option value="pill">Pill Evidente (Default)</option>
                     <option value="full">Riquadro Morbido</option>
-                    <option value="subtle">Testo Minimale Senza Sfondo</option>
+                    <option value="subtle">Minimal text, no background</option>
                   </select>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Etichetta Confronto</label>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#cbd5e1' }}>Comparison label</label>
                   <input
                     type="text"
                     value={formData.comparison_label || ''}

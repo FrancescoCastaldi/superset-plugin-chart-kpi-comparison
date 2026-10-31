@@ -6,11 +6,11 @@
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 [![Vector Engine](https://img.shields.io/badge/Sparkline-Native%20SVG-orange.svg)](#)
 
-**StratumKPI** (KPI Comparison Card) is a custom visualization plugin for **Apache Superset** engineered to display an all-in-one, high-impact executive summary card. It seamlessly combines primary reference metrics, period-over-period or budget benchmarks, absolute difference, automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion, and integrated vector sparklines.
+**StratumKPI** (KPI Comparison Card) is a custom visualization plugin for **Apache Superset** that displays an all-in-one, high-impact executive summary card. It combines the primary reference metric, a period-over-period or budget benchmark, the absolute difference, the automated percentage variance ($\Delta\%$), semantic trend badges, color polarity inversion and an integrated vector sparkline.
 
 ![KPI Comparison Dev Studio Live Demo](docs/images/dev_studio_demo.gif)
 
-*Live Dev Studio: Interactive workbench featuring real-time Explore control panel synchronization, granular typography settings (font family, weight, tabular numbers), cubic Bezier sparklines, inverted polarity, and sub-50ms Hot Module Reloading.*
+*Live Dev Studio: interactive workbench with real-time Explore control panel synchronization, typography settings (font family, weight, tabular numbers), cubic Bezier sparklines, inverted polarity and hot module reloading.*
 
 ---
 
@@ -20,56 +20,56 @@
 
 ![KPI Comparison Live Dashboard Showcase](docs/images/live_dashboard_showcase.png)
 
-*Figure 1: KPI Comparison Card live production rendering on Apache Superset with hospital production vs billing benchmark, automated +2.9% (+222.056) delta variance, trend indicator, and comparison metric display.*
+*Figure 1: KPI Comparison Card rendered on Apache Superset against a benchmark, with an automated +2.9% (+222,056) delta, a trend indicator and the comparison metric.*
 
 ### 🔍 Isolated Component Showcase & Dev Studio
 
 ![KPI Comparison Card Workbench](docs/images/kpi_comparison_preview.png)
 
-*Figure 2: KPI Comparison Card Dev Studio Showcase: Outpatient clinic volume (+10.8%), Inter font, tabular numbers, dual delta variance, and smooth cubic Bezier sparkline.*
+*Figure 2: KPI Comparison Card in the Dev Studio: a +10.8% delta, the Inter font, tabular numbers, a dual delta and a smooth cubic Bezier sparkline.*
 
 <p align="center">
   <img src="docs/images/kpi_card_showcase.png" alt="KPI Comparison Card Isolated Preview" width="460" />
 </p>
 
-*Figure 3: Crisp close-up view of the rendered KPI Comparison Card component.*
+*Figure 3: Close-up view of the rendered KPI Comparison Card component.*
 
 ---
 
 ## 🌟 Key Features
 
 ### 1. 🗂️ All-in-One Compact Executive Card
-- **Prominent Primary Value**: Current period or reference metric displayed with high-visibility typography and fluid auto-fitting.
-- **Benchmark Comparison Value**: Prior period, budget target, or custom baseline clearly labeled (e.g. `vs Prior Year: 24,500`).
-- **Dual Delta Calculations**: Computes both absolute variance ($\text{Ref} - \text{Comp}$) and percentage variance ($\Delta\% = \frac{\text{Ref} - \text{Comp}}{\text{Comp}} \times 100$).
-- **Semantic Trend Badges**: Directional indicators (▲ / ▼ / =) with configurable pill, boxed, or text styling.
+- **Prominent Primary Value**: the current period or reference metric, shown with high-visibility typography and fluid auto-fitting.
+- **Benchmark Comparison Value**: a prior period, budget target or custom baseline, clearly labeled (e.g. `vs Prior Year: 24,500`).
+- **Dual Delta Calculations**: computes both the absolute variance ($\text{Ref} - \text{Comp}$) and the percentage variance ($\Delta\% = \frac{\text{Ref} - \text{Comp}}{\text{Comp}} \times 100$).
+- **Semantic Trend Badges**: directional indicators (▲ / ▼ / =) with pill, boxed or text styling.
 
 ### 2. 🔄 Dual Calculation Engine (Dual Metric vs. Time Shift)
 - **Dual Metric Mode (Dataset / Pre-Aggregated SQL)**:
  - Compares two metrics directly from the SQL query or dataset (e.g., `Current Year Requests` vs `Prior Year Requests`, or `Actual` vs `Budget`).
- - Delivers instant calculations with zero subquery overhead - ideal for pre-aggregated analytical tables.
+ - Computes instantly with no subquery overhead, which suits pre-aggregated tables.
 - **Time Shift Mode (Native Temporal Offset)**:
- - Leverages Superset's native temporal offset engine (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`).
- - Automatically queries historical database records and calculates period comparisons on demand.
+ - Uses Superset's native temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`).
+ - Queries the historical records automatically and calculates the period comparison on demand.
 
 ### 3. 🎯 Color Polarity Inversion ("Lower is Better")
-- **Operational & Clinical Metric Support**: In environments such as healthcare, logistics, and cost accounting, a decrease signifies operational improvement (e.g., patient waiting times, ER door-to-doctor intervals, appointment cancellations, defect rates, operating costs).
-- **One-Click Inversion**: When enabled, a reduction is highlighted in **Green** and an increase is flagged in **Red**.
+- **Operational Metric Support**: in operations, logistics and cost accounting a decrease can mean an improvement (e.g., waiting times, lead times, cancellation rates, defect rates, operating costs).
+- **One-Click Inversion**: when enabled, a reduction is highlighted in **green** and an increase in **red**.
 
 ### 4. 📈 High-Resolution SVG Vector Sparkline
-- **Zero Heavy Charting Dependencies**: Rendered using lightweight, responsive SVG path math directly inside the component.
-- **Visual Depth**: Optional semi-transparent gradient fill beneath the curve highlighting temporal velocity and fluctuations.
-- **Chronological Sorting**: Automatically driven by a designated date/time dimension.
+- **No Heavy Charting Dependencies**: rendered with lightweight, responsive SVG path math inside the component.
+- **Visual Depth**: optional semi-transparent gradient fill beneath the curve, showing the trend and its fluctuations.
+- **Chronological Sorting**: driven by a date or time column.
 
 ### 5. 🔠 Fluid Typography & Anti-Collapse Layout
-- **Dynamic Viewport Scaling**: Text scales dynamically to fit card boundaries, completely preventing 0px height collapse or awkward line wrapping on multi-column dashboard layouts.
-- **Header Omission on Micro-Cards**: Automatically collapses redundant subtitles when embedded in ultra-compact dashboard tiles (< 90px height).
+- **Dynamic Viewport Scaling**: text scales to fit the card, which prevents a 0px height collapse or awkward wrapping in multi-column dashboards.
+- **Header Omission on Micro-Cards**: redundant subtitles are hidden when the card is embedded in very small tiles (under 90px high).
 
 ### 6. 🎨 Extensive Aesthetic Customization
-- **Background Styling**: Full RGBA color picker with alpha transparency support.
-- **Corner Radius Presets**: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)`, and `Pill (24px)`.
-- **Card Elevation**: `None (Flat)`, `Subtle Shadow`, `Elevated Shadow`, and `Thin Border`.
-- **Formatting Support**: d3-format string presets, currency symbols (`$`, `€`), and unit suffixes (`%`, `days`, `pts`).
+- **Background Styling**: full RGBA color picker with alpha transparency.
+- **Corner Radius Presets**: `Square (0px)`, `Subtle (8px)`, `Rounded (14px)` and `Pill (24px)`.
+- **Card Elevation**: `None (Flat)`, `Subtle Shadow`, `Elevated Shadow` and `Thin Border`.
+- **Formatting Support**: d3-format presets, currency symbols (`$`, `€`) and unit suffixes (`%`, `days`, `pts`).
 
 ---
 
@@ -93,16 +93,16 @@ flowchart LR
 superset-plugin-chart-kpi-comparison/
 ├── package.json                    # Plugin manifest & dependencies (v0.2.2)
 ├── tsconfig.json                   # TypeScript build configuration
-├── dev.bat                         # Quick launcher for local Dev Studio
+├── dev.bat                         # Quick launcher for the local Dev Studio
 ├── dev-studio/                     # Interactive Vite + React HMR workbench
 │   ├── index.html                  # Web sandbox with Google Fonts
 │   ├── vite.config.ts              # Vite configuration with src aliases
 │   └── src/
 │       ├── App.tsx                 # Interactive parameter control workbench
-│       ├── mockData.ts             # Realistic healthcare & business datasets
+│       ├── mockData.ts             # Sample datasets
 │       └── supersetMock.ts         # Lightweight Superset Core mock
 ├── install-plugin.ps1              # Unified PowerShell automated installer
-├── install.bat                     # Windows batch menu launcher
+├── install.bat                     # Windows batch launcher
 ├── src/
 │   ├── index.ts                    # Plugin entry point & registration
 │   ├── types.ts                    # Component & FormData TypeScript definitions
@@ -123,7 +123,7 @@ superset-plugin-chart-kpi-comparison/
 │   └── images/
 │       ├── thumbnail.png           # Chart picker thumbnail
 │       └── example.png             # Full gallery preview image
-└── test/                           # Unit tests & verification (173 tests)
+└── test/                           # Unit tests (191 tests)
 ```
 
 ---
@@ -135,29 +135,29 @@ superset-plugin-chart-kpi-comparison/
 Run the installer pointing to your Apache Superset repository:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1 -SupersetPath "D:\Sviluppo\superset"
+powershell -ExecutionPolicy Bypass -File .\install-plugin.ps1 -SupersetPath "D:\Development\superset"
 ```
 
-To perform a clean installation and trigger a Superset frontend recompile:
+For a clean installation that also recompiles the Superset frontend:
 ```powershell
-.\install-plugin.ps1 -SupersetPath "D:\Sviluppo\superset" -CleanReinstall -RebuildFrontend
+.\install-plugin.ps1 -SupersetPath "D:\Development\superset" -CleanReinstall -RebuildFrontend
 ```
 
-The script autonomously:
-1. Validates and installs missing npm dependencies (`npm install`).
+The script:
+1. Validates and installs the missing npm dependencies (`npm install`).
 2. Builds the TypeScript bundle (`tsc --build` / `npm run build`).
-3. Syncs compiled files into `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
+3. Syncs the compiled files into `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
 4. Creates a safety backup `MainPreset.ts.bak`.
-5. Idempotently registers `KPIComparisonChartPlugin` under the chart key `kpi_comparison`.
-6. Flushes Webpack and Babel bundle caches.
+5. Registers `KPIComparisonChartPlugin` idempotently under the chart key `kpi_comparison`.
+6. Clears the Webpack and Babel caches.
 
 ### Option 2: Windows Batch Launcher
 Double-click:
 👉 **`install.bat`**  
-Press `[1]` to launch the automated installer.
+Press `[1]` to start the automated installer.
 
 ### Option 3: Manual Installation
-1. Copy the plugin directory to `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
+1. Copy the plugin folder to `superset-frontend/plugins/superset-plugin-chart-kpi-comparison`.
 2. Edit `superset-frontend/src/visualizations/presets/MainPreset.ts`:
    ```typescript
    import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';
@@ -173,7 +173,7 @@ Press `[1]` to launch the automated installer.
 
 ## 🐳 Docker Compose Deployment
 
-When managing Superset via Docker Compose:
+When Superset runs under Docker Compose:
 
 ### Non-Dev Environment (Production / Staging)
 ```bash
@@ -187,7 +187,7 @@ cd superset-frontend
 npm run dev-server
 ```
 
-Navigate to `http://localhost:8088`, create a new chart, and select **KPI Comparison Card**!
+Open `http://localhost:8088`, create a new chart and select **KPI Comparison Card**.
 
 ---
 
@@ -195,89 +195,89 @@ Navigate to `http://localhost:8088`, create a new chart, and select **KPI Compar
 
 | Section | Control (`name`) | UI Label | Type | Default | Description |
 |:---|:---|:---|:---|:---|:---|
-| **Metrics & Comparison** | `calculation_mode` | Calculation Mode | Select | `dual_metric` | Comparison mode: `dual_metric` (pre-aggregated SQL) or `time_shift`. |
-| | `metric` | Primary Metric | Metric | (none) | Prominent reference metric (e.g. `SUM(current_visits)`). |
-| | `comparison_metric` | Comparison Metric | Metric | (none) | Baseline/target metric when in Dual Metric mode (e.g. `SUM(prior_visits)`). |
-| | `time_compare` | Time Shift Offset | Select | `1 year ago` | Temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`). |
-| | `comparison_label` | Comparison Label | Text | `"vs Periodo Prec."` | Descriptive benchmark text (e.g., `"vs 2025"`, `"vs Target"`). |
-| | `time_column` | Time Column | Select | (none) | Date/time dimension used to order the vector sparkline. |
-| **Card Appearance** | `kpi_title` | KPI Title | Text | `""` | Top uppercase heading (e.g., `"TOTAL OUTPATIENT VISITS"`). |
-| | `show_title` | Show Title | Checkbox | `true` | Toggles visibility of top title label. |
-| | `kpi_subtitle` | Subtitle / Detail | Text | `""` | Secondary context line (e.g., `"Clinical Department - FY 2026"`). |
-| | `card_alignment` | Content Alignment | Select | `left` | Text alignment: `left`, `center`, or `right`. |
-| | `prefix_value` | Value Prefix | Text | `""` | Currency symbols (`$`, `€`) prepended to values. |
-| | `suffix_value` | Value Suffix | Text | `""` | Units (`%`, `days`, `hrs`) appended to values. |
-| | `number_format` | Number Format | Select | `SMART_NUMBER` | d3-format preset or custom formatting pattern. |
-| **Tipografia & Testo** | `kpi_font_family` | Famiglia Font Valore | Select | `inherit` | Font: Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code. |
-| | `kpi_font_size_mode` | Modalita Dimensione Valore | Select | `auto` | Scaling automatico reattivo (`auto`) o dimensione fissa in pixel (`manual`). |
-| | `kpi_font_size_px` | Dimensione Fissa (px) | Slider | `48` | Dimensione del font quando in modalita manuale (12-120px). |
-| | `kpi_font_weight` | Peso Font Valore | Select | `700` | Peso tipografico: da Light 300 a Black 900. |
-| | `kpi_letter_spacing` | Spaziatura Caratteri | Select | `normal` | Spaziatura testo: `tight`, `normal`, `wide`. |
-| | `kpi_tabular_nums` | Allineamento Numeri Tabulare | Checkbox | `true` | Attiva `tabular-nums` per cifre a larghezza costante anti-jitter. |
-| | `kpi_color` | Colore Valore KPI | Color | (auto) | Colore personalizzato del valore principale. |
-| | `title_font_size` | Dimensione Titolo | Select | `medium` | Dimensione etichetta superiore: `small`, `medium`, `large`, `xlarge`. |
-| | `title_font_weight` | Peso Font Titolo | Select | `600` | Spessore del titolo da Regular a Bold. |
-| | `title_transform_uppercase` | Titolo Tutto Maiuscolo | Checkbox | `true` | Forza la visualizzazione in maiuscolo. |
-| | `title_color` | Colore Titolo | Color | (auto) | Tinta del titolo della card. |
-| | `subtitle_font_size` | Dimensione Sottotitolo | Select | `medium` | Scala dimensionale del sottotitolo. |
-| | `subtitle_font_weight` | Peso Font Sottotitolo | Select | `400` | Peso del font del sottotitolo. |
-| | `subtitle_color` | Colore Sottotitolo | Color | (auto) | Colore del sottotitolo. |
-| | `comparison_font_size` | Dimensione Testo Confronto | Select | `medium` | Scala dimensionale del testo di confronto inferiore. |
-| | `comparison_font_weight` | Peso Font Confronto | Select | `400` | Peso tipografico della riga di benchmark. |
-| | `comparison_label_color` | Colore Etichetta Confronto | Color | (auto) | Colore dedicato alla dicitura descrittiva. |
-| **Delta % & Polarity** | `invert_polarity` | Invert Color Polarity | Checkbox | `false` | **"Lower is Better" mode**: decrescita in **Verde**, crescita in **Rosso**. |
-| | `badge_style` | Delta Badge Style | Select | `pill` | Stile visivo: `pill` (Pillola), `full` (Box solido), o `subtle` (Testo). |
-| | `show_badge` | Show Delta Badge | Checkbox | `true` | Mostra o nasconde il badge percentuale. |
-| | `show_comparison_label` | Show Comparison Label | Checkbox | `true` | Mostra o nasconde la dicitura descrittiva del confronto. |
-| | `show_comparison_value`| Show Comparison Value | Checkbox | `true` | Mostra o nasconde il valore numerico di riferimento. |
-| | `show_absolute_delta` | Show Absolute Delta | Checkbox | `true` | Differenza assoluta tra parentesi (es. `(+2,640)`). |
-| **Card Styling** | `card_bg_color` | Card Background Color | Color | `#ffffff` | Colore di sfondo con supporto trasparenza RGBA. |
-| | `card_border_radius` | Card Corner Radius | Select | `subtle` | Raggio angoli: `square` (0px), `subtle` (8px), `rounded` (14px), `pill` (24px). |
-| | `card_box_shadow` | Card Shadow / Elevation | Select | `none` | Elevazione e ombra: `none`, `subtle`, `elevated`, `bordered`. |
-| | `card_border_width` | Spessore Bordo | Select | `0` | Bordo esplicito: `0` (nessuno), `1px`, `2px`, `3px`. |
-| | `card_border_color` | Colore Bordo | Color | `#e2e8f0` | Tinta del bordo perimetrale. |
-| **Sparkline** | `show_sparkline` | Show Sparkline | Checkbox | `false` | Curva di andamento temporale integrata nella card. |
-| | `sparkline_color` | Sparkline Color | Color | `#2563eb` | Colore del tracciato SVG. |
-| | `sparkline_fill` | Fill Below Curve | Checkbox | `true` | Sfumatura gradiente sotto la curva. |
-| | `sparkline_curve` | Stile Curva | Select | `smooth` | Tracciato morbido spline di Bezier (`smooth`) o angolare (`linear`). |
-| | `sparkline_show_peak_marker` | Marker Punto Massimo | Checkbox | `false` | Punto visivo sul picco massimo della serie. |
-| | `sparkline_show_last_marker` | Marker Valore Attuale | Checkbox | `false` | Punto visivo sull'ultimo valore temporale rilevato. |
+| **Metrics & comparison** | `calculation_mode` | Calculation mode | Select | `dual_metric` | Comparison mode: `dual_metric` (pre-aggregated SQL) or `time_shift`. |
+| | `metric` | Main metric | Metric | (none) | Prominent reference metric (e.g. `SUM(current_visits)`). |
+| | `comparison_metric` | Comparison metric (optional) | Metric | (none) | Baseline or target metric in dual metric mode (e.g. `SUM(prior_visits)`). |
+| | `time_compare` | Time offset (time shift) | Select | `1 year ago` | Temporal offset (`1 year ago`, `1 month ago`, `1 week ago`, `28 days ago`). |
+| | `comparison_label` | Comparison period label | Text | `"vs previous period"` | Descriptive benchmark text (e.g. `"vs 2025"`, `"vs Target"`). |
+| | `time_column` | Time column (optional, for the sparkline) | Select | (none) | Date or time column used to order the sparkline. |
+| **Card appearance** | `kpi_title` | KPI title | Text | `""` | Top uppercase heading (e.g. `"TOTAL VISITS"`). |
+| | `show_title` | Show top title | Checkbox | `true` | Toggles the top title label. |
+| | `kpi_subtitle` | Subtitle / detail | Text | `""` | Secondary context line (e.g. `"Department - FY 2026"`). |
+| | `card_alignment` | Content alignment | Select | `left` | Text alignment: `left`, `center` or `right`. |
+| | `prefix_value` | Value prefix (e.g. €) | Text | `""` | Symbol prepended to the value (`$`, `€`). |
+| | `suffix_value` | Value suffix (e.g. %, days) | Text | `""` | Unit appended to the value (`%`, `days`, `hrs`). |
+| | `number_format` | Number format | Select | `SMART_NUMBER` | d3-format preset or custom pattern. |
+| **Typography & text styling** | `kpi_font_family` | Font family | Select | `inherit` | Font: Inter, Roboto, Montserrat, Poppins, Oswald, JetBrains Mono, Fira Code. |
+| | `kpi_font_size_mode` | Main value size mode | Select | `auto` | Responsive automatic scaling (`auto`) or a fixed pixel size (`manual`). |
+| | `kpi_font_size_px` | Manual size (px) | Slider | `48` | Font size in manual mode (12-120px). |
+| | `kpi_font_weight` | Main value font weight (bold) | Select | `700` | Weight from Light 300 to Black 900. |
+| | `kpi_letter_spacing` | Value letter spacing | Select | `normal` | Letter spacing: `tight`, `normal` or `wide`. |
+| | `kpi_tabular_nums` | Tabular numeric alignment | Checkbox | `true` | Enables `tabular-nums` so digits have a constant width (no jitter). |
+| | `kpi_color` | Main value color | Color | (auto) | Custom color for the main value. |
+| | `title_font_size` | Title size | Select | `medium` | Top label size: `small`, `medium`, `large` or `xlarge`. |
+| | `title_font_weight` | Title font weight | Select | `600` | Title weight from Regular to Bold. |
+| | `title_transform_uppercase` | Uppercase title | Checkbox | `true` | Forces uppercase display. |
+| | `title_color` | Title color | Color | (auto) | Color of the card title. |
+| | `subtitle_font_size` | Subtitle size | Select | `medium` | Size of the subtitle. |
+| | `subtitle_font_weight` | Subtitle font weight | Select | `400` | Weight of the subtitle. |
+| | `subtitle_color` | Subtitle color | Color | (auto) | Color of the subtitle. |
+| | `comparison_font_size` | Comparison text size | Select | `medium` | Size of the bottom comparison text. |
+| | `comparison_font_weight` | Comparison font weight | Select | `400` | Weight of the benchmark row. |
+| | `comparison_label_color` | Comparison label color | Color | (auto) | Color of the descriptive comparison text. |
+| **Delta % & semantic polarity** | `invert_polarity` | Invert color polarity (lower is better) | Checkbox | `false` | **"Lower is better" mode**: a decrease shows in **green**, an increase in **red**. |
+| | `badge_style` | Delta badge style | Select | `pill` | Visual style: `pill`, `full` (solid box) or `subtle` (text). |
+| | `show_badge` | Show delta badge | Checkbox | `true` | Shows or hides the percentage badge. |
+| | `show_comparison_label` | Show comparison text label | Checkbox | `true` | Shows or hides the descriptive comparison text. |
+| | `show_comparison_value` | Show comparison numeric value | Checkbox | `true` | Shows or hides the reference value. |
+| | `show_absolute_delta` | Show absolute delta in brackets | Checkbox | `true` | Absolute difference in brackets (e.g. `(+2,640)`). |
+| **Card styling** | `card_bg_color` | Card background color | Color | `#ffffff` | Background color with RGBA transparency support. |
+| | `card_border_radius` | Corner radius | Select | `subtle` | Corner radius: `square` (0px), `subtle` (8px), `rounded` (14px), `pill` (24px). |
+| | `card_box_shadow` | Card shadow / elevation | Select | `none` | Elevation and shadow: `none`, `subtle`, `elevated` or `bordered`. |
+| | `card_border_width` | Border width | Select | `0` | Explicit border: `0` (none), `1px`, `2px` or `3px`. |
+| | `card_border_color` | Border color | Color | `#e2e8f0` | Color of the outer border. |
+| **Sparkline** | `show_sparkline` | Show micro sparkline at the bottom | Checkbox | `false` | Trend curve built into the card. |
+| | `sparkline_color` | Sparkline color | Color | `#2563eb` | Color of the SVG line. |
+| | `sparkline_fill` | Fill below curve | Checkbox | `true` | Gradient fill beneath the curve. |
+| | `sparkline_curve` | Sparkline curve style | Select | `smooth` | Smooth Bezier spline (`smooth`) or angular (`linear`). |
+| | `sparkline_show_peak_marker` | Highlight peak | Checkbox | `false` | Marker on the highest point of the series. |
+| | `sparkline_show_last_marker` | Highlight current value | Checkbox | `false` | Marker on the latest value in the series. |
 
 ---
 
 ## 🎨 Dev Studio Locale & Live Preview
 
-Il repository include un ambiente autonomo **Vite + React HMR** dedicato al collaudo visivo immediato senza dover avviare l'intera istanza Superset:
+The repository includes a standalone **Vite + React HMR** environment for immediate visual checks, without starting a full Superset instance:
 
 ```bash
-# Avvio rapido su Windows tramite launcher batch
+# Quick start on Windows with the batch launcher
 .\dev.bat
 
-# Oppure tramite comando npm
+# Or with the npm script
 npm run studio
 ```
 
-Il Dev Studio e accessibile su **`http://localhost:5175/`** e offre:
-- **Hot Module Replacement (HMR)** istantaneo: qualsiasi modifica ai componenti o agli stili in `src/` si riflette in tempo reale nel browser.
-- **Scenari Clinici e Direzionali Preconfigurati**: visite ambulatoriali, tempi di attesa pronto soccorso con polarita invertita, budget ricavi e glassmorphism dark executive.
-- **Slider e Controlli Interattivi**: regolazione in tempo reale di larghezza/altezza card, famiglie di font, pesi, spaziature, ombreggiature, curve sparkline e marker.
-- **Sfondo Canvas Personalizzabile**: switch immediato tra sfondo chiaro, scuro ed executive dark per verificare contrasto e accessibilita.
+The Dev Studio runs on **`http://localhost:5175/`** and offers:
+- **Instant Hot Module Replacement (HMR)**: any change to the components or styles in `src/` shows up in the browser right away.
+- **Preconfigured Scenarios**: visit counts, waiting times with inverted polarity, revenue budgets and a dark executive glassmorphism theme.
+- **Sliders and Interactive Controls**: real-time adjustment of card width and height, font families, weights, spacing, shadows, sparkline curves and markers.
+- **Customizable Canvas Background**: switch between light, dark and executive dark to check contrast and accessibility.
 
 ---
 
 ## 💻 Local Development & Build
 
 ```bash
-# Installazione dipendenze
+# Install dependencies
 npm install
 
-# Esecuzione suite di test (173 test)
+# Run the test suite (191 tests)
 npm test
 
-# Compilazione bundle ESM e dichiarazioni TypeScript
+# Build the ESM bundle and TypeScript declarations
 npm run build
 
-# Pulizia cartella di compilazione
+# Clean the build output
 npm run clean
 ```
 

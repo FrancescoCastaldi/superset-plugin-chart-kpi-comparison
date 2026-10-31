@@ -73,10 +73,10 @@ if (-not $PluginPath) {
 
 $ResolvedPluginPath = (Resolve-Path $PluginPath).Path
 if (-not (Test-Path (Join-Path $ResolvedPluginPath "package.json"))) {
-    Write-Color "[ERRORE] Impossibile trovare package.json del plugin in '$ResolvedPluginPath'!" "Red"
+    Write-Color "[ERROR] Cannot find the plugin package.json in '$ResolvedPluginPath'!" "Red"
     exit 1
 }
-Write-Color "[INFO] Cartella Plugin (sorgente): $ResolvedPluginPath" "Green"
+Write-Color "[INFO] Plugin folder (source): $ResolvedPluginPath" "Green"
 
 # -------------------------------------------------------------
 # 2. Resolve Superset Path
@@ -101,7 +101,7 @@ if (-not $SupersetPath) {
     foreach ($cand in $Candidates) {
         if ($cand -and (Test-Path (Join-Path $cand "superset-frontend\package.json"))) {
             $SupersetPath = (Resolve-Path $cand).Path
-            Write-Color "[INFO] Trovata installazione Superset automatica: $SupersetPath" "Green"
+            Write-Color "[INFO] Superset installation found automatically: $SupersetPath" "Green"
             break
         }
     }
@@ -111,7 +111,7 @@ if (-not $SupersetPath) {
     if ($Force) {
         $SupersetPath = $DefaultCandidate
     } else {
-        Write-Color "Inserisci il percorso della cartella radice di Apache Superset" "Yellow"
+        Write-Color "Enter the path of the Apache Superset root folder" "Yellow"
         Write-Color "[Default: $DefaultCandidate]:" "Gray"
         $InputPath = Read-Host "Percorso Superset"
         if ([string]::IsNullOrWhiteSpace($InputPath)) {
@@ -123,8 +123,8 @@ if (-not $SupersetPath) {
 }
 
 if (-not (Test-Path $SupersetPath)) {
-    Write-Color "[ERRORE] Il percorso specificato '$SupersetPath' non esiste!" "Red"
-    Write-Color "Verifica che il percorso punti alla radice di Apache Superset contenente 'superset-frontend'." "Yellow"
+    Write-Color "[ERROR] The specified path '$SupersetPath' does not exist!" "Red"
+    Write-Color "Check that the path points to the Apache Superset root containing 'superset-frontend'." "Yellow"
     exit 1
 }
 
@@ -132,12 +132,12 @@ $ResolvedSupersetPath = (Resolve-Path $SupersetPath).Path
 $FrontendDir = Join-Path $ResolvedSupersetPath "superset-frontend"
 
 if (-not (Test-Path (Join-Path $FrontendDir "package.json"))) {
-    Write-Color "[ERRORE] 'superset-frontend\package.json' non trovato in '$ResolvedSupersetPath'!" "Red"
-    Write-Color "Assicurati di selezionare la cartella principale del repository Superset." "Yellow"
+    Write-Color "[ERROR] 'superset-frontend\package.json' not found in '$ResolvedSupersetPath'!" "Red"
+    Write-Color "Make sure you select the main folder of the Superset repository." "Yellow"
     exit 1
 }
-Write-Color "[INFO] Cartella Target Superset: $ResolvedSupersetPath" "Green"
-Write-Color "[INFO] Cartella superset-frontend: $FrontendDir" "Gray"
+Write-Color "[INFO] Superset target folder: $ResolvedSupersetPath" "Green"
+Write-Color "[INFO] superset-frontend folder: $FrontendDir" "Gray"
 Write-Color ""
 
 # -------------------------------------------------------------
@@ -145,54 +145,54 @@ Write-Color ""
 # -------------------------------------------------------------
 $DistDir = Join-Path $ResolvedPluginPath "dist"
 if (Test-Path $DistDir) {
-    Write-Color "`n=== FASE 1: Bundle Pre-compilato 'dist' Rilevato ===" "Cyan"
-    Write-Color "[OK] File compilati gia' pronti in dist/. Installazione istantanea senza download dipendenze." "Green"
+    Write-Color "`n=== STEP 1: Prebuilt 'dist' bundle found ===" "Cyan"
+    Write-Color "[OK] Compiled files already in dist/. Instant install, no dependency download." "Green"
 } elseif (Test-Path (Join-Path $ResolvedPluginPath "src\index.ts")) {
-    Write-Color "`n=== FASE 1: Sorgenti 'src/' Rilevati ===" "Cyan"
-    Write-Color "[OK] Sorgenti TypeScript pronti. Superset li compilera' direttamente tramite Webpack." "Green"
+    Write-Color "`n=== STEP 1: 'src/' sources found ===" "Cyan"
+    Write-Color "[OK] TypeScript sources ready. Superset will compile them directly through Webpack." "Green"
 } elseif (-not $SkipBuild) {
-    Write-Color "=== FASE 1: Compilazione TypeScript del Plugin ===" "Cyan"
+    Write-Color "=== STEP 1: TypeScript build of the plugin ===" "Cyan"
     $NpmCmd = Get-Command "npm" -ErrorAction SilentlyContinue
     if ($NpmCmd) {
         $PluginNodeModules = Join-Path $ResolvedPluginPath "node_modules"
         $LocalTsc = Join-Path $PluginNodeModules "typescript\lib\tsc.js"
         if (-not (Test-Path $LocalTsc)) {
-            Write-Color "[INFO] Dipendenze non pronte (typescript locale mancante). Esecuzione automatica 'npm install --legacy-peer-deps' (stesso comportamento dello stratum-bar)..." "Yellow"
+            Write-Color "[INFO] Dependencies not ready (local typescript missing). Running 'npm install --legacy-peer-deps' automatically (same behaviour as stratum-bar)..." "Yellow"
             $OrigLoc = Get-Location
             try {
                 Set-Location $ResolvedPluginPath
                 & $NpmCmd.Source install --legacy-peer-deps
                 if ($LASTEXITCODE -eq 0) {
-                    Write-Color "[SUCCESS] Dipendenze installate (npm install --legacy-peer-deps)." "Green"
+                    Write-Color "[SUCCESS] Dependencies installed (npm install --legacy-peer-deps)." "Green"
                 } else {
-                    Write-Color "[WARN] 'npm install --legacy-peer-deps' ha restituito codice $LASTEXITCODE. Si prosegue con i file presenti." "Yellow"
+                    Write-Color "[WARN] 'npm install --legacy-peer-deps' returned code $LASTEXITCODE. Continuing with the existing files." "Yellow"
                 }
             } catch {
-                Write-Color "[WARN] Avviso durante npm install: $_" "Yellow"
+                Write-Color "[WARN] Warning during npm install: $_" "Yellow"
             } finally {
                 Set-Location $OrigLoc
             }
         } else {
-            Write-Color "[INFO] Dipendenze gia' presenti (typescript locale rilevato)." "Gray"
+            Write-Color "[INFO] Dependencies already present (local typescript found)." "Gray"
         }
 
-        Write-Color "[INFO] Esecuzione 'npm run build' in '$ResolvedPluginPath'..." "Yellow"
+        Write-Color "[INFO] Running 'npm run build' in '$ResolvedPluginPath'..." "Yellow"
         $OrigLoc = Get-Location
         try {
             Set-Location $ResolvedPluginPath
             & $NpmCmd.Source run build
             if ($LASTEXITCODE -eq 0) {
-                Write-Color "[SUCCESS] Compilazione TypeScript completata con successo." "Green"
+                Write-Color "[SUCCESS] TypeScript build completed successfully." "Green"
             } else {
-                Write-Color "[WARN] 'npm run build' ha restituito codice $LASTEXITCODE. Si prosegue con i file presenti." "Yellow"
+                Write-Color "[WARN] 'npm run build' returned code $LASTEXITCODE. Continuing with the existing files." "Yellow"
             }
         } catch {
-            Write-Color "[WARN] Avviso durante compilazione npm: $_" "Yellow"
+            Write-Color "[WARN] Warning during npm build: $_" "Yellow"
         } finally {
             Set-Location $OrigLoc
         }
     } else {
-        Write-Color "[INFO] 'npm' non rilevato nel PATH. Si prosegue usando dist/src preesistenti." "Gray"
+        Write-Color "[INFO] 'npm' not found in PATH. Continuing with the existing dist/src." "Gray"
     }
     Write-Color ""
 }
@@ -200,7 +200,7 @@ if (Test-Path $DistDir) {
 # -------------------------------------------------------------
 # 4. Copy/Sync Plugin to superset-frontend/plugins
 # -------------------------------------------------------------
-Write-Color "=== FASE 2: Copia e Sincronizzazione Plugin ===" "Cyan"
+Write-Color "=== STEP 2: Copy and sync the plugin ===" "Cyan"
 $PluginsTargetRoot = Join-Path $FrontendDir "plugins"
 if (-not (Test-Path $PluginsTargetRoot)) {
     New-Item -ItemType Directory -Path $PluginsTargetRoot -Force | Out-Null
@@ -208,7 +208,7 @@ if (-not (Test-Path $PluginsTargetRoot)) {
 
 $DestPluginDir = Join-Path $PluginsTargetRoot "superset-plugin-chart-kpi-comparison"
 if (Test-Path $DestPluginDir) {
-    Write-Color "[INFO] Pulizia versione precedente in '$DestPluginDir'..." "Yellow"
+    Write-Color "[INFO] Cleaning the previous version in '$DestPluginDir'..." "Yellow"
     try {
         Remove-Item -Recurse -Force $DestPluginDir -ErrorAction Stop
     } catch {
@@ -227,20 +227,20 @@ foreach ($item in $ItemsToCopy) {
         $isDir = (Get-Item $srcItem) -is [System.IO.DirectoryInfo]
         if ($isDir) {
             Copy-Item -Path $srcItem -Destination $DestPluginDir -Recurse -Force
-            Write-Color "  [+] Copiata cartella: $item" "Gray"
+            Write-Color "  [+] Copied folder:    $item" "Gray"
         } else {
             Copy-Item -Path $srcItem -Destination $destItem -Force
-            Write-Color "  [+] Copiato file:     $item" "Gray"
+            Write-Color "  [+] Copied file:      $item" "Gray"
         }
     }
 }
-Write-Color "[SUCCESS] Plugin copiato con successo in '$DestPluginDir'" "Green"
+Write-Color "[SUCCESS] Plugin copied successfully to '$DestPluginDir'" "Green"
 Write-Color ""
 
 # -------------------------------------------------------------
 # 5. Safely parse and update MainPreset.ts
 # -------------------------------------------------------------
-Write-Color "=== FASE 3: Registrazione in MainPreset.ts ===" "Cyan"
+Write-Color "=== STEP 3: Registration in MainPreset.ts ===" "Cyan"
 
 $PresetCandidates = @(
     (Join-Path $FrontendDir "src\visualizations\presets\MainPreset.ts"),
@@ -256,29 +256,29 @@ foreach ($pf in $PresetCandidates) {
 }
 
 if (-not $PresetFile) {
-    Write-Color "[ERRORE] Impossibile trovare MainPreset.ts in '$FrontendDir\src'!" "Red"
+    Write-Color "[ERROR] Cannot find MainPreset.ts in '$FrontendDir\src'!" "Red"
     exit 1
 }
 
-Write-Color "[INFO] File preset individuato: $PresetFile" "Gray"
+Write-Color "[INFO] Preset file found: $PresetFile" "Gray"
 
-# 5.1 Backup di sicurezza
+# 5.1 Safety backup
 $BackupFile = "$PresetFile.bak"
 if (-not (Test-Path $BackupFile)) {
     Copy-Item -Path $PresetFile -Destination $BackupFile -Force
-    Write-Color "[SUCCESS] Creato backup di sicurezza: $(Split-Path -Leaf $BackupFile)" "Green"
+    Write-Color "[SUCCESS] Safety backup created: $(Split-Path -Leaf $BackupFile)" "Green"
 } else {
-    Write-Color "[INFO] Backup di sicurezza preesistente mantenuto: $(Split-Path -Leaf $BackupFile)" "Gray"
+    Write-Color "[INFO] Existing safety backup kept: $(Split-Path -Leaf $BackupFile)" "Gray"
 }
 
-# 5.2 Lettura e parsing
+# 5.2 Reading and parsing
 $RawContent = [System.IO.File]::ReadAllText($PresetFile, [System.Text.Encoding]::UTF8)
 $NL = if ($RawContent.Contains("`r`n")) { "`r`n" } else { "`n" }
 
 $TargetImport = "import { KPIComparisonChartPlugin } from '../../../plugins/superset-plugin-chart-kpi-comparison/src';"
 $TargetRegister = "        new KPIComparisonChartPlugin().configure({ key: 'kpi_comparison' }),"
 
-# Verifica idempotenza sulla FORMA CANONICA (riga-esatta): le varianti legacy
+# Idempotency is checked on the CANONICAL form (exact line): legacy variants
 # (riga con `.register()`, indentazioni anomale, duplicati) non contano come
 # configurazione valida e vengono normalizzate dal ramo else.
 $PresetLineList = [System.Collections.Generic.List[string]]($RawContent -split "\r?\n")
@@ -288,9 +288,9 @@ $importCount = ([regex]::Matches($RawContent, "from\s*['`"][^'`"]*superset-plugi
 $registerCount = ([regex]::Matches($RawContent, "new\s+KPIComparisonChartPlugin")).Count
 
 if (-not $CleanReinstall -and $hasExactImport -and $hasExactRegister -and ($importCount -eq 1) -and ($registerCount -eq 1)) {
-    Write-Color "[INFO] MainPreset.ts e' gia' registrato correttamente (idempotente - nessuna modifica necessaria)." "Green"
+    Write-Color "[INFO] MainPreset.ts is already registered correctly (idempotent, no change needed)." "Green"
 } else {
-    Write-Color "[INFO] Aggiornamento import e registrazione in corso..." "Yellow"
+    Write-Color "[INFO] Updating the import and registration..." "Yellow"
 
     $lines = [System.Collections.Generic.List[string]]($RawContent -split "\r?\n")
     $filteredLines = [System.Collections.Generic.List[string]]::new()
@@ -340,9 +340,9 @@ if (-not $CleanReinstall -and $hasExactImport -and $hasExactRegister -and ($impo
     $Utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     [System.IO.File]::WriteAllText($PresetFile, $NewContent, $Utf8NoBom)
 
-    Write-Color "[SUCCESS] Aggiunto import:       $TargetImport" "Green"
-    Write-Color "[SUCCESS] Aggiunta registrazione: $TargetRegister" "Green"
-    Write-Color "[SUCCESS] File $(Split-Path -Leaf $PresetFile) salvato con successo." "Green"
+    Write-Color "[SUCCESS] Added import:       $TargetImport" "Green"
+    Write-Color "[SUCCESS] Added registration: $TargetRegister" "Green"
+    Write-Color "[SUCCESS] File $(Split-Path -Leaf $PresetFile) saved successfully." "Green"
 }
 Write-Color ""
 
@@ -350,7 +350,7 @@ Write-Color ""
 # 6. Safety Cache Cleanup
 # -------------------------------------------------------------
 if (-not $SkipCleanCache) {
-    Write-Color "=== FASE 4: Pulizia Cache Frontend Webpack ===" "Cyan"
+    Write-Color "=== STEP 4: Clearing the Webpack frontend cache ===" "Cyan"
     $CacheDirs = @(
         (Join-Path $FrontendDir "node_modules\.cache"),
         (Join-Path $FrontendDir ".cache")
@@ -359,9 +359,9 @@ if (-not $SkipCleanCache) {
         if (Test-Path $cd) {
             try {
                 Remove-Item -Recurse -Force $cd -ErrorAction SilentlyContinue
-                Write-Color "[SUCCESS] Svuotata cache in: $cd" "Green"
+                Write-Color "[SUCCESS] Cache cleared: $cd" "Green"
             } catch {
-                Write-Color "[WARN] Impossibile svuotare $($cd): $_" "Yellow"
+                Write-Color "[WARN] Cannot clear $($cd): $_" "Yellow"
             }
         }
     }
@@ -369,21 +369,21 @@ if (-not $SkipCleanCache) {
 }
 
 # -------------------------------------------------------------
-# 7. Hotfix per Bugnoti Superset 6.x (Geostyler & Dipendenze)
+# 7. Hotfixes for known Superset 6.x issues (Geostyler and dependencies)
 # -------------------------------------------------------------
-Write-Color "=== FASE 5: Patch Automatica Bugnoti Superset 6.x ===" "Cyan"
+Write-Color "=== STEP 5: Automatic patch for known Superset 6.x issues ===" "Cyan"
 $WebpackConfig = Join-Path $FrontendDir "webpack.config.js"
 if (Test-Path $WebpackConfig) {
     $WebpackContent = [System.IO.File]::ReadAllText($WebpackConfig, [System.Text.Encoding]::UTF8)
-    # Fissa il problema di risoluzione path su Windows per geostyler (che rompe npm run build locale e docker)
+    # Fixes the path resolution problem on Windows for geostyler (it breaks local npm run build and docker)
     $TargetGeostylerRegex = '/node_modules\/.*geostyler.*\/.*\.(js|mjs)$/'
     $FixedGeostylerRegex = '/node_modules[\\\/].*geostyler.*[\\\/].*\.(js|mjs)$/'
     if ($WebpackContent.Contains($TargetGeostylerRegex)) {
         $WebpackContent = $WebpackContent.Replace($TargetGeostylerRegex, $FixedGeostylerRegex)
         [System.IO.File]::WriteAllText($WebpackConfig, $WebpackContent, [System.Text.UTF8Encoding]::new($false))
-        Write-Color "[SUCCESS] Webpack config patchato: Risolto bug geostyler regex per Windows/ESM." "Green"
+        Write-Color "[SUCCESS] Webpack config patched: geostyler regex fixed for Windows/ESM." "Green"
     } else {
-        Write-Color "[INFO] Webpack config: patch geostyler gia' applicata o non trovata." "Gray"
+        Write-Color "[INFO] Webpack config: geostyler patch already applied or not found." "Gray"
     }
 }
 
@@ -392,25 +392,25 @@ if (Test-Path $PackageJson) {
     $PkgContent = Get-Content -Raw $PackageJson
     $Modified = $false
     
-    # Aggiungi @react-spring/web se mancante (causa crash frequenti di visx)
+    # Add @react-spring/web if missing (frequent visx crashes without it)
     if ($PkgContent -notmatch '"@react-spring/web"') {
         $PkgContent = $PkgContent -replace '("dependencies"\s*:\s*\{)', "`$1`n    `"@react-spring/web`": `"^9.7.5`","
         $Modified = $true
-        Write-Color "[SUCCESS] Aggiunto @react-spring/web a package.json." "Green"
+        Write-Color "[SUCCESS] Added @react-spring/web to package.json." "Green"
     }
     
-    # Aggiungi @fontsource/inter se mancante
+    # Add @fontsource/inter if missing
     if ($PkgContent -notmatch '"@fontsource/inter"') {
         $PkgContent = $PkgContent -replace '("dependencies"\s*:\s*\{)', "`$1`n    `"@fontsource/inter`": `"^5.2.6`","
         $Modified = $true
-        Write-Color "[SUCCESS] Aggiunto @fontsource/inter a package.json." "Green"
+        Write-Color "[SUCCESS] Added @fontsource/inter to package.json." "Green"
     }
 
     if ($Modified) {
         [System.IO.File]::WriteAllText($PackageJson, $PkgContent, [System.Text.UTF8Encoding]::new($false))
-        Write-Color "[INFO] Modifiche salvate in package.json (sara' necessario npm install / rebuild)." "Gray"
+        Write-Color "[INFO] Changes saved to package.json (npm install / rebuild will be needed)." "Gray"
     } else {
-        Write-Color "[INFO] Le dipendenze critiche (@react-spring/web, @fontsource/inter) sono gia' presenti." "Gray"
+        Write-Color "[INFO] Critical dependencies (@react-spring/web, @fontsource/inter) are already present." "Gray"
     }
 }
 Write-Color ""
@@ -419,18 +419,18 @@ Write-Color ""
 # 8. Optional Frontend Rebuild
 # -------------------------------------------------------------
 if ($RebuildFrontend) {
-    Write-Color "=== FASE 6: Ricompilazione Frontend Apache Superset ===" "Cyan"
+    Write-Color "=== STEP 6: Rebuilding the Apache Superset frontend ===" "Cyan"
     $NpmCmd = Get-Command "npm" -ErrorAction SilentlyContinue
     if ($NpmCmd) {
-        Write-Color "[INFO] Avvio 'npm run build' in '$FrontendDir'..." "Yellow"
+        Write-Color "[INFO] Starting 'npm run build' in '$FrontendDir'..." "Yellow"
         $OrigLoc = Get-Location
         try {
             Set-Location $FrontendDir
             & $NpmCmd.Source run build
             if ($LASTEXITCODE -eq 0) {
-                Write-Color "[SUCCESS] Frontend Apache Superset ricompilato con successo!" "Green"
+                Write-Color "[SUCCESS] Apache Superset frontend rebuilt successfully!" "Green"
             } else {
-                Write-Color "[WARN] 'npm run build' ha terminato con codice $LASTEXITCODE." "Yellow"
+                Write-Color "[WARN] 'npm run build' exited with code $LASTEXITCODE." "Yellow"
             }
         } finally {
             Set-Location $OrigLoc
@@ -440,7 +440,7 @@ if ($RebuildFrontend) {
 }
 
 Write-Color "================================================================" "Green"
-Write-Color "   Installazione Plugin KPI Comparison completata con successo! " "Green"
+Write-Color "   KPI Comparison plugin installed successfully! " "Green"
 Write-Color "================================================================" "Green"
 Write-Color "Il plugin 'kpi_comparison' e' ora registrato nel frontend Superset." "White"
 Write-Color "Riavvia il server o visualizza la dashboard per utilizzarlo." "White"

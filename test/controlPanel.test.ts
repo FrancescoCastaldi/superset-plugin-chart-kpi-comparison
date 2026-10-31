@@ -6,17 +6,17 @@ describe('KPI Comparison Explore ControlPanel Config', () => {
     expect(config.controlPanelSections).toBeInstanceOf(Array);
 
     const sectionLabels = config.controlPanelSections.map((s: any) => s.label);
-    expect(sectionLabels).toContain('Filtri Temporali');
-    expect(sectionLabels).toContain('Configurazione Metriche & Confronto');
-    expect(sectionLabels).toContain('Personalizzazione Estetica Card');
-    expect(sectionLabels).toContain('Tipografia & Personalizzazione Testo');
-    expect(sectionLabels).toContain('Delta % & Polarità Semantica');
+    expect(sectionLabels).toContain('Time filters');
+    expect(sectionLabels).toContain('Metrics & comparison');
+    expect(sectionLabels).toContain('Card aesthetics');
+    expect(sectionLabels).toContain('Typography & text styling');
+    expect(sectionLabels).toContain('Delta % & semantic polarity');
     expect(sectionLabels).toContain('Trendline / Sparkline');
   });
 
   it('should include typography controls for font family, size mode and weight', () => {
     const typoSection = config.controlPanelSections.find(
-      (s: any) => s.label === 'Tipografia & Personalizzazione Testo'
+      (s: any) => s.label === 'Typography & text styling'
     );
     expect(typoSection).toBeDefined();
 

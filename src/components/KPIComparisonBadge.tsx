@@ -84,8 +84,8 @@ export const KPIComparisonBadge: React.FC<KPIComparisonBadgeProps> = ({
   const shouldRenderAbsoluteDelta = showAbsoluteDelta && !hideAbsoluteDelta && hasAbsoluteDelta;
 
   const tooltipText = hasAbsoluteDelta
-    ? `Variazione: ${deltaPercentStr} (${deltaAbsoluteStr})`
-    : `Variazione: ${deltaPercentStr}`;
+    ? `Change: ${deltaPercentStr} (${deltaAbsoluteStr})`
+    : `Change: ${deltaPercentStr}`;
 
   const arrowIcon = getArrowIcon();
 
